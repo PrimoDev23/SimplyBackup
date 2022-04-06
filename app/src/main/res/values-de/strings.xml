@@ -46,4 +46,6 @@
     <string name="Yes">Ja</string>
     <string name="Cancel">Abbrechen</string>
     <string name="DeleteAlertTitle">Sicher?</string>
+    <string name="ErrorLoadingFiles">Dateien zum Backup konnten nicht geladen werden...</string>
+    <string name="NoFiles">Es gibt noch keine Dateien für dieses Backup...</string>
 </resources>

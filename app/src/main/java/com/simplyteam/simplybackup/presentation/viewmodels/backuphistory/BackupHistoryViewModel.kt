@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.owncloud.android.lib.resources.files.model.RemoteFile
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.BackupDetail
 import com.simplyteam.simplybackup.data.models.Connection
@@ -20,6 +21,8 @@ class BackupHistoryViewModel @Inject constructor(
     val NextCloudService: NextCloudService
 ) : ViewModel() {
 
+    val ShowErrorLoading = mutableStateOf(false)
+
     val BackupToDelete = mutableStateOf<BackupDetail?>(null)
 
     val Loading = mutableStateOf(false)
@@ -31,6 +34,8 @@ class BackupHistoryViewModel @Inject constructor(
                 Loading.value = true
                 NextCloudService.GetFilesForConnection(context, connection)
                     .onSuccess { files ->
+                        ShowErrorLoading.value = false
+
                         BuildBackupDetails(connection, files.sortedByDescending { file ->
                             file.uploadTimestamp
                         })
@@ -38,7 +43,7 @@ class BackupHistoryViewModel @Inject constructor(
                     .onFailure {
                         Timber.e(it)
 
-                        //TODO: Show Alert
+                        ShowErrorLoading.value = true
                     }
                 Loading.value = false
             }

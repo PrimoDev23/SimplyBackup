@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.BackupDetail
@@ -37,22 +38,32 @@ class BackupHistoryView {
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                items(viewModel.BackupDetails.value) { detail ->
-                    BuildFileCard(
-                        detail = detail,
+            when {
+                viewModel.ShowErrorLoading.value -> {
+                    BuildErrorText(R.string.ErrorLoadingFiles)
+                }
+                !viewModel.Loading.value && viewModel.BackupDetails.value.isEmpty() -> {
+                    BuildErrorText(R.string.NoFiles)
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        items(viewModel.BackupDetails.value) { detail ->
+                            BuildFileCard(
+                                detail = detail,
+                                viewModel = viewModel
+                            )
+                        }
+                    }
+
+                    BuildDeleteAlert(
                         viewModel = viewModel
                     )
                 }
             }
-
-            BuildDeleteAlert(
-                viewModel = viewModel
-            )
         }
     }
 
@@ -226,6 +237,25 @@ class BackupHistoryView {
                         )
                     }
                 }
+            )
+        }
+    }
+
+    @Composable
+    fun BuildErrorText(
+        resId: Int
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(
+                    id = resId
+                ),
+                textAlign = TextAlign.Center
             )
         }
     }

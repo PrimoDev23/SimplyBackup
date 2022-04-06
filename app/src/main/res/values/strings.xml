@@ -51,4 +51,6 @@
     <string name="Yes">Yes</string>
     <string name="Cancel">Cancel</string>
     <string name="DeleteAlertTitle">Sure?</string>
+    <string name="ErrorLoadingFiles">Couldn\'t load files for this backup...</string>
+    <string name="NoFiles">There are no files to display for this backup yet...</string>
 </resources>
