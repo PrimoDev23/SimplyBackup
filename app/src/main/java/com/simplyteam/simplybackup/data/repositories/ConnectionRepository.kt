@@ -3,13 +3,10 @@ package com.simplyteam.simplybackup.data.repositories
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.simplyteam.simplybackup.data.daos.ConnectionDao
-import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
+import com.simplyteam.simplybackup.data.models.Connection
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlin.Exception
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class ConnectionRepository {
     private lateinit var _connectionDao: ConnectionDao

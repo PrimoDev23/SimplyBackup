@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
@@ -13,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(

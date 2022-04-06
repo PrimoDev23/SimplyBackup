@@ -21,11 +21,15 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(p0: Context?, p1: Intent?) {
         p0?.let { context ->
-            GlobalScope.launch {
-                val connections = ConnectionRepository.GetAllConnections(context)
+            p1?.let { intent ->
+                if(intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                    GlobalScope.launch {
+                        val connections = ConnectionRepository.GetAllConnections(context)
 
-                for (connection in connections) {
-                    SchedulerService.ScheduleBackup(context, connection)
+                        for (connection in connections) {
+                            SchedulerService.ScheduleBackup(context, connection)
+                        }
+                    }
                 }
             }
         }

@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.owncloud.android.lib.resources.files.model.RemoteFile
-import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.BackupDetail
 import com.simplyteam.simplybackup.data.models.Connection

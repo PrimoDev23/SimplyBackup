@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.common
 
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
-import com.simplyteam.simplybackup.data.repositories.QueueRepository
 import com.simplyteam.simplybackup.data.services.NextCloudService
 import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
@@ -57,10 +56,6 @@ class AppModule {
     @Provides
     @Singleton
     fun GetHistoryRepository() = HistoryRepository()
-
-    @Provides
-    @Singleton
-    fun GetQueueRepository() = QueueRepository()
 
     //endregion Repos
 

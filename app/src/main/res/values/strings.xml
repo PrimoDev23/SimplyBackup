@@ -32,12 +32,12 @@
     <string name="NextBackup">Next backup</string>
     <string name="TotalBackupSize">Total size of backups</string>
     <string name="WifiOnly">Backup only on wifi connection</string>
-    <string name="BackingUpNotificationTitle">Backing up...</string>
+    <string name="BackingUpNotificationTitle">Backing up…</string>
     <string name="BackingUpNotificationText">Currently backing up %s</string>
     <string name="notification_channel_id" translatable="false">simplybackup_notify_channel</string>
     <string name="notification_channel_name" translatable="false">Backup Notification</string>
     <string name="ErrorNotificationTitle">Error backing up</string>
-    <string name="ErrorNotificationText">An error occured while trying to backup %s (%s)</string>
+    <string name="ErrorNotificationText">An error occurred while trying to backup %s (%s)</string>
     <string name="SuccessNotificationTitle">Backup succeed</string>
     <string name="SuccessNotificationText">The backup of %s succeed</string>
     <string name="ErrorUpload">Uploading backup %s failed (%s)</string>
@@ -51,6 +51,6 @@
     <string name="Yes">Yes</string>
     <string name="Cancel">Cancel</string>
     <string name="DeleteAlertTitle">Sure?</string>
-    <string name="ErrorLoadingFiles">Couldn\'t load files for this backup...</string>
-    <string name="NoFiles">There are no files to display for this backup yet...</string>
+    <string name="ErrorLoadingFiles">Couldn\'t load files for this backup…</string>
+    <string name="NoFiles">There are no files to display for this backup yet…</string>
 </resources>

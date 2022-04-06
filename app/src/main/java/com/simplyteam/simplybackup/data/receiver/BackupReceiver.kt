@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Bundle
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
@@ -16,7 +15,6 @@ import com.simplyteam.simplybackup.data.services.NextCloudService
 import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.SchedulerService
-import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,7 +23,6 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class BackupReceiver : BroadcastReceiver() {
@@ -147,7 +144,7 @@ class BackupReceiver : BroadcastReceiver() {
         return false
     }
 
-    suspend fun AddHistoryEntry(connection: Connection, file: File, succeed: Boolean) {
+    private suspend fun AddHistoryEntry(connection: Connection, file: File, succeed: Boolean) {
         val entry = HistoryEntry(
             ConnectionId = connection.Id,
             Time = LocalDateTime.now().format(formatter),

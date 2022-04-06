@@ -10,7 +10,7 @@ object MathUtil {
     private const val _gigaBytes = _megaBytes * _divider
 
     //Number of 0s is the number of decimals
-    private val _decimals = 100.0
+    private const val _decimals = 100.0
 
     fun GetBiggestFileSizeString(bytes: Long): String {
         //0 -1024 B

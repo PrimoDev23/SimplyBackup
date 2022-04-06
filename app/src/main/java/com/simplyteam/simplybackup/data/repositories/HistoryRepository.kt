@@ -27,10 +27,10 @@ class HistoryRepository {
     }
 
     suspend fun InsertHistoryEntry(entry: HistoryEntry) : Result<Long> {
-        try {
-            return Result.success(_historyDao.InsertHistoryEntry(entry))
+        return try {
+            Result.success(_historyDao.InsertHistoryEntry(entry))
         }catch (ex: Exception){
-            return Result.failure(ex)
+            Result.failure(ex)
         }
     }
 

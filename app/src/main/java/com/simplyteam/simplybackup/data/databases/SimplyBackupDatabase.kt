@@ -8,18 +8,15 @@ import androidx.room.TypeConverters
 import com.simplyteam.simplybackup.data.converter.Converters
 import com.simplyteam.simplybackup.data.daos.ConnectionDao
 import com.simplyteam.simplybackup.data.daos.HistoryDao
-import com.simplyteam.simplybackup.data.daos.QueueDao
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryEntry
-import com.simplyteam.simplybackup.data.models.QueueItem
 
-@Database(entities = [Connection::class, HistoryEntry::class, QueueItem::class], version = 1, exportSchema = false)
+@Database(entities = [Connection::class, HistoryEntry::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class SimplyBackupDatabase : RoomDatabase() {
 
     abstract fun connectionDao() : ConnectionDao
     abstract fun historyDao() : HistoryDao
-    abstract fun queueDao() : QueueDao
 
     companion object {
         @Volatile
