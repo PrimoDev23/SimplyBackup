@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">SimplyBackup</string>
+    <string name="Connections">Connections</string>
+    <string name="Home">Home</string>
+    <string name="Settings">Settings</string>
+    <string name="ConfigureConnection">Configure connection</string>
+    <string name="SelectConnectionType">Select type of connection</string>
+    <string name="NextCloud" translatable="false">NextCloud</string>
+    <string name="Create">Create</string>
+    <string name="URL" translatable="false">URL</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="Name">Name</string>
+    <string name="AddPath">Add path</string>
+    <string name="Path">Path</string>
+    <string name="PathAdded">Path added</string>
+    <string name="Delete">Delete</string>
+    <string name="title_activity_add_connection" translatable="false">AddConnectionActivity</string>
+    <string name="Save">Save</string>
+    <string name="ConfigurePaths">Configure paths</string>
+    <string name="RemotePath">Remote path</string>
+    <string name="SelectScheduleType">Select schedule type</string>
+    <string name="Daily">Daily</string>
+    <string name="Weekly">Weekly</string>
+    <string name="Monthly">Monthly</string>
+    <string name="Yearly">Yearly</string>
+    <string name="Success">Success</string>
+    <string name="Failed">Failed</string>
+    <string name="History">History</string>
+    <string name="LastBackup">Last backup</string>
+    <string name="LastBackupSize">Size of last backup</string>
+    <string name="NextBackup">Next backup</string>
+    <string name="TotalBackupSize">Total size of backups</string>
+    <string name="WifiOnly">Backup only on wifi connection</string>
+    <string name="BackingUpNotificationTitle">Backing up...</string>
+    <string name="BackingUpNotificationText">Currently backing up %s</string>
+    <string name="notification_channel_id" translatable="false">simplybackup_notify_channel</string>
+    <string name="notification_channel_name" translatable="false">Backup Notification</string>
+    <string name="ErrorNotificationTitle">Error backing up</string>
+    <string name="ErrorNotificationText">An error occured while trying to backup %s (%s)</string>
+    <string name="SuccessNotificationTitle">Backup succeed</string>
+    <string name="SuccessNotificationText">The backup of %s succeed</string>
+    <string name="ErrorUpload">Uploading backup %s failed (%s)</string>
+    <string name="ErrorException">Backup for %s failed with an exception (check logcat)</string>
+    <string name="ErrorPackaging">Zipping files for %s failed</string>
+    <string name="ErrorWifi">Wifi was not connected while backing up %s</string>
+    <string name="title_activity_backup_history" translatable="false">BackupHistoryActivity</string>
+    <string name="Retry">Retry</string>
+    <string name="Restore">Restore</string>
+    <string name="DeleteAlertText">Are you sure you want to delete this file in the cloud?</string>
+    <string name="Yes">Yes</string>
+    <string name="Cancel">Cancel</string>
+    <string name="DeleteAlertTitle">Sure?</string>
+</resources>
