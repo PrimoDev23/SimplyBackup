@@ -5,13 +5,11 @@
     <string name="Home">Startseite</string>
     <string name="Settings">Einstellungen</string>
     <string name="ConfigureConnection">Verbindung konfigurieren</string>
-    <string name="Create">Erstellen</string>
     <string name="Username">Nutzername</string>
     <string name="Password">Passwort</string>
     <string name="Name">Name</string>
     <string name="AddPath">Pfad hinzufügen</string>
     <string name="Path">Pfad</string>
-    <string name="PathAdded">Pfad hinzugefügt</string>
     <string name="Delete">Löschen</string>
     <string name="Save">Speichern</string>
     <string name="ConfigurePaths">Pfade konfigurieren</string>
@@ -21,9 +19,6 @@
     <string name="Weekly">Wöchentlich</string>
     <string name="Monthly">Monatlich</string>
     <string name="Yearly">Jährlich</string>
-    <string name="SelectConnectionType">Verbindungs-Typ wählen</string>
-    <string name="Success">Erfolgreich</string>
-    <string name="Failed">Fehlgeschlagen</string>
     <string name="History">Historie</string>
     <string name="LastBackup">Letztes Backup</string>
     <string name="LastBackupSize">Größe des letzten Backups</string>
@@ -33,7 +28,6 @@
     <string name="BackingUpNotificationTitle">Backup wird ausgeführt…</string>
     <string name="BackingUpNotificationText">Backup für %s wird ausgeführt</string>
     <string name="ErrorNotificationTitle">Fehler beim Backup</string>
-    <string name="ErrorNotificationText">Ein Fehler ist beim Erstellen des Backups %s aufgetreten (%s)</string>
     <string name="SuccessNotificationTitle">Backup erfolgreich</string>
     <string name="SuccessNotificationText">Das Backup %s wurde erfolgreich ausgeführt</string>
     <string name="ErrorUpload">Der Upload des Backups %s ist fehlgeschlagen (%s)</string>

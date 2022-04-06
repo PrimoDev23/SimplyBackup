@@ -4,16 +4,13 @@
     <string name="Home">Home</string>
     <string name="Settings">Settings</string>
     <string name="ConfigureConnection">Configure connection</string>
-    <string name="SelectConnectionType">Select type of connection</string>
     <string name="NextCloud" translatable="false">NextCloud</string>
-    <string name="Create">Create</string>
     <string name="URL" translatable="false">URL</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="Name">Name</string>
     <string name="AddPath">Add path</string>
     <string name="Path">Path</string>
-    <string name="PathAdded">Path added</string>
     <string name="Delete">Delete</string>
     <string name="title_activity_add_connection" translatable="false">AddConnectionActivity</string>
     <string name="Save">Save</string>
@@ -24,8 +21,6 @@
     <string name="Weekly">Weekly</string>
     <string name="Monthly">Monthly</string>
     <string name="Yearly">Yearly</string>
-    <string name="Success">Success</string>
-    <string name="Failed">Failed</string>
     <string name="History">History</string>
     <string name="LastBackup">Last backup</string>
     <string name="LastBackupSize">Size of last backup</string>
@@ -37,7 +32,6 @@
     <string name="notification_channel_id" translatable="false">simplybackup_notify_channel</string>
     <string name="notification_channel_name" translatable="false">Backup Notification</string>
     <string name="ErrorNotificationTitle">Error backing up</string>
-    <string name="ErrorNotificationText">An error occurred while trying to backup %s (%s)</string>
     <string name="SuccessNotificationTitle">Backup succeed</string>
     <string name="SuccessNotificationText">The backup of %s succeed</string>
     <string name="ErrorUpload">Uploading backup %s failed (%s)</string>
