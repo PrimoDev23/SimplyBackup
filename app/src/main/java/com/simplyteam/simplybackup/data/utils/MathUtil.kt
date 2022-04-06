@@ -4,30 +4,30 @@ import kotlin.math.roundToInt
 
 object MathUtil {
 
-    private const val _divider = 1024.0
-    private const val _kiloBytes = _divider
-    private const val _megaBytes = _kiloBytes * _divider
-    private const val _gigaBytes = _megaBytes * _divider
+    private const val DIVIDER = 1024.0
+    private const val KILOBYTES = DIVIDER
+    private const val MEGABYTES = KILOBYTES * DIVIDER
+    private const val GIGABYTES = MEGABYTES * DIVIDER
 
     //Number of 0s is the number of decimals
-    private const val _decimals = 100.0
+    private const val DECIMALS = 100.0
 
     fun GetBiggestFileSizeString(bytes: Long): String {
         //0 -1024 B
-        if (bytes < _kiloBytes) {
+        if (bytes < KILOBYTES) {
             return "$bytes B"
         }
 
         //0.01 - 999.99 KB
-        if (bytes < _megaBytes) {
-            return "${((bytes / _kiloBytes) * _decimals).roundToInt() / _decimals} KB"
+        if (bytes < MEGABYTES) {
+            return "${((bytes / KILOBYTES) * DECIMALS).roundToInt() / DECIMALS} KB"
         }
 
-        if (bytes < _gigaBytes) {
-            return "${((bytes / _megaBytes) * _decimals).roundToInt() / _decimals} MB"
+        if (bytes < GIGABYTES) {
+            return "${((bytes / MEGABYTES) * DECIMALS).roundToInt() / DECIMALS} MB"
         }
 
-        return "${((bytes / _gigaBytes) * _decimals).roundToInt() / _decimals} GB"
+        return "${((bytes / GIGABYTES) * DECIMALS).roundToInt() / DECIMALS} GB"
     }
 
 }

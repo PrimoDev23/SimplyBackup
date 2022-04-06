@@ -10,12 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 
 class NotificationService {
-
-    private val ID_OFFSET = 1000
 
     fun CreateNotificationChannel(context: Context) {
         val notificationChannel = NotificationChannel(
@@ -57,7 +56,7 @@ class NotificationService {
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            connection.Id.toInt() + ID_OFFSET,
+            connection.Id.toInt() + Constants.NOTIFICATION_ID_OFFSET,
             intent,
             if (Build.VERSION.SDK_INT >= 31) {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT

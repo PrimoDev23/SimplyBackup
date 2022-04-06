@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
-    val NextCloudService: NextCloudService
+    private val NextCloudService: NextCloudService
 ) : ViewModel() {
 
     val ShowErrorLoading = mutableStateOf(false)
