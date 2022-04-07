@@ -22,11 +22,18 @@ import kotlin.coroutines.suspendCoroutine
 
 class NextCloudService {
 
-    private fun CreateClient(context: Context, connection: Connection): OwnCloudClient {
+    private fun CreateClient(
+        context: Context,
+        connection: Connection
+    ): OwnCloudClient {
         val serverUri = Uri.parse(connection.URL)
 
         //Create a client
-        val client = OwnCloudClientFactory.createOwnCloudClient(serverUri, context, true)
+        val client = OwnCloudClientFactory.createOwnCloudClient(
+            serverUri,
+            context,
+            true
+        )
         client.credentials = OwnCloudCredentialsFactory.newBasicCredentials(
             connection.Username,
             connection.Password
@@ -46,7 +53,10 @@ class NextCloudService {
     ): Result<RemoteOperationResult<*>> {
         return suspendCoroutine { continuation ->
             try {
-                val client = CreateClient(context, connection)
+                val client = CreateClient(
+                    context,
+                    connection
+                )
 
                 val remotePath = connection.RemotePath + FileUtils.PATH_SEPARATOR + file.name
 
@@ -81,45 +91,40 @@ class NextCloudService {
     suspend fun GetFilesForConnection(
         context: Context,
         connection: Connection
-    ): Result<List<RemoteFile>> {
+    ): List<RemoteFile> {
         return suspendCoroutine { continuation ->
-            try {
-                val client = CreateClient(context, connection)
+            val client = CreateClient(
+                context,
+                connection
+            )
 
-                val operation = ReadFolderRemoteOperation(connection.RemotePath)
+            val operation = ReadFolderRemoteOperation(connection.RemotePath)
 
-                val handler = Handler(context.mainLooper)
+            val handler = Handler(context.mainLooper)
 
-                operation.execute(
-                    client,
-                    { _, p1 ->
-                        if (p1.isSuccess) {
-                            val files = mutableListOf<RemoteFile>()
+            operation.execute(
+                client,
+                { _, p1 ->
+                    if (p1.isSuccess) {
+                        val files = mutableListOf<RemoteFile>()
 
-                            for (obj in p1.data) {
-                                val file = obj as RemoteFile
+                        for (obj in p1.data) {
+                            val file = obj as RemoteFile
 
-                                if (file.mimeType == "application/zip" && file.remotePath.contains("-${connection.Name}-")) {
-                                    files.add(file)
-                                }
+                            if (file.mimeType == "application/zip" && file.remotePath.contains("-${connection.Name}-")) {
+                                files.add(file)
                             }
-
-                            continuation.resume(Result.success(files))
-                        } else {
-                            continuation.resume(
-                                Result.failure(
-                                    p1.exception ?: FolderOperationException(
-                                        "${p1.code.name} (${p1.httpPhrase})"
-                                    )
-                                )
-                            )
                         }
-                    },
-                    handler
-                )
-            } catch (ex: Exception) {
-                continuation.resume(Result.failure(ex))
-            }
+
+                        continuation.resume(files)
+                    } else {
+                        throw p1.exception ?: FolderOperationException(
+                            "${p1.code.name} (${p1.httpPhrase})"
+                        )
+                    }
+                },
+                handler
+            )
         }
     }
 
@@ -127,35 +132,31 @@ class NextCloudService {
         context: Context,
         connection: Connection,
         file: RemoteFile
-    ): Result<Boolean> {
+    ): Boolean {
         return suspendCoroutine { continuation ->
-            try {
-                val client = CreateClient(context, connection)
+            val client = CreateClient(
+                context,
+                connection
+            )
 
-                val operation = RemoveFileRemoteOperation(file.remotePath)
+            val operation = RemoveFileRemoteOperation(file.remotePath)
 
-                val handler = Handler(context.mainLooper)
+            val handler = Handler(context.mainLooper)
 
-                operation.execute(
-                    client,
-                    { _, p1 ->
-                        if (p1.isSuccess) {
-                            continuation.resume(Result.success(true))
-                        } else {
-                            continuation.resume(
-                                Result.failure(
-                                    p1.exception ?: FolderOperationException(
-                                        "${p1.code.name} (${p1.httpPhrase})"
-                                    )
-                                )
-                            )
-                        }
-                    },
-                    handler
-                )
-            } catch (ex: Exception) {
-                continuation.resume(Result.failure(ex))
-            }
+            operation.execute(
+                client,
+                { _, p1 ->
+                    if (p1.isSuccess) {
+                        continuation.resume(true)
+                    } else {
+                        throw
+                        p1.exception ?: FolderOperationException(
+                            "${p1.code.name} (${p1.httpPhrase})"
+                        )
+                    }
+                },
+                handler
+            )
         }
     }
 }

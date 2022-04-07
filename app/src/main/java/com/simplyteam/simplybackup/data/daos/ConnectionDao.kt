@@ -17,8 +17,8 @@ interface ConnectionDao {
     suspend fun InsertConnection(connection: Connection) : Long
 
     @Update
-    suspend fun UpdateConnection(connection: Connection) : Int
+    suspend fun UpdateConnection(connection: Connection)
 
     @Delete
-    suspend fun DeleteConnection(connection: Connection)
+    suspend fun DeleteConnection(connection: Connection) : Int
 }

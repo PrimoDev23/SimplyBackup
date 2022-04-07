@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -27,18 +28,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import kotlinx.coroutines.launch
 
-class ConnectionConfigurationView {
+class ConnectionConfigurationView(
+    private val _nextCloudConfigurationView: NextCloudConfigurationView
+) {
 
     @Composable
     fun Build(
@@ -65,7 +69,6 @@ class ConnectionConfigurationView {
             )
 
             BuildPathConfigurationView(
-                modifier = Modifier,
                 navController = navController
             )
 
@@ -80,7 +83,12 @@ class ConnectionConfigurationView {
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp, 0.dp, 8.dp, 8.dp),
+                    .padding(
+                        8.dp,
+                        0.dp,
+                        8.dp,
+                        8.dp
+                    ),
                 onClick = {
                     scope.launch {
                         viewModel.SaveConnection(activity)
@@ -97,12 +105,120 @@ class ConnectionConfigurationView {
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
+    private @Composable
+    fun BuildInformationFields(viewModel: ConnectionConfigurationViewModel) {
+        val keyBoardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    8.dp,
+                    0.dp,
+                    8.dp,
+                    8.dp
+                ),
+            elevation = 2.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        8.dp,
+                        8.dp,
+                        8.dp,
+                        8.dp
+                    )
+            ) {
+                when (viewModel.ConnectionType.value) {
+                    ConnectionType.NextCloud -> {
+                        _nextCloudConfigurationView.BuildInformationFields(
+                            viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = stringResource(
+                                id = R.string.RemotePath
+                            )
+                        )
+                    },
+                    value = viewModel.RemotePath.value,
+                    onValueChange = {
+                        viewModel.RemotePath.value = it
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.ic_baseline_folder_24
+                            ),
+                            contentDescription = stringResource(
+                                id = R.string.RemotePath
+                            )
+                        )
+                    },
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyBoardController?.hide()
+                            focusManager.clearFocus(true)
+                        }
+                    )
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            0.dp,
+                            8.dp,
+                            0.dp,
+                            0.dp
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = viewModel.WifiOnly.value,
+                        onCheckedChange = {
+                            viewModel.WifiOnly.value = it
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colors.primary
+                        )
+                    )
+
+                    Text(
+                        text = stringResource(
+                            id = R.string.WifiOnly
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     @Composable
     private fun BuildScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp, 0.dp, 8.dp, 8.dp)
+                .padding(
+                    8.dp,
+                    0.dp,
+                    8.dp,
+                    8.dp
+                )
                 .clickable {
                     viewModel.ScheduleTypeDialogShown.value = true
                 },
@@ -115,7 +231,12 @@ class ConnectionConfigurationView {
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(8.dp, 8.dp, 8.dp, 2.dp),
+                        .padding(
+                            8.dp,
+                            8.dp,
+                            8.dp,
+                            2.dp
+                        ),
                     style = MaterialTheme.typography.subtitle1,
                     text = stringResource(
                         id = R.string.SelectScheduleType
@@ -125,7 +246,12 @@ class ConnectionConfigurationView {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier
-                            .padding(8.dp, 0.dp, 8.dp, 8.dp),
+                            .padding(
+                                8.dp,
+                                0.dp,
+                                8.dp,
+                                8.dp
+                            ),
                         style = MaterialTheme.typography.body2,
                         text = stringResource(
                             id = when (viewModel.ScheduleType.value) {
@@ -168,7 +294,10 @@ class ConnectionConfigurationView {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp, 0.dp)
+                                .padding(
+                                    8.dp,
+                                    0.dp
+                                )
                                 .clickable {
                                     viewModel.UpdateScheduleType(ScheduleType.DAILY)
                                 },
@@ -192,7 +321,10 @@ class ConnectionConfigurationView {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp, 0.dp)
+                                .padding(
+                                    8.dp,
+                                    0.dp
+                                )
                                 .clickable {
                                     viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
                                 },
@@ -216,7 +348,10 @@ class ConnectionConfigurationView {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp, 0.dp)
+                                .padding(
+                                    8.dp,
+                                    0.dp
+                                )
                                 .clickable {
                                     viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
                                 },
@@ -240,7 +375,10 @@ class ConnectionConfigurationView {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp, 0.dp)
+                                .padding(
+                                    8.dp,
+                                    0.dp
+                                )
                                 .clickable {
                                     viewModel.UpdateScheduleType(ScheduleType.YEARLY)
                                 },
@@ -295,239 +433,51 @@ class ConnectionConfigurationView {
     ) {
         if (viewModel.ConnectionType.value == type) {
             OutlinedButton(
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                modifier = Modifier
+                    .height(70.dp)
+                    .width(98.dp)
+                    .padding(4.dp),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colors.primary
+                ),
                 onClick = {
                 }) {
-                viewModel.GetIconProvider().BuildIconFromConnectionType(
-                    connectionType = type
-                )
+                viewModel.GetIconProvider()
+                    .BuildIconFromConnectionType(
+                        connectionType = type
+                    )
             }
         } else {
             OutlinedButton(
-                onClick = {
-                    viewModel.ConnectionType.value = ConnectionType.NextCloud
-                }) {
-                viewModel.GetIconProvider().BuildIconFromConnectionType(
-                    connectionType = type
-                )
-            }
-        }
-    }
-
-    @OptIn(ExperimentalComposeUiApi::class)
-    @Composable
-    private fun BuildInformationFields(
-        viewModel: ConnectionConfigurationViewModel
-    ) {
-        val keyBoardController = LocalSoftwareKeyboardController.current
-        val focusManager = LocalFocusManager.current
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp, 0.dp, 8.dp, 8.dp),
-            elevation = 2.dp
-        ) {
-            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp, 8.dp, 8.dp, 8.dp)
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.Name
-                            )
-                        )
-                    },
-                    value = viewModel.Name.value,
-                    onValueChange = {
-                        viewModel.Name.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_title_24),
-                            contentDescription = stringResource(
-                                id = R.string.Name
-                            )
-                        )
-                    },
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.URL
-                            )
-                        )
-                    },
-                    value = viewModel.URL.value,
-                    onValueChange = {
-                        viewModel.URL.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Uri,
-                        imeAction = ImeAction.Next
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_link_24),
-                            contentDescription = stringResource(
-                                id = R.string.URL
-                            )
-                        )
-                    },
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.Username
-                            )
-                        )
-                    },
-                    value = viewModel.Username.value,
-                    onValueChange = {
-                        viewModel.Username.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.ic_baseline_person_24
-                            ),
-                            contentDescription = stringResource(
-                                id = R.string.Username
-                            )
-                        )
-                    },
-                    singleLine = true,
-                    keyboardActions = KeyboardActions {
-                        this.defaultKeyboardAction(ImeAction.Next)
-                    }
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.Password
-                            )
-                        )
-                    },
-                    value = viewModel.Password.value,
-                    onValueChange = {
-                        viewModel.Password.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next
-                    ),
-                    visualTransformation = PasswordVisualTransformation(),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.ic_baseline_vpn_key_24
-                            ),
-                            contentDescription = stringResource(
-                                id = R.string.Password
-                            )
-                        )
-                    },
-                    singleLine = true,
-                    keyboardActions = KeyboardActions {
-                        this.defaultKeyboardAction(ImeAction.Next)
-                    }
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.RemotePath
-                            )
-                        )
-                    },
-                    value = viewModel.RemotePath.value,
-                    onValueChange = {
-                        viewModel.RemotePath.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.ic_baseline_folder_24
-                            ),
-                            contentDescription = stringResource(
-                                id = R.string.RemotePath
-                            )
-                        )
-                    },
-                    singleLine = true,
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyBoardController?.hide()
-                            focusManager.clearFocus(true)
-                        }
+                    .height(70.dp)
+                    .width(98.dp)
+                    .padding(4.dp),
+                onClick = {
+                    viewModel.ConnectionType.value = type
+                }) {
+                viewModel.GetIconProvider()
+                    .BuildIconFromConnectionType(
+                        connectionType = type
                     )
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp, 8.dp, 0.dp, 0.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = viewModel.WifiOnly.value,
-                        onCheckedChange = {
-                            viewModel.WifiOnly.value = it
-                        },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colors.primary
-                        )
-                    )
-
-                    Text(
-                        text = stringResource(
-                            id = R.string.WifiOnly
-                        )
-                    )
-                }
             }
         }
     }
 
     @Composable
     private fun BuildPathConfigurationView(
-        modifier: Modifier,
         navController: NavHostController
     ) {
         Card(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp, 0.dp, 8.dp, 8.dp)
+                .padding(
+                    8.dp,
+                    0.dp,
+                    8.dp,
+                    8.dp
+                )
                 .clickable {
                     navController.navigate(Screen.PathsConfiguration.Route)
                 },

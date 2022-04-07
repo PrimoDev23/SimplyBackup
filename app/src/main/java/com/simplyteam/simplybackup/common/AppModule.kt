@@ -2,15 +2,13 @@ package com.simplyteam.simplybackup.common
 
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
-import com.simplyteam.simplybackup.data.services.NextCloudService
-import com.simplyteam.simplybackup.data.services.NotificationService
-import com.simplyteam.simplybackup.data.services.PackagingService
-import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.services.*
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
 import com.simplyteam.simplybackup.presentation.views.IconProvider
 import com.simplyteam.simplybackup.presentation.views.backuphistory.BackupHistoryView
 import com.simplyteam.simplybackup.presentation.views.connection.ConnectionConfigurationView
+import com.simplyteam.simplybackup.presentation.views.connection.NextCloudConfigurationView
 import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurationView
 import com.simplyteam.simplybackup.presentation.views.main.ConnectionOverviewView
 import com.simplyteam.simplybackup.presentation.views.main.HomeView
@@ -88,7 +86,14 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetConnectionConfigurationView() = ConnectionConfigurationView()
+    fun GetNextCloudConfigurationView() = NextCloudConfigurationView()
+
+    @Provides
+    @Singleton
+    fun GetConnectionConfigurationView(
+        nextCloudConfigurationView: NextCloudConfigurationView
+    )
+        = ConnectionConfigurationView(nextCloudConfigurationView)
 
     @Provides
     @Singleton

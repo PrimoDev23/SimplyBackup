@@ -3,6 +3,7 @@ package com.simplyteam.simplybackup.presentation.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,14 +13,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,12 +38,17 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         val connection = this.intent.extras?.get("Connection") as Connection?
 
+        val viewModel = ViewModelProvider(this).get(ConnectionConfigurationViewModel::class.java)
+        val nextCloudViewModel = ViewModelProvider(this).get(NextCloudConfigurationViewModel::class.java)
+
+        viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
+
         setContent {
             SimplyBackupTheme {
                 val navController = rememberNavController()
-                val viewModel : ConnectionConfigurationViewModel = hiltViewModel()
 
                 LaunchedEffect(key1 = true){
+
                     connection?.let {
                         viewModel.LoadData(connection)
                     }

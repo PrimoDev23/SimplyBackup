@@ -27,29 +27,43 @@ class BackupHistoryViewModel @Inject constructor(
     val Loading = mutableStateOf(false)
     val BackupDetails = mutableStateOf(listOf<BackupDetail>())
 
-    suspend fun InitValues(context: Context, connection: Connection) {
+    suspend fun InitValues(
+        context: Context,
+        connection: Connection
+    ) {
         when (connection.ConnectionType) {
             ConnectionType.NextCloud -> {
-                Loading.value = true
-                NextCloudService.GetFilesForConnection(context, connection)
-                    .onSuccess { files ->
-                        ShowErrorLoading.value = false
+                try {
+                    Loading.value = true
 
-                        BuildBackupDetails(connection, files.sortedByDescending { file ->
+
+                    val files = NextCloudService.GetFilesForConnection(
+                        context,
+                        connection
+                    )
+                    ShowErrorLoading.value = false
+
+                    BuildBackupDetails(
+                        connection,
+                        files.sortedByDescending { file ->
                             file.uploadTimestamp
-                        })
-                    }
-                    .onFailure {
-                        Timber.e(it)
+                        }
+                    )
+                } catch (ex: Exception) {
+                    Timber.e(ex)
 
-                        ShowErrorLoading.value = true
-                    }
-                Loading.value = false
+                    ShowErrorLoading.value = true
+                } finally {
+                    Loading.value = false
+                }
             }
         }
     }
 
-    private fun BuildBackupDetails(connection: Connection, files: List<RemoteFile>) {
+    private fun BuildBackupDetails(
+        connection: Connection,
+        files: List<RemoteFile>
+    ) {
         val details = mutableListOf<BackupDetail>()
 
         for (file in files) {
@@ -76,13 +90,24 @@ class BackupHistoryViewModel @Inject constructor(
         BackupDetails.value = details
     }
 
-    private fun ExtractFileNameFromRemotePath(connection: Connection, file: RemoteFile): String =
-        file.remotePath.removeRange(0, connection.RemotePath.length + 1)
+    private fun ExtractFileNameFromRemotePath(
+        connection: Connection,
+        file: RemoteFile
+    ): String =
+        file.remotePath.removeRange(
+            0,
+            connection.RemotePath.length + 1
+        )
 
     private fun ExtractDateFromFileName(fileName: String): String {
-        val originalDate = fileName.split('-').last().removeSuffix(".zip")
+        val originalDate = fileName.split('-')
+            .last()
+            .removeSuffix(".zip")
 
-        val date = LocalDateTime.parse(originalDate, Constants.PackagingFormatter)
+        val date = LocalDateTime.parse(
+            originalDate,
+            Constants.PackagingFormatter
+        )
         return date.format(Constants.HumanReadableFormatter)
     }
 
@@ -95,19 +120,23 @@ class BackupHistoryViewModel @Inject constructor(
     }
 
     suspend fun DeleteBackup(context: Context) {
-        BackupToDelete.value?.let { backup ->
-            HideDeleteAlert()
-
+        try {
             Loading.value = true
 
-            NextCloudService.DeleteFile(context, backup.Connection, backup.RemoteFile)
-                .onSuccess {
+            BackupToDelete.value?.let { backup ->
+                HideDeleteAlert()
+
+                if(NextCloudService.DeleteFile(
+                    context,
+                    backup.Connection,
+                    backup.RemoteFile
+                )) {
                     DeleteBackupFromList(backup)
                 }
-                .onFailure {
-                    Timber.e(it)
-                }
-
+            }
+        } catch (ex: Exception) {
+            Timber.e(ex)
+        } finally {
             Loading.value = false
         }
     }

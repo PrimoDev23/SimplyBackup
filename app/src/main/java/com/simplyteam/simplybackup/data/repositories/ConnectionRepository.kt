@@ -15,42 +15,32 @@ class ConnectionRepository {
 
     @OptIn(InternalCoroutinesApi::class)
     suspend fun Init(context: Context) {
-        _connectionDao = SimplyBackupDatabase.getDatabase(context).connectionDao()
+        _connectionDao = SimplyBackupDatabase.getDatabase(context)
+            .connectionDao()
 
-        _connectionDao.GetAllConnectionsFlow().collect {
-            Connections.value = it
-        }
+        _connectionDao.GetAllConnectionsFlow()
+            .collect {
+                Connections.value = it
+            }
     }
 
     suspend fun GetAllConnections(context: Context): List<Connection> {
-        return SimplyBackupDatabase.getDatabase(context).connectionDao().GetAllConnections()
+        return SimplyBackupDatabase.getDatabase(context)
+            .connectionDao()
+            .GetAllConnections()
     }
 
-    suspend fun InsertConnection(connection: Connection): Result<Long> {
-        return try {
-            Result.success(_connectionDao.InsertConnection(connection))
-        } catch (ex: Exception) {
-            Result.failure(ex)
-        }
+    suspend fun InsertConnection(connection: Connection): Long {
+        return _connectionDao.InsertConnection(connection)
     }
 
-    suspend fun RemoveConnection(connection: Connection): Result<Boolean> {
-        return try {
-            _connectionDao.DeleteConnection(connection)
-
-            Result.success(true)
-        } catch (ex: Exception) {
-            Result.failure(ex)
-        }
+    suspend fun RemoveConnection(connection: Connection): Int {
+        return _connectionDao.DeleteConnection(connection)
     }
 
-    suspend fun UpdateConnection(connection: Connection): Result<Long> {
-        return try {
-            _connectionDao.UpdateConnection(connection)
+    suspend fun UpdateConnection(connection: Connection): Int {
+        _connectionDao.UpdateConnection(connection)
 
-            Result.success(connection.Id)
-        } catch (ex: Exception) {
-            Result.failure(ex)
-        }
+        return 1
     }
 }

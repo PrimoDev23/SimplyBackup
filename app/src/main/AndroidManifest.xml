@@ -42,9 +42,10 @@
         </activity>
 
         <receiver android:name=".data.receiver.BackupReceiver" />
-        <receiver android:name=".data.receiver.BootReceiver"
-            android:exported="false"
-            android:enabled="true">
+        <receiver
+            android:name=".data.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
@@ -22,7 +23,7 @@ class IconProvider {
 
     @Composable
     private fun BuildNextcloudIcon() {
-        Icon(
+        Image(
             modifier = Modifier
                 .size(64.dp),
             painter = painterResource(
@@ -30,8 +31,7 @@ class IconProvider {
             ),
             contentDescription = stringResource(
                 id = R.string.NextCloud
-            ),
-            tint = Color(0, 130, 201)
+            )
         )
     }
 
