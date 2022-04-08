@@ -61,7 +61,8 @@ class HomeView {
                     intent.putExtra("Connection", connection)
 
                     context.startActivity(intent)
-                },
+                }
+                .testTag(connection.Name),
             elevation = 2.dp
         ) {
             Column(

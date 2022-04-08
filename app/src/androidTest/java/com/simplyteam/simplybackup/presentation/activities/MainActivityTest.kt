@@ -2,14 +2,17 @@ package com.simplyteam.simplybackup.presentation.activities
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
+import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
-import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.data.models.ConnectionType
-import com.simplyteam.simplybackup.data.models.ScheduleType
-import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
+import com.simplyteam.simplybackup.data.repositories.HistoryRepository
+import com.simplyteam.simplybackup.data.services.NextCloudService
+import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -18,6 +21,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import timber.log.Timber
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 
@@ -35,7 +41,16 @@ class MainActivityTest {
     lateinit var ConnectionRepository: ConnectionRepository
 
     @Inject
+    lateinit var HistoryRepository: HistoryRepository
+
+    @Inject
     lateinit var SimplyBackupDatabase: SimplyBackupDatabase
+
+    @Inject
+    lateinit var PackagingService: PackagingService
+
+    @Inject
+    lateinit var NextCloudService: NextCloudService
 
     @Before
     fun Setup() {
@@ -116,6 +131,15 @@ class MainActivityTest {
         assert(newConnection.WifiOnly)
         assert(newConnection.ScheduleType == ScheduleType.MONTHLY)
         assert(newConnection.Paths.isNotEmpty())
+    }
+
+    @Test
+    fun HistoryEntryOnNewConnection() {
+        val id = InsertConnection()
+
+        val connection = RetrieveConnections().first {
+            it.Id == id
+        }
 
         composeRule.onNodeWithTag(Screen.Home.Route)
             .performClick()
@@ -124,7 +148,10 @@ class MainActivityTest {
             .onChildren()
             .assertCountEquals(1)
 
-        composeRule.onNodeWithText(testValue)
+        composeRule.onNodeWithContentDescription(connection.ConnectionType.name)
+            .assertExists()
+
+        composeRule.onNodeWithText(connection.Name)
             .assertExists()
     }
 
@@ -231,6 +258,152 @@ class MainActivityTest {
 
         composeRule.onNodeWithText(testValue)
             .assertExists()
+    }
+
+    @Test
+    fun AddHistoryEntry() {
+        val id = InsertConnection()
+
+        val historyEntry = HistoryEntry(
+            Id = 0,
+            ConnectionId = id,
+            Time = LocalDateTime.now()
+                .format(Constants.HumanReadableFormatter),
+            Succeed = true,
+            Size = 2048
+        )
+
+        runBlocking {
+            HistoryRepository.InsertHistoryEntry(
+                historyEntry
+            )
+        }
+
+        composeRule.onNodeWithText(historyEntry.Time)
+            .assertExists()
+
+        composeRule.onNodeWithText("2.0 KB")
+            .assertExists()
+
+        val nextDay = LocalDate.now().plusDays(1).atStartOfDay().format(Constants.HumanReadableFormatter)
+
+        composeRule.onNodeWithText(nextDay)
+            .assertExists()
+    }
+
+    @Test
+    fun BackupHistory() {
+        var id: Long
+        runBlocking {
+            id = ConnectionRepository.InsertConnection(
+                Connection(
+                    ConnectionType = ConnectionType.NextCloud,
+                    Name = "Test",
+                    URL = BuildConfig.NEXTCLOUD_URL,
+                    Username = BuildConfig.NEXTCLOUD_USERNAME,
+                    Password = BuildConfig.NEXTCLOUD_PASSWORD,
+                    Paths = listOf(
+                        Path(
+                            "/sdcard/Pictures",
+                            PathType.DIRECTORY
+                        )
+                    )
+                )
+            )
+        }
+
+        val connection = RetrieveConnections().first {
+            it.Id == id
+        }
+
+        composeRule.onNodeWithTag(connection.Name)
+            .performClick()
+
+        composeRule.onNodeWithTag("ProgressIndicator")
+            .assertIsDisplayed()
+
+        Thread.sleep(10000)
+
+        composeRule.onNodeWithTag("ErrorLabel")
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithText(composeRule.activity.getString(R.string.NoFiles))
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithTag("BackButton")
+            .performClick()
+
+        PackagingService.CreatePackage(
+            composeRule.activity,
+            connection
+        )
+            .onSuccess {
+                runBlocking {
+                    NextCloudService.UploadFile(
+                        composeRule.activity,
+                        connection,
+                        it
+                    )
+                        .onSuccess {
+                            if (it.isSuccess) {
+                                composeRule.onNodeWithTag(connection.Name)
+                                    .performClick()
+
+                                Thread.sleep(10000)
+
+                                composeRule.onNodeWithTag("HistoryList")
+                                    .onChildren()
+                                    .assertCountEquals(1)
+
+                                composeRule.onNodeWithTag("ProgressIndicator")
+                                    .assertDoesNotExist()
+
+                                composeRule.onNodeWithTag("More")
+                                    .performClick()
+
+                                composeRule.onNodeWithTag("DeleteMenuItem")
+                                    .performClick()
+
+                                composeRule.onNodeWithTag("DeleteDialogCancel")
+                                    .performClick()
+
+                                composeRule.onNodeWithTag("DeleteDialog")
+                                    .assertDoesNotExist()
+
+                                composeRule.onNodeWithTag("More")
+                                    .performClick()
+
+                                composeRule.onNodeWithTag("DeleteMenuItem")
+                                    .performClick()
+
+                                composeRule.onNodeWithTag("DeleteDialogYes")
+                                    .performClick()
+
+                                Thread.sleep(10000)
+
+                                composeRule.onNodeWithTag("DeleteDialog")
+                                    .assertDoesNotExist()
+
+                                composeRule.onNodeWithTag("HistoryList")
+                                    .assertDoesNotExist()
+
+                                composeRule.onNodeWithTag("ErrorLabel")
+                                    .assertIsDisplayed()
+
+                                composeRule.onNodeWithText(composeRule.activity.getString(R.string.NoFiles))
+                                    .assertIsDisplayed()
+                            } else {
+                                throw it.exception
+                            }
+                        }
+                        .onFailure {
+                            throw it
+                        }
+                }
+            }
+            .onFailure {
+                throw it
+            }
     }
 
     private fun InsertConnection(): Long {

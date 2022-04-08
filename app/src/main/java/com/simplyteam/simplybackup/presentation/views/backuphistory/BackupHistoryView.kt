@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ class BackupHistoryView {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag("ProgressIndicator")
                 )
             }
 
@@ -50,6 +52,7 @@ class BackupHistoryView {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
+                            .testTag("HistoryList")
                     ) {
                         items(viewModel.BackupDetails.value) { detail ->
                             BuildFileCard(
@@ -115,6 +118,8 @@ class BackupHistoryView {
 
                 Column {
                     IconButton(
+                        modifier = Modifier
+                            .testTag("More"),
                         onClick = {
                             menuExpanded = true
                         }) {
@@ -135,6 +140,8 @@ class BackupHistoryView {
                         },
                     ) {
                         DropdownMenuItem(
+                            modifier = Modifier
+                                .testTag("DeleteMenuItem"),
                             onClick = {
                                 viewModel.ShowDeleteAlert(detail)
                                 menuExpanded = false
@@ -192,6 +199,8 @@ class BackupHistoryView {
             val context = LocalContext.current
 
             AlertDialog(
+                modifier = Modifier
+                    .testTag("DeleteDialog"),
                 onDismissRequest = {
                     viewModel.HideDeleteAlert()
                 },
@@ -211,6 +220,8 @@ class BackupHistoryView {
                 },
                 dismissButton = {
                     TextButton(
+                        modifier = Modifier
+                            .testTag("DeleteDialogCancel"),
                         onClick = {
                             viewModel.HideDeleteAlert()
                         }
@@ -224,6 +235,8 @@ class BackupHistoryView {
                 },
                 confirmButton = {
                     TextButton(
+                        modifier = Modifier
+                            .testTag("DeleteDialogYes"),
                         onClick = {
                             scope.launch {
                                 viewModel.DeleteBackup(context)
@@ -252,6 +265,8 @@ class BackupHistoryView {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
+                modifier = Modifier
+                    .testTag("ErrorLabel"),
                 text = stringResource(
                     id = resId
                 ),

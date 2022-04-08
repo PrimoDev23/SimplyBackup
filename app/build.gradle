@@ -22,6 +22,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "NEXTCLOUD_URL", NEXTCLOUD_URL
+            buildConfigField "String", "NEXTCLOUD_USERNAME", NEXTCLOUD_USERNAME
+            buildConfigField "String", "NEXTCLOUD_PASSWORD", NEXTCLOUD_PASSWORD
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
