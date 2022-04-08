@@ -23,9 +23,12 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "NEXTCLOUD_URL", NEXTCLOUD_URL
-            buildConfigField "String", "NEXTCLOUD_USERNAME", NEXTCLOUD_USERNAME
-            buildConfigField "String", "NEXTCLOUD_PASSWORD", NEXTCLOUD_PASSWORD
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+            buildConfigField "String", "NEXTCLOUD_URL", properties.getProperty('NEXTCLOUD_URL')
+            buildConfigField "String", "NEXTCLOUD_USERNAME", properties.getProperty('NEXTCLOUD_USERNAME')
+            buildConfigField "String", "NEXTCLOUD_PASSWORD", properties.getProperty('NEXTCLOUD_PASSWORD')
         }
         release {
             minifyEnabled false
