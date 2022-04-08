@@ -38,17 +38,15 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         val connection = this.intent.extras?.get("Connection") as Connection?
 
-        val viewModel = ViewModelProvider(this).get(ConnectionConfigurationViewModel::class.java)
-        val nextCloudViewModel = ViewModelProvider(this).get(NextCloudConfigurationViewModel::class.java)
-
-        viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
-
         setContent {
             SimplyBackupTheme {
                 val navController = rememberNavController()
+                val viewModel = hiltViewModel<ConnectionConfigurationViewModel>()
+                val nextCloudViewModel = hiltViewModel<NextCloudConfigurationViewModel>()
+
+                viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
 
                 LaunchedEffect(key1 = true){
-
                     connection?.let {
                         viewModel.LoadData(connection)
                     }
