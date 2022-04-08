@@ -4,7 +4,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.*
-import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService

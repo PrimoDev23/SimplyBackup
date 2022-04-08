@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -31,7 +30,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -108,8 +106,8 @@ class ConnectionConfigurationView(
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
-    private @Composable
-    fun BuildInformationFields(viewModel: ConnectionConfigurationViewModel) {
+    @Composable
+    private fun BuildInformationFields(viewModel: ConnectionConfigurationViewModel) {
         val keyBoardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
 

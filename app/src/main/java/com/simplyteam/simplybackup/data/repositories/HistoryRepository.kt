@@ -1,12 +1,9 @@
 package com.simplyteam.simplybackup.data.repositories
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.simplyteam.simplybackup.data.daos.HistoryDao
-import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.models.HistoryEntry
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 
 class HistoryRepository(
     private val _historyDao: HistoryDao
