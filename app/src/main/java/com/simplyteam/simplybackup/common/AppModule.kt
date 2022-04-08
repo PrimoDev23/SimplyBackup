@@ -1,5 +1,8 @@
 package com.simplyteam.simplybackup.common
 
+import android.app.Application
+import androidx.room.Room
+import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
@@ -25,6 +28,21 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
+    //region DB
+
+    @Provides
+    @Singleton
+    fun GetDatabase(app: Application): SimplyBackupDatabase {
+        return Room.databaseBuilder(
+            app,
+            SimplyBackupDatabase::class.java,
+            SimplyBackupDatabase.DATABASE_NAME
+        )
+            .build()
+    }
+
+    //endregion DB
+
     //region Services
 
     @Provides
@@ -49,11 +67,15 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetConnectionRepository() = ConnectionRepository()
+    fun GetConnectionRepository(simplyBackupDatabase: SimplyBackupDatabase) = ConnectionRepository(
+        simplyBackupDatabase.connectionDao
+    )
 
     @Provides
     @Singleton
-    fun GetHistoryRepository() = HistoryRepository()
+    fun GetHistoryRepository(simplyBackupDatabase: SimplyBackupDatabase) = HistoryRepository(
+        simplyBackupDatabase.historyDao
+    )
 
     //endregion Repos
 
@@ -73,8 +95,15 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetMainNavigation(homeView: HomeView, connectionOverviewView: ConnectionOverviewView, settingsView: SettingsView)
-            = MainNavigation(homeView, connectionOverviewView, settingsView)
+    fun GetMainNavigation(
+        homeView: HomeView,
+        connectionOverviewView: ConnectionOverviewView,
+        settingsView: SettingsView
+    ) = MainNavigation(
+        homeView,
+        connectionOverviewView,
+        settingsView
+    )
 
     @Provides
     @Singleton
@@ -92,8 +121,7 @@ class AppModule {
     @Singleton
     fun GetConnectionConfigurationView(
         nextCloudConfigurationView: NextCloudConfigurationView
-    )
-        = ConnectionConfigurationView(nextCloudConfigurationView)
+    ) = ConnectionConfigurationView(nextCloudConfigurationView)
 
     @Provides
     @Singleton
@@ -101,8 +129,13 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetConnectionConfigurationNavigation(connectionConfigurationView: ConnectionConfigurationView, pathsConfigurationView: PathsConfigurationView)
-            = ConnectionConfigurationNavigation(connectionConfigurationView, pathsConfigurationView)
+    fun GetConnectionConfigurationNavigation(
+        connectionConfigurationView: ConnectionConfigurationView,
+        pathsConfigurationView: PathsConfigurationView
+    ) = ConnectionConfigurationNavigation(
+        connectionConfigurationView,
+        pathsConfigurationView
+    )
 
     //endregion ConnectionViews
 

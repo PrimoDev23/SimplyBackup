@@ -8,16 +8,13 @@ import com.simplyteam.simplybackup.data.models.Connection
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
-class ConnectionRepository {
-    private lateinit var _connectionDao: ConnectionDao
-
+class ConnectionRepository(
+    private val _connectionDao: ConnectionDao
+) {
     val Connections = mutableStateOf<List<Connection>>(listOf())
 
     @OptIn(InternalCoroutinesApi::class)
-    suspend fun Init(context: Context) {
-        _connectionDao = SimplyBackupDatabase.getDatabase(context)
-            .connectionDao()
-
+    suspend fun Init() {
         _connectionDao.GetAllConnectionsFlow()
             .collect {
                 Connections.value = it
@@ -25,9 +22,7 @@ class ConnectionRepository {
     }
 
     suspend fun GetAllConnections(context: Context): List<Connection> {
-        return SimplyBackupDatabase.getDatabase(context)
-            .connectionDao()
-            .GetAllConnections()
+        return _connectionDao.GetAllConnections()
     }
 
     suspend fun InsertConnection(connection: Connection): Long {

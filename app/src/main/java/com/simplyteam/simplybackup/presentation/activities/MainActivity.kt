@@ -84,11 +84,11 @@ class MainActivity : ComponentActivity() {
 
     private fun InitRepositories(context: Context) {
         lifecycleScope.launchWhenStarted {
-            ConnectionRepository.Init(context)
+            ConnectionRepository.Init()
         }
 
         lifecycleScope.launchWhenStarted {
-            HistoryRepository.Init(context)
+            HistoryRepository.Init()
         }
     }
 }

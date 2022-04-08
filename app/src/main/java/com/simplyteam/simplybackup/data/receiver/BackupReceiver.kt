@@ -61,7 +61,6 @@ class BackupReceiver : BroadcastReceiver() {
                                             context,
                                             connection
                                         )
-                                        HistoryRepository.ContextOnlyInit(context)
                                         val uploadResult = nextCloudService.UploadFile(
                                             context,
                                             connection,

@@ -15,25 +15,11 @@ import com.simplyteam.simplybackup.data.models.HistoryEntry
 @TypeConverters(Converters::class)
 abstract class SimplyBackupDatabase : RoomDatabase() {
 
-    abstract fun connectionDao() : ConnectionDao
-    abstract fun historyDao() : HistoryDao
+    abstract val connectionDao : ConnectionDao
+    abstract val historyDao : HistoryDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: SimplyBackupDatabase? = null
-
-        fun getDatabase(context: Context): SimplyBackupDatabase {
-            return INSTANCE ?: synchronized(this){
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    SimplyBackupDatabase::class.java,
-                    "simplybackup_database"
-                ).build()
-                INSTANCE = instance
-                // return instance
-                instance
-            }
-        }
+        const val DATABASE_NAME = "simplybackup_database"
     }
 
 }
