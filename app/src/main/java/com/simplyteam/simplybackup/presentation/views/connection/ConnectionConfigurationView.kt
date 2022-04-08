@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -88,7 +89,8 @@ class ConnectionConfigurationView(
                         0.dp,
                         8.dp,
                         8.dp
-                    ),
+                    )
+                    .testTag("Save"),
                 onClick = {
                     scope.launch {
                         viewModel.SaveConnection(activity)
@@ -142,7 +144,8 @@ class ConnectionConfigurationView(
 
                 OutlinedTextField(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .testTag("RemotePath"),
                     label = {
                         Text(
                             text = stringResource(
@@ -189,6 +192,8 @@ class ConnectionConfigurationView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
+                        modifier = Modifier
+                            .testTag("WifiOnly"),
                         checked = viewModel.WifiOnly.value,
                         onCheckedChange = {
                             viewModel.WifiOnly.value = it
@@ -221,7 +226,8 @@ class ConnectionConfigurationView(
                 )
                 .clickable {
                     viewModel.ScheduleTypeDialogShown.value = true
-                },
+                }
+                .testTag("ScheduleTypeCard"),
             elevation = 2.dp
         ) {
             Column(
@@ -305,9 +311,11 @@ class ConnectionConfigurationView(
                             horizontalArrangement = Arrangement.Start
                         ) {
                             RadioButton(
+                                modifier = Modifier
+                                    .testTag("DailyScheduleType"),
                                 selected = viewModel.ScheduleType.value == ScheduleType.DAILY,
                                 onClick = {
-                                    viewModel.ScheduleType.value = ScheduleType.DAILY
+                                    viewModel.UpdateScheduleType(ScheduleType.DAILY)
                                 }
                             )
 
@@ -332,9 +340,11 @@ class ConnectionConfigurationView(
                             horizontalArrangement = Arrangement.Start
                         ) {
                             RadioButton(
+                                modifier = Modifier
+                                    .testTag("WeeklyScheduleType"),
                                 selected = viewModel.ScheduleType.value == ScheduleType.WEEKLY,
                                 onClick = {
-                                    viewModel.ScheduleType.value = ScheduleType.DAILY
+                                    viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
                                 }
                             )
 
@@ -359,9 +369,11 @@ class ConnectionConfigurationView(
                             horizontalArrangement = Arrangement.Start
                         ) {
                             RadioButton(
+                                modifier = Modifier
+                                    .testTag("MonthlyScheduleType"),
                                 selected = viewModel.ScheduleType.value == ScheduleType.MONTHLY,
                                 onClick = {
-                                    viewModel.ScheduleType.value = ScheduleType.DAILY
+                                    viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
                                 }
                             )
 
@@ -386,9 +398,11 @@ class ConnectionConfigurationView(
                             horizontalArrangement = Arrangement.Start
                         ) {
                             RadioButton(
+                                modifier = Modifier
+                                    .testTag("YearlyScheduleType"),
                                 selected = viewModel.ScheduleType.value == ScheduleType.YEARLY,
                                 onClick = {
-                                    viewModel.ScheduleType.value = ScheduleType.DAILY
+                                    viewModel.UpdateScheduleType(ScheduleType.YEARLY)
                                 }
                             )
 
@@ -436,7 +450,8 @@ class ConnectionConfigurationView(
                 modifier = Modifier
                     .height(70.dp)
                     .width(98.dp)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .testTag(type.name),
                 border = BorderStroke(
                     1.dp,
                     MaterialTheme.colors.primary
@@ -453,7 +468,8 @@ class ConnectionConfigurationView(
                 modifier = Modifier
                     .height(70.dp)
                     .width(98.dp)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .testTag(type.name),
                 onClick = {
                     viewModel.ConnectionType.value = type
                 }) {
@@ -480,7 +496,8 @@ class ConnectionConfigurationView(
                 )
                 .clickable {
                     navController.navigate(Screen.PathsConfiguration.Route)
-                },
+                }
+                .testTag("ConfigurePaths"),
             elevation = 2.dp
         ) {
             Row(

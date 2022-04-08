@@ -17,9 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConnectionConfigurationViewModel @Inject constructor(
-    val connectionRepository: ConnectionRepository,
-    val schedulerService: SchedulerService,
-    val IconProvider: IconProvider
+    private val connectionRepository: ConnectionRepository,
+    private val schedulerService: SchedulerService,
+    private val IconProvider: IconProvider
 ) : ViewModel() {
     private val _id = mutableStateOf(0L)
 
@@ -83,14 +83,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
             Timber.e(ex)
         }
     }
-
-    //region CheckValues
-
-    private fun CheckValuesNextCloud() {
-
-    }
-
-    //endregion CheckValues
 
     private fun CreatePathObjectFromStringPath(path: String): Path {
         val file = File(path)

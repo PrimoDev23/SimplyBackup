@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
@@ -18,7 +19,10 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.Connection
 class PathsConfigurationView {
 
     @Composable
-    fun Build(paddingValues: PaddingValues, viewModel: ConnectionConfigurationViewModel) {
+    fun Build(
+        paddingValues: PaddingValues,
+        viewModel: ConnectionConfigurationViewModel
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -37,7 +41,8 @@ class PathsConfigurationView {
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .testTag("CurrentPath"),
                         value = viewModel.CurrentPath.value,
                         onValueChange = {
                             viewModel.CurrentPath.value = it
@@ -54,8 +59,12 @@ class PathsConfigurationView {
                     OutlinedButton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                            .padding(8.dp)
+                            .testTag("AddPath"),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colors.primary
+                        ),
                         onClick = {
                             viewModel.AddPath(viewModel.CurrentPath.value)
                         }) {
@@ -77,6 +86,7 @@ class PathsConfigurationView {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
+                        .testTag("Paths")
                 ) {
                     itemsIndexed(viewModel.Paths.value) { index, path ->
                         Row(
@@ -92,9 +102,13 @@ class PathsConfigurationView {
                                 text = path.Path
                             )
 
-                            IconButton(onClick = {
-                                viewModel.RemovePath(path)
-                            }) {
+                            IconButton(
+                                modifier = Modifier
+                                    .testTag("DeletePath"),
+                                onClick = {
+                                    viewModel.RemovePath(path)
+                                }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = stringResource(
