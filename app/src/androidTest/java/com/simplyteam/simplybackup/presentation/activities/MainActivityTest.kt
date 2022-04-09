@@ -512,12 +512,21 @@ class MainActivityTest {
                             composeRule.onNodeWithTag("RestoreDialogYes")
                                 .performClick()
 
-                            Thread.sleep(10000)
-
-                            DeleteAllNextCloudFiles(connection)
-
                             composeRule.onNodeWithTag("RestoreDialog")
                                 .assertDoesNotExist()
+
+                            composeRule.onNodeWithTag("CurrentlyRestoringDialog")
+                                .assertExists()
+
+                            Thread.sleep(10000)
+
+                            composeRule.onNodeWithTag("RestoreFinishedDialog")
+                                .assertExists()
+
+                            composeRule.onNodeWithTag("OkRestoreFinishedDialog")
+                                .performClick()
+
+                            DeleteAllNextCloudFiles(connection)
 
                             for (checkFile in files) {
                                 assert(checkFile.exists())
