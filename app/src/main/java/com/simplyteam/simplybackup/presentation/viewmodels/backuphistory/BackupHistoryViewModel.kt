@@ -9,6 +9,7 @@ import com.simplyteam.simplybackup.data.models.BackupDetail
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.services.NextCloudService
+import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
@@ -17,12 +18,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
-    private val NextCloudService: NextCloudService
+    private val _nextCloudService: NextCloudService,
+    private val _packagingService: PackagingService
 ) : ViewModel() {
 
     val ShowErrorLoading = mutableStateOf(false)
 
     val BackupToDelete = mutableStateOf<BackupDetail?>(null)
+    val BackupToRestore = mutableStateOf<BackupDetail?>(null)
 
     val Loading = mutableStateOf(false)
     val BackupDetails = mutableStateOf(listOf<BackupDetail>())
@@ -37,7 +40,7 @@ class BackupHistoryViewModel @Inject constructor(
                     Loading.value = true
 
 
-                    val files = NextCloudService.GetFilesForConnection(
+                    val files = _nextCloudService.GetFilesForConnection(
                         context,
                         connection
                     )
@@ -126,7 +129,7 @@ class BackupHistoryViewModel @Inject constructor(
             BackupToDelete.value?.let { backup ->
                 HideDeleteAlert()
 
-                if(NextCloudService.DeleteFile(
+                if(_nextCloudService.DeleteFile(
                     context,
                     backup.Connection,
                     backup.RemoteFile
@@ -147,6 +150,25 @@ class BackupHistoryViewModel @Inject constructor(
         list.remove(item)
 
         BackupDetails.value = list
+    }
+
+    fun ShowRestoreAlert(detail: BackupDetail) {
+        BackupToRestore.value = detail
+    }
+
+    fun HideRestoreAlert() {
+        BackupToRestore.value = null
+    }
+
+    suspend fun RestoreBackup(context: Context) {
+        BackupToRestore.value?.let { backup ->
+            HideRestoreAlert()
+
+            val file = _nextCloudService.DownloadFile(context, backup.Connection, backup.RemoteFile)
+
+            _packagingService.RestorePackage(file)
+            file.delete()
+        }
     }
 
 }

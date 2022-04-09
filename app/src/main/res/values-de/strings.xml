@@ -39,7 +39,8 @@
     <string name="DeleteAlertText">Sind Sie sicher, dass die Datei in der Cloud gelöscht werden soll?</string>
     <string name="Yes">Ja</string>
     <string name="Cancel">Abbrechen</string>
-    <string name="DeleteAlertTitle">Sicher?</string>
+    <string name="SureQuestion">Sicher?</string>
     <string name="ErrorLoadingFiles">Dateien zum Backup konnten nicht geladen werden…</string>
     <string name="NoFiles">Es gibt noch keine Dateien für dieses Backup…</string>
+    <string name="RestoreAlertText">Sind Sie sicher, dass sie das Backup wiederherstellen möchten? Es können Dateien dadurch überschrieben werden!</string>
 </resources>

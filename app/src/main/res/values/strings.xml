@@ -44,7 +44,8 @@
     <string name="DeleteAlertText">Are you sure you want to delete this file in the cloud?</string>
     <string name="Yes">Yes</string>
     <string name="Cancel">Cancel</string>
-    <string name="DeleteAlertTitle">Sure?</string>
+    <string name="SureQuestion">Sure?</string>
     <string name="ErrorLoadingFiles">Couldn\'t load files for this backup…</string>
     <string name="NoFiles">There are no files to display for this backup yet…</string>
+    <string name="RestoreAlertText">Are you sure you want to restore this backup? Files can be replaced by this!</string>
 </resources>

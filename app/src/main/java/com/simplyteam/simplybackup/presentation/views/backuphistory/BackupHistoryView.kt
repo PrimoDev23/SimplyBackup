@@ -65,6 +65,10 @@ class BackupHistoryView {
                     BuildDeleteAlert(
                         viewModel = viewModel
                     )
+
+                    BuildRestoreAlert(
+                        viewModel = viewModel
+                    )
                 }
             }
         }
@@ -93,16 +97,27 @@ class BackupHistoryView {
             ) {
                 Icon(
                     modifier = Modifier
-                        .padding(8.dp, 8.dp, 4.dp, 8.dp),
+                        .padding(
+                            8.dp,
+                            8.dp,
+                            4.dp,
+                            8.dp
+                        ),
                     painter = painterResource(
                         id = R.drawable.ic_baseline_folder_zip_24
-                    ), contentDescription = "ZIP"
+                    ),
+                    contentDescription = "ZIP"
                 )
 
                 Text(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(4.dp, 8.dp, 8.dp, 8.dp),
+                        .padding(
+                            4.dp,
+                            8.dp,
+                            8.dp,
+                            8.dp
+                        ),
                     text = detail.Date,
                     style = MaterialTheme.typography.subtitle1
                 )
@@ -110,7 +125,12 @@ class BackupHistoryView {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier
-                            .padding(4.dp, 8.dp, 0.dp, 8.dp),
+                            .padding(
+                                4.dp,
+                                8.dp,
+                                0.dp,
+                                8.dp
+                            ),
                         text = detail.Size,
                         style = MaterialTheme.typography.body2
                     )
@@ -146,7 +166,10 @@ class BackupHistoryView {
                                 viewModel.ShowDeleteAlert(detail)
                                 menuExpanded = false
                             },
-                            contentPadding = PaddingValues(24.dp, 8.dp)
+                            contentPadding = PaddingValues(
+                                24.dp,
+                                8.dp
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -156,7 +179,12 @@ class BackupHistoryView {
                             )
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                    .padding(
+                                        20.dp,
+                                        0.dp,
+                                        0.dp,
+                                        0.dp
+                                    ),
                                 text = stringResource(
                                     id = R.string.Delete
                                 )
@@ -164,10 +192,16 @@ class BackupHistoryView {
                         }
 
                         DropdownMenuItem(
+                            modifier = Modifier
+                                .testTag("RestoreMenuItem"),
                             onClick = {
+                                viewModel.ShowRestoreAlert(detail)
                                 menuExpanded = false
                             },
-                            contentPadding = PaddingValues(24.dp, 8.dp)
+                            contentPadding = PaddingValues(
+                                24.dp,
+                                8.dp
+                            )
                         ) {
                             Icon(
                                 painter = painterResource(
@@ -179,7 +213,12 @@ class BackupHistoryView {
                             )
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                    .padding(
+                                        20.dp,
+                                        0.dp,
+                                        0.dp,
+                                        0.dp
+                                    ),
                                 text = stringResource(
                                     id = R.string.Restore
                                 )
@@ -207,7 +246,7 @@ class BackupHistoryView {
                 title = {
                     Text(
                         text = stringResource(
-                            id = R.string.DeleteAlertTitle
+                            id = R.string.SureQuestion
                         )
                     )
                 },
@@ -240,6 +279,69 @@ class BackupHistoryView {
                         onClick = {
                             scope.launch {
                                 viewModel.DeleteBackup(context)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.Yes
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    @Composable
+    private fun BuildRestoreAlert(viewModel: BackupHistoryViewModel) {
+        val scope = rememberCoroutineScope()
+
+        if (viewModel.BackupToRestore.value != null) {
+            val context = LocalContext.current
+
+            AlertDialog(
+                modifier = Modifier
+                    .testTag("RestoreDialog"),
+                onDismissRequest = {
+                    viewModel.HideRestoreAlert()
+                },
+                title = {
+                    Text(
+                        text = stringResource(
+                            id = R.string.SureQuestion
+                        )
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(
+                            id = R.string.RestoreAlertText
+                        )
+                    )
+                },
+                dismissButton = {
+                    TextButton(
+                        modifier = Modifier
+                            .testTag("RestoreDialogCancel"),
+                        onClick = {
+                            viewModel.HideRestoreAlert()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.Cancel
+                            )
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        modifier = Modifier
+                            .testTag("RestoreDialogYes"),
+                        onClick = {
+                            scope.launch {
+                                viewModel.RestoreBackup(context)
                             }
                         }
                     ) {

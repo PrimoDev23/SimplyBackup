@@ -7,10 +7,7 @@ import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.OwnCloudClientFactory
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.files.FileUtils
-import com.owncloud.android.lib.resources.files.ReadFolderRemoteOperation
-import com.owncloud.android.lib.resources.files.RemoveFileRemoteOperation
-import com.owncloud.android.lib.resources.files.UploadFileRemoteOperation
+import com.owncloud.android.lib.resources.files.*
 import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.exceptions.FolderOperationException
@@ -158,5 +155,58 @@ class NextCloudService {
                 handler
             )
         }
+    }
+
+    suspend fun DownloadFile(
+        context: Context,
+        connection: Connection,
+        file: RemoteFile
+    ): File {
+        return suspendCoroutine { continuation ->
+            val client = CreateClient(
+                context,
+                connection
+            )
+
+            val operation = DownloadFileRemoteOperation(
+                file.remotePath,
+                context.filesDir.absolutePath
+            )
+
+            val handler = Handler(context.mainLooper)
+
+            operation.execute(
+                client,
+                { _, p1 ->
+                    if (p1.isSuccess) {
+                        continuation.resume(
+                            File(
+                                context.filesDir.absolutePath,
+                                ExtractFileNameFromRemotePath(
+                                    connection,
+                                    file
+                                )
+                            )
+                        )
+                    } else {
+                        throw
+                        p1.exception ?: FolderOperationException(
+                            "${p1.code.name} (${p1.httpPhrase})"
+                        )
+                    }
+                },
+                handler
+            )
+        }
+    }
+
+    private fun ExtractFileNameFromRemotePath(
+        connection: Connection,
+        file: RemoteFile
+    ): String {
+        return file.remotePath.removeRange(
+            0,
+            connection.RemotePath.length + 1
+        )
     }
 }
