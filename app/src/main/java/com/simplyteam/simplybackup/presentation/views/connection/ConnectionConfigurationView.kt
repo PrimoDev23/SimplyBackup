@@ -36,11 +36,13 @@ import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import kotlinx.coroutines.launch
 
 class ConnectionConfigurationView(
-    private val _nextCloudConfigurationView: NextCloudConfigurationView
+    private val _nextCloudConfigurationView: NextCloudConfigurationView,
+    private val _sFTPConfigurationView: SFTPConfigurationView
 ) {
 
     @Composable
@@ -136,6 +138,11 @@ class ConnectionConfigurationView(
                     ConnectionType.NextCloud -> {
                         _nextCloudConfigurationView.BuildInformationFields(
                             viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
+                        )
+                    }
+                    ConnectionType.SFTP -> {
+                        _sFTPConfigurationView.BuildInformationFields(
+                            viewModel = viewModel.ViewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
                         )
                     }
                 }

@@ -23,6 +23,7 @@ import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -43,8 +44,10 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val viewModel = hiltViewModel<ConnectionConfigurationViewModel>()
                 val nextCloudViewModel = hiltViewModel<NextCloudConfigurationViewModel>()
+                val ftpViewModel = hiltViewModel<SFTPConfigurationViewModel>()
 
                 viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
+                viewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
 
                 LaunchedEffect(key1 = true){
                     connection?.let {

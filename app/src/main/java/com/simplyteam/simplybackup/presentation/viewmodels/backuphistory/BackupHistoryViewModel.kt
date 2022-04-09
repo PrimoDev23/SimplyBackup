@@ -3,22 +3,23 @@ package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.owncloud.android.lib.resources.files.model.RemoteFile
-import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.BackupDetail
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
+import com.simplyteam.simplybackup.data.services.SFTPService
 import com.simplyteam.simplybackup.data.services.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
-import java.time.LocalDateTime
 import javax.inject.Inject
+import com.simplyteam.simplybackup.data.models.RemoteFile
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
     private val _nextCloudService: NextCloudService,
+    private val _sFTPService: SFTPService,
     private val _packagingService: PackagingService
 ) : ViewModel() {
 
@@ -49,7 +50,20 @@ class BackupHistoryViewModel @Inject constructor(
                     BuildBackupDetails(
                         connection,
                         files.sortedByDescending { file ->
-                            file.uploadTimestamp
+                            file.TimeStamp
+                        }
+                    )
+                }
+                ConnectionType.SFTP -> {
+                    val files = _sFTPService.GetFilesForConnection(
+                        connection
+                    )
+                    ShowErrorLoading.value = false
+
+                    BuildBackupDetails(
+                        connection,
+                        files.sortedByDescending { file ->
+                            file.TimeStamp
                         }
                     )
                 }
@@ -70,20 +84,20 @@ class BackupHistoryViewModel @Inject constructor(
         val details = mutableListOf<BackupDetail>()
 
         for (file in files) {
-            val fileName = ExtractFileNameFromRemotePath(
+            val fileName = FileUtil.ExtractFileNameFromRemotePath(
                 connection = connection,
-                file = file
+                path = file.RemotePath
             )
 
-            val date = ExtractDateFromFileName(
+            val date = FileUtil.ExtractDateFromFileName(
                 fileName
             )
-            val size = MathUtil.GetBiggestFileSizeString(file.size)
+            val size = MathUtil.GetBiggestFileSizeString(file.Size)
 
             details.add(
                 BackupDetail(
                     Connection = connection,
-                    RemoteFile = file,
+                    RemotePath = file.RemotePath,
                     Size = size,
                     Date = date
                 )
@@ -91,27 +105,6 @@ class BackupHistoryViewModel @Inject constructor(
         }
 
         BackupDetails.value = details
-    }
-
-    private fun ExtractFileNameFromRemotePath(
-        connection: Connection,
-        file: RemoteFile
-    ): String =
-        file.remotePath.removeRange(
-            0,
-            connection.RemotePath.length + 1
-        )
-
-    private fun ExtractDateFromFileName(fileName: String): String {
-        val originalDate = fileName.split('-')
-            .last()
-            .removeSuffix(".zip")
-
-        val date = LocalDateTime.parse(
-            originalDate,
-            Constants.PackagingFormatter
-        )
-        return date.format(Constants.HumanReadableFormatter)
     }
 
     fun ShowDeleteAlert(item: BackupDetail) {
@@ -128,12 +121,23 @@ class BackupHistoryViewModel @Inject constructor(
                 Loading.value = true
                 HideDeleteAlert()
 
-                if (_nextCloudService.DeleteFile(
-                        context,
-                        backup.Connection,
-                        backup.RemoteFile
-                    )
-                ) {
+                val result = when (backup.Connection.ConnectionType) {
+                    ConnectionType.NextCloud -> {
+                        _nextCloudService.DeleteFile(
+                            context,
+                            backup.Connection,
+                            backup.RemotePath
+                        )
+                    }
+                    ConnectionType.SFTP -> {
+                        _sFTPService.DeleteFile(
+                            backup.Connection,
+                            backup.RemotePath
+                        )
+                    }
+                }
+
+                if (result) {
                     DeleteBackupFromList(backup)
                 }
             } catch (ex: Exception) {
@@ -163,15 +167,27 @@ class BackupHistoryViewModel @Inject constructor(
     suspend fun RestoreBackup(context: Context) {
         BackupToRestore.value?.let { backup ->
             try {
-                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.RESTORING
+                RestoreStatus.value =
+                    com.simplyteam.simplybackup.data.models.RestoreStatus.RESTORING
 
                 HideRestoreAlert()
 
-                val file = _nextCloudService.DownloadFile(
-                    context,
-                    backup.Connection,
-                    backup.RemoteFile
-                )
+                val file = when(backup.Connection.ConnectionType){
+                    ConnectionType.NextCloud -> {
+                        _nextCloudService.DownloadFile(
+                            context,
+                            backup.Connection,
+                            backup.RemotePath
+                        )
+                    }
+                    ConnectionType.SFTP -> {
+                        _sFTPService.DownloadFile(
+                            context,
+                            backup.Connection,
+                            backup.RemotePath
+                        )
+                    }
+                }
 
                 _packagingService.RestorePackage(file)
                 file.delete()

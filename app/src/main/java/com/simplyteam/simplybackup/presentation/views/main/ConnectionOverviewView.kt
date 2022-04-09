@@ -46,7 +46,10 @@ class ConnectionOverviewView {
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f, fill = true)
+                    .weight(
+                        1f,
+                        fill = true
+                    )
                     .padding(8.dp)
             ) {
                 items(viewModel.GetConnections()) { item ->
@@ -61,7 +64,10 @@ class ConnectionOverviewView {
                     .fillMaxWidth()
                     .padding(8.dp)
                     .testTag("AddConnection"),
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colors.primary
+                ),
                 onClick = {
                     scope.launch {
                         context.startActivity(
@@ -74,7 +80,12 @@ class ConnectionOverviewView {
                 }) {
                 Icon(
                     modifier = Modifier
-                        .padding(0.dp, 0.dp, 8.dp, 0.dp),
+                        .padding(
+                            0.dp,
+                            0.dp,
+                            8.dp,
+                            0.dp
+                        ),
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(
                         id = R.string.ConfigureConnection
@@ -91,7 +102,10 @@ class ConnectionOverviewView {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun BuildConnectionCard(item: Connection, viewModel: ConnectionOverviewViewModel) {
+    private fun BuildConnectionCard(
+        item: Connection,
+        viewModel: ConnectionOverviewViewModel
+    ) {
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
 
@@ -105,7 +119,10 @@ class ConnectionOverviewView {
                         ConnectionConfigurationActivity::class.java
                     )
 
-                    intent.putExtra("Connection", item)
+                    intent.putExtra(
+                        "Connection",
+                        item
+                    )
                     context.startActivity(
                         intent
                     )
@@ -123,19 +140,35 @@ class ConnectionOverviewView {
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    viewModel.GetIconProvider().BuildIconFromConnectionType(
-                        connectionType = item.ConnectionType
-                    )
+                    Column(
+                        modifier = Modifier
+                            .width(65.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        viewModel.GetIconProvider()
+                            .BuildIconFromConnectionType(
+                                connectionType = item.ConnectionType
+                            )
+                    }
 
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .padding(8.dp, 0.dp)
+                            .padding(
+                                8.dp,
+                                0.dp
+                            )
                             .weight(1f)
                     ) {
                         Text(
                             modifier = Modifier
-                                .padding(8.dp, 8.dp, 8.dp, 0.dp),
+                                .padding(
+                                    8.dp,
+                                    8.dp,
+                                    8.dp,
+                                    0.dp
+                                ),
                             text = item.Name,
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Bold
@@ -144,7 +177,12 @@ class ConnectionOverviewView {
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                             Text(
                                 modifier = Modifier
-                                    .padding(8.dp, 0.dp, 8.dp, 8.dp),
+                                    .padding(
+                                        8.dp,
+                                        0.dp,
+                                        8.dp,
+                                        8.dp
+                                    ),
                                 text = item.Username,
                                 style = MaterialTheme.typography.body2,
                                 fontStyle = FontStyle.Italic

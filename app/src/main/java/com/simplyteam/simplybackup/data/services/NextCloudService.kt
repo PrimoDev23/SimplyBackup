@@ -6,11 +6,10 @@ import android.os.Handler
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.OwnCloudClientFactory
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.files.*
-import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.data.models.exceptions.FolderOperationException
+import com.simplyteam.simplybackup.data.models.RemoteFile
+import com.simplyteam.simplybackup.data.utils.FileUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 import java.io.File
@@ -47,7 +46,7 @@ class NextCloudService {
         context: Context,
         connection: Connection,
         file: File
-    ): Result<RemoteOperationResult<*>> {
+    ): Result<Boolean> {
         return suspendCoroutine { continuation ->
             try {
                 val client = CreateClient(
@@ -75,7 +74,17 @@ class NextCloudService {
                     { _, p1 ->
                         Timber.d("Upload to ${connection.URL} succeed - ${p1.isSuccess}")
 
-                        continuation.resume(Result.success(p1))
+                        if (p1.isSuccess) {
+                            continuation.resume(Result.success(true))
+                        } else {
+                            continuation.resume(
+                                Result.failure(
+                                    p1.exception ?: Exception(
+                                        "${p1.code.name} (${p1.httpPhrase})"
+                                    )
+                                )
+                            )
+                        }
                     },
                     handler
                 )
@@ -106,16 +115,23 @@ class NextCloudService {
                         val files = mutableListOf<RemoteFile>()
 
                         for (obj in p1.data) {
-                            val file = obj as RemoteFile
+                            val file =
+                                obj as com.owncloud.android.lib.resources.files.model.RemoteFile
 
                             if (file.mimeType == "application/zip" && file.remotePath.contains("-${connection.Name}-")) {
-                                files.add(file)
+                                files.add(
+                                    RemoteFile(
+                                        file.remotePath,
+                                        file.uploadTimestamp,
+                                        file.size
+                                    )
+                                )
                             }
                         }
 
                         continuation.resume(files)
                     } else {
-                        throw p1.exception ?: FolderOperationException(
+                        throw p1.exception ?: Exception(
                             "${p1.code.name} (${p1.httpPhrase})"
                         )
                     }
@@ -128,7 +144,7 @@ class NextCloudService {
     suspend fun DeleteFile(
         context: Context,
         connection: Connection,
-        file: RemoteFile
+        remotePath: String
     ): Boolean {
         return suspendCoroutine { continuation ->
             val client = CreateClient(
@@ -136,7 +152,7 @@ class NextCloudService {
                 connection
             )
 
-            val operation = RemoveFileRemoteOperation(file.remotePath)
+            val operation = RemoveFileRemoteOperation(remotePath)
 
             val handler = Handler(context.mainLooper)
 
@@ -146,8 +162,7 @@ class NextCloudService {
                     if (p1.isSuccess) {
                         continuation.resume(true)
                     } else {
-                        throw
-                        p1.exception ?: FolderOperationException(
+                        throw p1.exception ?: Exception(
                             "${p1.code.name} (${p1.httpPhrase})"
                         )
                     }
@@ -160,7 +175,7 @@ class NextCloudService {
     suspend fun DownloadFile(
         context: Context,
         connection: Connection,
-        file: RemoteFile
+        remotePath: String
     ): File {
         return suspendCoroutine { continuation ->
             val client = CreateClient(
@@ -169,7 +184,7 @@ class NextCloudService {
             )
 
             val operation = DownloadFileRemoteOperation(
-                file.remotePath,
+                remotePath,
                 context.filesDir.absolutePath
             )
 
@@ -182,15 +197,14 @@ class NextCloudService {
                         continuation.resume(
                             File(
                                 context.filesDir.absolutePath,
-                                ExtractFileNameFromRemotePath(
+                                FileUtil.ExtractFileNameFromRemotePath(
                                     connection,
-                                    file
+                                    remotePath
                                 )
                             )
                         )
                     } else {
-                        throw
-                        p1.exception ?: FolderOperationException(
+                        throw p1.exception ?: Exception(
                             "${p1.code.name} (${p1.httpPhrase})"
                         )
                     }
@@ -198,15 +212,5 @@ class NextCloudService {
                 handler
             )
         }
-    }
-
-    private fun ExtractFileNameFromRemotePath(
-        connection: Connection,
-        file: RemoteFile
-    ): String {
-        return file.remotePath.removeRange(
-            0,
-            connection.RemotePath.length + 1
-        )
     }
 }

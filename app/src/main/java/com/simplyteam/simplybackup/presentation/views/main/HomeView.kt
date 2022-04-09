@@ -49,7 +49,10 @@ class HomeView {
     }
 
     @Composable
-    private fun BuildHistoryCard(viewModel: HomeViewModel, connection: Connection) {
+    private fun BuildHistoryCard(
+        viewModel: HomeViewModel,
+        connection: Connection
+    ) {
         val context = LocalContext.current
 
         Card(
@@ -57,8 +60,14 @@ class HomeView {
                 .fillMaxWidth()
                 .padding(8.dp)
                 .clickable {
-                    val intent = Intent(context, BackupHistoryActivity::class.java)
-                    intent.putExtra("Connection", connection)
+                    val intent = Intent(
+                        context,
+                        BackupHistoryActivity::class.java
+                    )
+                    intent.putExtra(
+                        "Connection",
+                        connection
+                    )
 
                     context.startActivity(intent)
                 }
@@ -77,13 +86,26 @@ class HomeView {
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    viewModel.GetIconProvider().BuildIconFromConnectionType(
-                        connectionType = data.Type
-                    )
+                    Column(
+                        modifier = Modifier
+                            .width(65.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        viewModel.GetIconProvider()
+                            .BuildIconFromConnectionType(
+                                connectionType = data.Type
+                            )
+                    }
 
                     Text(
                         modifier = Modifier
-                            .padding(12.dp, 8.dp, 8.dp, 0.dp),
+                            .padding(
+                                12.dp,
+                                8.dp,
+                                8.dp,
+                                0.dp
+                            ),
                         text = data.Name,
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold

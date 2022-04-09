@@ -48,8 +48,9 @@
     <string name="ErrorLoadingFiles">Couldn\'t load files for this backup…</string>
     <string name="NoFiles">There are no files to display for this backup yet…</string>
     <string name="RestoreAlertText">Are you sure you want to restore this backup? Files can be replaced by this!</string>
-    <string name="RestoringBackup">Restoring backup...</string>
+    <string name="RestoringBackup">Restoring backup…</string>
     <string name="OK">OK</string>
     <string name="RestoringBackupSucceed">Successfully restored the backup!</string>
     <string name="RestoringBackupError">Couldn\'t restore the backup!</string>
+    <string name="SFTP" translatable="false">SFTP</string>
 </resources>

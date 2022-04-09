@@ -9,20 +9,17 @@ import android.os.Bundle
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.HistoryEntry
 import com.simplyteam.simplybackup.data.models.exceptions.WifiNotEnabledException
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
-import com.simplyteam.simplybackup.data.services.NextCloudService
-import com.simplyteam.simplybackup.data.services.NotificationService
-import com.simplyteam.simplybackup.data.services.PackagingService
-import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.services.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +31,9 @@ class BackupReceiver : BroadcastReceiver() {
     lateinit var nextCloudService: NextCloudService
 
     @Inject
+    lateinit var SFTPService: SFTPService
+
+    @Inject
     lateinit var schedulerService: SchedulerService
 
     @Inject
@@ -42,7 +42,10 @@ class BackupReceiver : BroadcastReceiver() {
     @Inject
     lateinit var HistoryRepository: HistoryRepository
 
-    override fun onReceive(p0: Context?, p1: Intent?) {
+    override fun onReceive(
+        p0: Context?,
+        p1: Intent?
+    ) {
         p0?.let { context ->
             p1?.let { intent ->
                 val extraBundle = intent.extras?.get("Bundle") as Bundle?
@@ -52,18 +55,31 @@ class BackupReceiver : BroadcastReceiver() {
 
                     conn?.let { connection ->
                         if (!connection.WifiOnly || IsWifiConnected(context)) {
-                            packagingService.CreatePackage(context, connection)
+                            packagingService.CreatePackage(
+                                context,
+                                connection
+                            )
                                 .onSuccess { file ->
                                     GlobalScope.launch {
                                         NotificationService.ShowBackingUpNotification(
                                             context,
                                             connection
                                         )
-                                        val uploadResult = nextCloudService.UploadFile(
-                                            context,
-                                            connection,
-                                            file
-                                        )
+                                        val uploadResult = when (connection.ConnectionType) {
+                                            ConnectionType.NextCloud -> {
+                                                nextCloudService.UploadFile(
+                                                    context,
+                                                    connection,
+                                                    file
+                                                )
+                                            }
+                                            ConnectionType.SFTP -> {
+                                                SFTPService.UploadFile(
+                                                    connection,
+                                                    file
+                                                )
+                                            }
+                                        }
 
                                         NotificationService.HideBackingUpNotification(
                                             context,
@@ -72,19 +88,15 @@ class BackupReceiver : BroadcastReceiver() {
 
                                         uploadResult
                                             .onSuccess { result ->
-                                                if (result.isSuccess) {
-                                                    AddHistoryEntry(connection, file, true)
+                                                if (result) {
+                                                    AddHistoryEntry(
+                                                        connection,
+                                                        file,
+                                                        true
+                                                    )
 
                                                     NotificationService.ShowSuccessNotification(
                                                         context,
-                                                        connection
-                                                    )
-                                                } else {
-                                                    Timber.e(result.exception)
-
-                                                    NotificationService.ShowErrorNotification(
-                                                        context,
-                                                        context.getString(R.string.ErrorUpload).format(connection.Name, result.code.name),
                                                         connection
                                                     )
                                                 }
@@ -94,7 +106,8 @@ class BackupReceiver : BroadcastReceiver() {
 
                                                 NotificationService.ShowErrorNotification(
                                                     context,
-                                                    context.getString(R.string.ErrorException).format(connection.Name),
+                                                    context.getString(R.string.ErrorException)
+                                                        .format(connection.Name),
                                                     connection
                                                 )
                                             }
@@ -107,7 +120,8 @@ class BackupReceiver : BroadcastReceiver() {
 
                                     NotificationService.ShowErrorNotification(
                                         context,
-                                        context.getString(R.string.ErrorPackaging).format(connection.Name),
+                                        context.getString(R.string.ErrorPackaging)
+                                            .format(connection.Name),
                                         connection
                                     )
                                 }
@@ -116,13 +130,17 @@ class BackupReceiver : BroadcastReceiver() {
 
                             NotificationService.ShowErrorNotification(
                                 context,
-                                context.getString(R.string.ErrorWifi).format(connection.Name),
+                                context.getString(R.string.ErrorWifi)
+                                    .format(connection.Name),
                                 connection
                             )
                         }
 
                         //Reschedule even if the backup fails
-                        schedulerService.ScheduleBackup(context, connection)
+                        schedulerService.ScheduleBackup(
+                            context,
+                            connection
+                        )
                     }
                 }
             }
@@ -134,17 +152,23 @@ class BackupReceiver : BroadcastReceiver() {
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         connectivityManager.activeNetwork?.let { network ->
-            connectivityManager.getNetworkCapabilities(network)?.let { networkCapabilities ->
-                return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-            }
+            connectivityManager.getNetworkCapabilities(network)
+                ?.let { networkCapabilities ->
+                    return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                }
         }
         return false
     }
 
-    private suspend fun AddHistoryEntry(connection: Connection, file: File, succeed: Boolean) {
+    private suspend fun AddHistoryEntry(
+        connection: Connection,
+        file: File,
+        succeed: Boolean
+    ) {
         val entry = HistoryEntry(
             ConnectionId = connection.Id,
-            Time = LocalDateTime.now().format(Constants.HumanReadableFormatter),
+            Time = LocalDateTime.now()
+                .format(Constants.HumanReadableFormatter),
             Size = file.length(),
             Succeed = succeed
         )
