@@ -15,8 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.BackupDetail
+import com.simplyteam.simplybackup.data.models.RestoreStatus
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
 import kotlinx.coroutines.launch
 
@@ -66,7 +68,7 @@ class BackupHistoryView {
                         viewModel = viewModel
                     )
 
-                    BuildRestoreAlert(
+                    BuildRestoreControls(
                         viewModel = viewModel
                     )
                 }
@@ -294,6 +296,21 @@ class BackupHistoryView {
     }
 
     @Composable
+    private fun BuildRestoreControls(viewModel: BackupHistoryViewModel) {
+        BuildRestoreAlert(
+            viewModel = viewModel
+        )
+
+        BuildRestoringDialog(
+            viewModel = viewModel
+        )
+
+        BuildRestoreFinishedAlert(
+            viewModel
+        )
+    }
+
+    @Composable
     private fun BuildRestoreAlert(viewModel: BackupHistoryViewModel) {
         val scope = rememberCoroutineScope()
 
@@ -351,6 +368,92 @@ class BackupHistoryView {
                             )
                         )
                     }
+                }
+            )
+        }
+    }
+
+    @Composable
+    private fun BuildRestoringDialog(viewModel: BackupHistoryViewModel) {
+        if (viewModel.RestoreStatus.value == RestoreStatus.RESTORING) {
+            Dialog(
+                onDismissRequest = {}
+            ) {
+                Card(
+                    modifier = Modifier
+                        .testTag("CurrentlyRestoringDialog"),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(
+                                    24.dp,
+                                    24.dp,
+                                    8.dp,
+                                    24.dp
+                                )
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    8.dp,
+                                    24.dp,
+                                    24.dp,
+                                    24.dp
+                                ),
+                            text = stringResource(id = R.string.RestoringBackup)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun BuildRestoreFinishedAlert(viewModel: BackupHistoryViewModel) {
+        if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS
+            || viewModel.RestoreStatus.value == RestoreStatus.ERROR
+        ) {
+            AlertDialog(
+                modifier = Modifier
+                    .testTag("RestoreFinishedDialog"),
+                onDismissRequest = {
+                    viewModel.HideRestoreFinishedAlert()
+                },
+                title = {
+                    Text(
+                        text = stringResource(
+                            id = if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
+                        )
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(
+                            id = if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
+                        )
+                    )
+                },
+                dismissButton = {
+                    TextButton(
+                        modifier = Modifier
+                            .testTag("OkRestoreFinishedDialog"),
+                        onClick = {
+                            viewModel.HideRestoreFinishedAlert()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.OK
+                            )
+                        )
+                    }
+                },
+                confirmButton = {
+
                 }
             )
         }

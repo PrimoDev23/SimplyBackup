@@ -26,6 +26,7 @@ class BackupHistoryViewModel @Inject constructor(
 
     val BackupToDelete = mutableStateOf<BackupDetail?>(null)
     val BackupToRestore = mutableStateOf<BackupDetail?>(null)
+    val RestoreStatus = mutableStateOf(com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE)
 
     val Loading = mutableStateOf(false)
     val BackupDetails = mutableStateOf(listOf<BackupDetail>())
@@ -34,12 +35,11 @@ class BackupHistoryViewModel @Inject constructor(
         context: Context,
         connection: Connection
     ) {
-        when (connection.ConnectionType) {
-            ConnectionType.NextCloud -> {
-                try {
-                    Loading.value = true
+        try {
+            Loading.value = true
 
-
+            when (connection.ConnectionType) {
+                ConnectionType.NextCloud -> {
                     val files = _nextCloudService.GetFilesForConnection(
                         context,
                         connection
@@ -52,14 +52,14 @@ class BackupHistoryViewModel @Inject constructor(
                             file.uploadTimestamp
                         }
                     )
-                } catch (ex: Exception) {
-                    Timber.e(ex)
-
-                    ShowErrorLoading.value = true
-                } finally {
-                    Loading.value = false
                 }
             }
+        } catch (ex: Exception) {
+            Timber.e(ex)
+
+            ShowErrorLoading.value = true
+        } finally {
+            Loading.value = false
         }
     }
 
@@ -123,24 +123,24 @@ class BackupHistoryViewModel @Inject constructor(
     }
 
     suspend fun DeleteBackup(context: Context) {
-        try {
-            Loading.value = true
-
-            BackupToDelete.value?.let { backup ->
+        BackupToDelete.value?.let { backup ->
+            try {
+                Loading.value = true
                 HideDeleteAlert()
 
-                if(_nextCloudService.DeleteFile(
-                    context,
-                    backup.Connection,
-                    backup.RemoteFile
-                )) {
+                if (_nextCloudService.DeleteFile(
+                        context,
+                        backup.Connection,
+                        backup.RemoteFile
+                    )
+                ) {
                     DeleteBackupFromList(backup)
                 }
+            } catch (ex: Exception) {
+                Timber.e(ex)
+            } finally {
+                Loading.value = false
             }
-        } catch (ex: Exception) {
-            Timber.e(ex)
-        } finally {
-            Loading.value = false
         }
     }
 
@@ -162,13 +162,31 @@ class BackupHistoryViewModel @Inject constructor(
 
     suspend fun RestoreBackup(context: Context) {
         BackupToRestore.value?.let { backup ->
-            HideRestoreAlert()
+            try {
+                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.RESTORING
 
-            val file = _nextCloudService.DownloadFile(context, backup.Connection, backup.RemoteFile)
+                HideRestoreAlert()
 
-            _packagingService.RestorePackage(file)
-            file.delete()
+                val file = _nextCloudService.DownloadFile(
+                    context,
+                    backup.Connection,
+                    backup.RemoteFile
+                )
+
+                _packagingService.RestorePackage(file)
+                file.delete()
+
+                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.SUCCESS
+            } catch (ex: Exception) {
+                Timber.e(ex)
+
+                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.ERROR
+            }
         }
+    }
+
+    fun HideRestoreFinishedAlert() {
+        RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE
     }
 
 }
