@@ -14,7 +14,7 @@ import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
 
 class MainTabView constructor(
-    private val mainNavigation: MainNavigation
+    private val _mainNavigation: MainNavigation
 ) {
 
     @Composable
@@ -31,7 +31,7 @@ class MainTabView constructor(
                 )
             }
         ) {
-            mainNavigation.Build(
+            _mainNavigation.Build(
                 navController = navController,
                 paddingValues = it
             )

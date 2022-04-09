@@ -10,17 +10,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConnectionOverviewViewModel @Inject constructor(
-    val connectionRepository: ConnectionRepository,
-    val IconProvider: IconProvider
+    private val _connectionRepository: ConnectionRepository,
+    private val _iconProvider: IconProvider
 ) : ViewModel() {
 
-    fun GetConnections() = connectionRepository.Connections.value
+    fun GetConnections() = _connectionRepository.Connections.value
 
-    fun GetIconProvider() = IconProvider
+    fun GetIconProvider() = _iconProvider
 
     suspend fun DeleteConnection(entry: Connection) {
         try {
-            connectionRepository.RemoveConnection(entry)
+            _connectionRepository.RemoveConnection(entry)
         }catch (ex: Exception){
             Timber.e(ex)
         }

@@ -11,8 +11,8 @@ import com.simplyteam.simplybackup.presentation.views.connection.ConnectionConfi
 import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurationView
 
 class ConnectionConfigurationNavigation constructor(
-    private val connectionConfigurationView: ConnectionConfigurationView,
-    private val pathsConfigurationView: PathsConfigurationView
+    private val _connectionConfigurationView: ConnectionConfigurationView,
+    private val _pathsConfigurationView: PathsConfigurationView
 ) {
 
     @Composable
@@ -22,11 +22,11 @@ class ConnectionConfigurationNavigation constructor(
             startDestination = Screen.ConnectionConfiguration.Route
         ) {
             composable(Screen.ConnectionConfiguration.Route) {
-                connectionConfigurationView.Build(paddingValues, navController, viewModel)
+                _connectionConfigurationView.Build(paddingValues, navController, viewModel)
             }
 
             composable(Screen.PathsConfiguration.Route) {
-                pathsConfigurationView.Build(paddingValues, viewModel)
+                _pathsConfigurationView.Build(paddingValues, viewModel)
             }
         }
     }

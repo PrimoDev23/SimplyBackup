@@ -1,6 +1,7 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
 import androidx.lifecycle.ViewModel
+import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
@@ -15,28 +16,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val HistoryRepository: HistoryRepository,
-    val ConnectionRepository: ConnectionRepository,
-    val SchedulerService: SchedulerService,
-    val IconProvider: IconProvider
+    private val _historyRepository: HistoryRepository,
+    private val _connectionRepository: ConnectionRepository,
+    private val _schedulerService: SchedulerService,
+    private val _iconProvider: IconProvider
 ) : ViewModel() {
-
-    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-
-    fun GetConnections() = ConnectionRepository.Connections.value
+    fun GetConnections() = _connectionRepository.Connections.value
 
     fun BuildHistoryDataForConnection(connection: Connection) : HistoryData {
-        val entries = HistoryRepository.History.value.filter {
+        val entries = _historyRepository.History.value.filter {
             it.ConnectionId == connection.Id
         }
 
-        val calendar = SchedulerService.GetNextSchedule(connection.ScheduleType)
+        val calendar = _schedulerService.GetNextSchedule(connection.ScheduleType)
 
         return HistoryData(
             Name = connection.Name,
             Type = connection.ConnectionType,
             LastBackup = if(entries.isNotEmpty()) entries.last().Time else "-",
-            NextBackup = LocalDateTime.ofInstant(calendar.toInstant(), calendar.timeZone.toZoneId()).format(formatter),
+            NextBackup = LocalDateTime.ofInstant(calendar.toInstant(), calendar.timeZone.toZoneId()).format(Constants.HumanReadableFormatter),
             LastBackupSize = if(entries.isNotEmpty()) MathUtil.GetBiggestFileSizeString(entries.last().Size) else "0 B",
             TotalBackedUpSize = MathUtil.GetBiggestFileSizeString(entries.sumOf {
                 it.Size
@@ -44,5 +42,5 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun GetIconProvider() = IconProvider
+    fun GetIconProvider() = _iconProvider
 }

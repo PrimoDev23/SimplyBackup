@@ -11,9 +11,9 @@ import com.simplyteam.simplybackup.presentation.views.main.HomeView
 import com.simplyteam.simplybackup.presentation.views.main.SettingsView
 
 class MainNavigation(
-    private val homeView: HomeView,
-    private val connectionOverviewView: ConnectionOverviewView,
-    private val settingsView: SettingsView
+    private val _homeView: HomeView,
+    private val _connectionOverviewView: ConnectionOverviewView,
+    private val _settingsView: SettingsView
 ) {
 
     @Composable
@@ -23,15 +23,15 @@ class MainNavigation(
             startDestination = Screen.Home.Route
         ) {
             composable(Screen.Home.Route) {
-                homeView.Build(paddingValues)
+                _homeView.Build(paddingValues)
             }
 
             composable(Screen.CloudOverview.Route) {
-                connectionOverviewView.Build(paddingValues)
+                _connectionOverviewView.Build(paddingValues)
             }
 
             composable(Screen.Settings.Route) {
-                settingsView.Build(paddingValues)
+                _settingsView.Build(paddingValues)
             }
         }
     }

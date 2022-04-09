@@ -39,8 +39,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var NotificationService: NotificationService
 
-    private lateinit var storageAccessIntent: Intent
-    private val storageAccessLauncher = registerForActivityResult(
+    private lateinit var _storageAccessIntent: Intent
+    private val _storageAccessLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (Build.VERSION.SDK_INT >= 30 && !Environment.isExternalStorageManager()) {
@@ -62,14 +62,14 @@ class MainActivity : ComponentActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= 30 && !Environment.isExternalStorageManager()) {
-            storageAccessIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+            _storageAccessIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
 
             RequestFullStorageAccess()
         }
 
         NotificationService.CreateNotificationChannel(this)
 
-        InitRepositories(this)
+        InitRepositories()
 
         setContent {
             SimplyBackupTheme {
@@ -79,10 +79,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun RequestFullStorageAccess() {
-        storageAccessLauncher.launch(storageAccessIntent)
+        _storageAccessLauncher.launch(_storageAccessIntent)
     }
 
-    private fun InitRepositories(context: Context) {
+    private fun InitRepositories() {
         lifecycleScope.launchWhenStarted {
             ConnectionRepository.Init()
         }

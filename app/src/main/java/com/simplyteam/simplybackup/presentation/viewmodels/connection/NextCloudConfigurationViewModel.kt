@@ -4,8 +4,13 @@ import androidx.compose.runtime.mutableStateOf
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class NextCloudConfigurationViewModel : ConfigurationViewModelBase() {
+@HiltViewModel
+class NextCloudConfigurationViewModel @Inject constructor(
+
+) : ConfigurationViewModelBase() {
 
     val Name = mutableStateOf("")
     val URL = mutableStateOf("")

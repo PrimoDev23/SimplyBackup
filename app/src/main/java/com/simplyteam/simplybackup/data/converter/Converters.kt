@@ -8,16 +8,16 @@ import com.squareup.moshi.Types
 
 class Converters {
 
-    private val pathListAdapter: JsonAdapter<List<Path>> = Moshi.Builder().build().adapter(Types.newParameterizedType(List::class.java, Path::class.java))
+    private val _pathListAdapter: JsonAdapter<List<Path>> = Moshi.Builder().build().adapter(Types.newParameterizedType(List::class.java, Path::class.java))
 
     @TypeConverter
     fun RestoreMutableList(json: String) : List<Path> {
-        return pathListAdapter.fromJson(json)!!
+        return _pathListAdapter.fromJson(json)!!
     }
 
     @TypeConverter
     fun SaveMutableList(list: List<Path>) : String {
-        return pathListAdapter.toJson(list)
+        return _pathListAdapter.toJson(list)
     }
 
 }

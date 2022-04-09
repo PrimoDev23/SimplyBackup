@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryEntry
 import com.simplyteam.simplybackup.data.models.exceptions.WifiNotEnabledException
@@ -26,9 +27,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BackupReceiver : BroadcastReceiver() {
-
-    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-
     @Inject
     lateinit var packagingService: PackagingService
 
@@ -146,7 +144,7 @@ class BackupReceiver : BroadcastReceiver() {
     private suspend fun AddHistoryEntry(connection: Connection, file: File, succeed: Boolean) {
         val entry = HistoryEntry(
             ConnectionId = connection.Id,
-            Time = LocalDateTime.now().format(formatter),
+            Time = LocalDateTime.now().format(Constants.HumanReadableFormatter),
             Size = file.length(),
             Succeed = succeed
         )

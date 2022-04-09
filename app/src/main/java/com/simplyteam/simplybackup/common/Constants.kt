@@ -10,6 +10,4 @@ object Constants {
 
     const val NOTIFICATION_ID_OFFSET = 1000
 
-    val Test = BuildConfig.NEXTCLOUD_URL
-
 }
