@@ -3,7 +3,6 @@ package com.simplyteam.simplybackup.presentation.activities
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
@@ -342,7 +341,7 @@ class MainActivityTest {
             connection
         )
             .onSuccess {
-                val result: Result<RemoteOperationResult<*>>
+                val result: Result<Boolean>
                 runBlocking {
                     result = NextCloudService.UploadFile(
                         composeRule.activity,
@@ -353,7 +352,7 @@ class MainActivityTest {
 
                 result
                     .onSuccess {
-                        if (it.isSuccess) {
+                        if (it) {
                             composeRule.onNodeWithTag(connection.Name)
                                 .performClick()
 
@@ -364,8 +363,6 @@ class MainActivityTest {
                                 .assertCountEquals(1)
 
                             DeleteAllNextCloudFiles(connection)
-                        } else {
-                            throw it.exception
                         }
                     }
                     .onFailure {
@@ -390,7 +387,7 @@ class MainActivityTest {
             connection
         )
             .onSuccess {
-                val result: Result<RemoteOperationResult<*>>
+                val result: Result<Boolean>
                 runBlocking {
                     result = NextCloudService.UploadFile(
                         composeRule.activity,
@@ -401,7 +398,7 @@ class MainActivityTest {
 
                 result
                     .onSuccess {
-                        if (it.isSuccess) {
+                        if (it) {
                             composeRule.onNodeWithTag(connection.Name)
                                 .performClick()
 
@@ -438,8 +435,6 @@ class MainActivityTest {
 
                             composeRule.onNodeWithText(composeRule.activity.getString(R.string.NoFiles))
                                 .assertExists()
-                        } else {
-                            throw it.exception
                         }
                     }
                     .onFailure {
@@ -464,7 +459,7 @@ class MainActivityTest {
             connection
         )
             .onSuccess {
-                val result: Result<RemoteOperationResult<*>>
+                val result: Result<Boolean>
                 runBlocking {
                     result = NextCloudService.UploadFile(
                         composeRule.activity,
@@ -475,7 +470,7 @@ class MainActivityTest {
 
                 result
                     .onSuccess {
-                        if (it.isSuccess) {
+                        if (it) {
                             composeRule.onNodeWithTag(connection.Name)
                                 .performClick()
 
@@ -531,8 +526,6 @@ class MainActivityTest {
                             for (checkFile in files) {
                                 assert(checkFile.exists())
                             }
-                        } else {
-                            throw it.exception
                         }
                     }
                     .onFailure {
@@ -624,7 +617,7 @@ class MainActivityTest {
                 NextCloudService.DeleteFile(
                     composeRule.activity,
                     connection,
-                    file
+                    file.RemotePath
                 )
             }
         }

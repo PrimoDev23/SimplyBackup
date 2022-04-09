@@ -1,10 +1,7 @@
 package com.simplyteam.simplybackup.presentation.activities
 
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import dagger.hilt.android.testing.HiltAndroidRule

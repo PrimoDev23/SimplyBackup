@@ -11,6 +11,7 @@ import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
 import com.simplyteam.simplybackup.presentation.views.IconProvider
 import com.simplyteam.simplybackup.presentation.views.backuphistory.BackupHistoryView
 import com.simplyteam.simplybackup.presentation.views.connection.ConnectionConfigurationView
+import com.simplyteam.simplybackup.presentation.views.connection.SFTPConfigurationView
 import com.simplyteam.simplybackup.presentation.views.connection.NextCloudConfigurationView
 import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurationView
 import com.simplyteam.simplybackup.presentation.views.main.ConnectionOverviewView
@@ -50,6 +51,10 @@ class TestAppModule {
     @Provides
     @Singleton
     fun GetNextCloudService() = NextCloudService()
+
+    @Provides
+    @Singleton
+    fun GetFtpService() = SFTPService()
 
     @Provides
     @Singleton
@@ -121,9 +126,17 @@ class TestAppModule {
 
     @Provides
     @Singleton
+    fun GetFtpConfigurationView() = SFTPConfigurationView()
+
+    @Provides
+    @Singleton
     fun GetConnectionConfigurationView(
-        nextCloudConfigurationView: NextCloudConfigurationView
-    ) = ConnectionConfigurationView(nextCloudConfigurationView)
+        nextCloudConfigurationView: NextCloudConfigurationView,
+        SFTPConfigurationView: SFTPConfigurationView
+    ) = ConnectionConfigurationView(
+        nextCloudConfigurationView,
+        SFTPConfigurationView
+    )
 
     @Provides
     @Singleton
