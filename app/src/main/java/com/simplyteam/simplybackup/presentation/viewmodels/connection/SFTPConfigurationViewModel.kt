@@ -16,6 +16,7 @@ class SFTPConfigurationViewModel @Inject constructor(
     val URL = mutableStateOf("")
     val Username = mutableStateOf("")
     val Password = mutableStateOf("")
+    val RemotePath = mutableStateOf("")
 
     override fun GetBaseConnection(): Connection {
         when {
@@ -31,6 +32,9 @@ class SFTPConfigurationViewModel @Inject constructor(
             Password.value.isEmpty() -> {
                 throw FieldNotFilledException("Password")
             }
+            RemotePath.value.isEmpty() -> {
+                throw FieldNotFilledException("RemotePath")
+            }
         }
 
         return Connection(
@@ -38,7 +42,8 @@ class SFTPConfigurationViewModel @Inject constructor(
             Name = Name.value,
             URL = URL.value,
             Username = Username.value,
-            Password = Password.value
+            Password = Password.value,
+            RemotePath = RemotePath.value
         )
     }
 
@@ -47,5 +52,6 @@ class SFTPConfigurationViewModel @Inject constructor(
         URL.value = connection.URL
         Username.value = connection.Username
         Password.value = connection.Password
+        RemotePath.value = connection.RemotePath
     }
 }

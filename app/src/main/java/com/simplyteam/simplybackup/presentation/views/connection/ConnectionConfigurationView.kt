@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,14 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
@@ -69,7 +62,11 @@ class ConnectionConfigurationView(
                 viewModel = viewModel
             )
 
-            BuildPathConfigurationView(
+            BuildWifiOnlyCard(
+                viewModel = viewModel
+            )
+
+            BuildPathConfigurationCard(
                 navController = navController
             )
 
@@ -107,12 +104,88 @@ class ConnectionConfigurationView(
         }
     }
 
+    @Composable
+    private fun BuildConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = 2.dp
+        ) {
+            LazyRow(
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                items(ConnectionType.values()) { type ->
+                    BuildConnectionButton(
+                        viewModel = viewModel,
+                        type = type
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun BuildConnectionButton(
+        viewModel: ConnectionConfigurationViewModel,
+        type: ConnectionType
+    ) {
+        if (viewModel.ConnectionType.value == type) {
+            OutlinedButton(
+                modifier = Modifier
+                    .height(70.dp)
+                    .width(98.dp)
+                    .padding(4.dp)
+                    .testTag("${type.name}Selected"),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colors.primary
+                ),
+                onClick = {
+                }) {
+                viewModel.GetIconProvider()
+                    .BuildIconFromConnectionType(
+                        connectionType = type
+                    )
+            }
+        } else {
+            OutlinedButton(
+                modifier = Modifier
+                    .height(70.dp)
+                    .width(98.dp)
+                    .padding(4.dp)
+                    .testTag(type.name),
+                onClick = {
+                    viewModel.ConnectionType.value = type
+                }) {
+                viewModel.GetIconProvider()
+                    .BuildIconFromConnectionType(
+                        connectionType = type
+                    )
+            }
+        }
+    }
+
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     private fun BuildInformationFields(viewModel: ConnectionConfigurationViewModel) {
-        val keyBoardController = LocalSoftwareKeyboardController.current
-        val focusManager = LocalFocusManager.current
+        when (viewModel.ConnectionType.value) {
+            ConnectionType.NextCloud -> {
+                _nextCloudConfigurationView.BuildInformationFields(
+                    viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
+                )
+            }
+            ConnectionType.SFTP -> {
+                _sFTPConfigurationView.BuildInformationFields(
+                    viewModel = viewModel.ViewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
+                )
+            }
+        }
+    }
 
+    @Composable
+    private fun BuildWifiOnlyCard(viewModel: ConnectionConfigurationViewModel) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -134,66 +207,9 @@ class ConnectionConfigurationView(
                         8.dp
                     )
             ) {
-                when (viewModel.ConnectionType.value) {
-                    ConnectionType.NextCloud -> {
-                        _nextCloudConfigurationView.BuildInformationFields(
-                            viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
-                        )
-                    }
-                    ConnectionType.SFTP -> {
-                        _sFTPConfigurationView.BuildInformationFields(
-                            viewModel = viewModel.ViewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
-                        )
-                    }
-                }
-
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("RemotePath"),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = R.string.RemotePath
-                            )
-                        )
-                    },
-                    value = viewModel.RemotePath.value,
-                    onValueChange = {
-                        viewModel.RemotePath.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.ic_baseline_folder_24
-                            ),
-                            contentDescription = stringResource(
-                                id = R.string.RemotePath
-                            )
-                        )
-                    },
-                    singleLine = true,
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyBoardController?.hide()
-                            focusManager.clearFocus(true)
-                        }
-                    )
-                )
-
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            0.dp,
-                            8.dp,
-                            0.dp,
-                            0.dp
-                        ),
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
@@ -214,6 +230,50 @@ class ConnectionConfigurationView(
                         )
                     )
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun BuildPathConfigurationCard(
+        navController: NavHostController
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    8.dp,
+                    0.dp,
+                    8.dp,
+                    8.dp
+                )
+                .clickable {
+                    navController.navigate(Screen.PathsConfiguration.Route)
+                }
+                .testTag("ConfigurePaths"),
+            elevation = 2.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(8.dp),
+                    text = stringResource(
+                        id = R.string.ConfigurePaths
+                    )
+                )
+
+                Icon(
+                    modifier = Modifier
+                        .padding(8.dp),
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = ""
+                )
             }
         }
     }
@@ -419,113 +479,6 @@ class ConnectionConfigurationView(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    @Composable
-    private fun BuildConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            elevation = 2.dp
-        ) {
-            LazyRow(
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                items(ConnectionType.values()) { type ->
-                    BuildConnectionButton(
-                        viewModel = viewModel,
-                        type = type
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun BuildConnectionButton(
-        viewModel: ConnectionConfigurationViewModel,
-        type: ConnectionType
-    ) {
-        if (viewModel.ConnectionType.value == type) {
-            OutlinedButton(
-                modifier = Modifier
-                    .height(70.dp)
-                    .width(98.dp)
-                    .padding(4.dp)
-                    .testTag("${type.name}Selected"),
-                border = BorderStroke(
-                    1.dp,
-                    MaterialTheme.colors.primary
-                ),
-                onClick = {
-                }) {
-                viewModel.GetIconProvider()
-                    .BuildIconFromConnectionType(
-                        connectionType = type
-                    )
-            }
-        } else {
-            OutlinedButton(
-                modifier = Modifier
-                    .height(70.dp)
-                    .width(98.dp)
-                    .padding(4.dp)
-                    .testTag(type.name),
-                onClick = {
-                    viewModel.ConnectionType.value = type
-                }) {
-                viewModel.GetIconProvider()
-                    .BuildIconFromConnectionType(
-                        connectionType = type
-                    )
-            }
-        }
-    }
-
-    @Composable
-    private fun BuildPathConfigurationView(
-        navController: NavHostController
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    8.dp,
-                    0.dp,
-                    8.dp,
-                    8.dp
-                )
-                .clickable {
-                    navController.navigate(Screen.PathsConfiguration.Route)
-                }
-                .testTag("ConfigurePaths"),
-            elevation = 2.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    text = stringResource(
-                        id = R.string.ConfigurePaths
-                    )
-                )
-
-                Icon(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = ""
-                )
             }
         }
     }
