@@ -14,6 +14,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class NextCloudService {
@@ -131,8 +132,10 @@ class NextCloudService {
 
                         continuation.resume(files)
                     } else {
-                        throw p1.exception ?: Exception(
-                            "${p1.code.name} (${p1.httpPhrase})"
+                        continuation.resumeWithException(
+                            p1.exception ?: Exception(
+                                "${p1.code.name} (${p1.httpPhrase})"
+                            )
                         )
                     }
                 },
@@ -162,8 +165,10 @@ class NextCloudService {
                     if (p1.isSuccess) {
                         continuation.resume(true)
                     } else {
-                        throw p1.exception ?: Exception(
-                            "${p1.code.name} (${p1.httpPhrase})"
+                        continuation.resumeWithException(
+                            p1.exception ?: Exception(
+                                "${p1.code.name} (${p1.httpPhrase})"
+                            )
                         )
                     }
                 },
@@ -204,8 +209,10 @@ class NextCloudService {
                             )
                         )
                     } else {
-                        throw p1.exception ?: Exception(
-                            "${p1.code.name} (${p1.httpPhrase})"
+                        continuation.resumeWithException(
+                            p1.exception ?: Exception(
+                                "${p1.code.name} (${p1.httpPhrase})"
+                            )
                         )
                     }
                 },

@@ -10,11 +10,14 @@ import com.simplyteam.simplybackup.data.utils.FileUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.OutputStream
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class SFTPService {
@@ -115,7 +118,7 @@ class SFTPService {
                     channel?.exit()
                     session.disconnect()
 
-                    throw ex
+                    continuation.resumeWithException(ex)
                 }
             }
         }
@@ -159,7 +162,7 @@ class SFTPService {
                     channel?.exit()
                     session.disconnect()
 
-                    throw ex
+                    continuation.resumeWithException(ex)
                 }
             }
         }
@@ -215,7 +218,7 @@ class SFTPService {
                     channel?.exit()
                     session.disconnect()
 
-                    throw ex
+                    continuation.resumeWithException(ex)
                 }
             }
         }
