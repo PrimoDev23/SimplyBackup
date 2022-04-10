@@ -53,4 +53,9 @@
     <string name="RestoringBackupSucceed">Successfully restored the backup!</string>
     <string name="RestoringBackupError">Couldn\'t restore the backup!</string>
     <string name="SFTP" translatable="false">SFTP</string>
+    <string name="EnterName">Please enter a name</string>
+    <string name="EnterURL">Please enter an URL</string>
+    <string name="EnterUsername">Please enter an username</string>
+    <string name="EnterPassword">Please enter a password</string>
+    <string name="EnterRemotePath">Please enter a remote path</string>
 </resources>

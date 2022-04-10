@@ -15,25 +15,22 @@ class NextCloudConfigurationViewModel @Inject constructor(
 ) : ConfigurationViewModelBase() {
 
     var Name by mutableStateOf("")
+    var NameErrorShown by mutableStateOf(false)
+
     var URL by mutableStateOf("")
+    var URLErrorShown by mutableStateOf(false)
+
     var Username by mutableStateOf("")
+    var UsernameErrorShown by mutableStateOf(false)
+
     var Password by mutableStateOf("")
+    var PasswordErrorShown by mutableStateOf(false)
+
     var RemotePath by mutableStateOf("")
 
     override fun GetBaseConnection(): Connection {
-        when {
-            Name.isEmpty() -> {
-                throw FieldNotFilledException("Name")
-            }
-            URL.isEmpty() -> {
-                throw FieldNotFilledException("URL")
-            }
-            Username.isEmpty() -> {
-                throw FieldNotFilledException("Username")
-            }
-            Password.isEmpty() -> {
-                throw FieldNotFilledException("Password")
-            }
+        if(!ValuesValid()){
+            throw FieldNotFilledException()
         }
 
         return Connection(
@@ -44,6 +41,15 @@ class NextCloudConfigurationViewModel @Inject constructor(
             Password = Password,
             RemotePath = RemotePath
         )
+    }
+
+    private fun ValuesValid(): Boolean {
+        NameErrorShown = Name.isEmpty()
+        URLErrorShown = URL.isEmpty()
+        UsernameErrorShown = Username.isEmpty()
+        PasswordErrorShown = Password.isEmpty()
+
+        return !(NameErrorShown || URLErrorShown || UsernameErrorShown || PasswordErrorShown)
     }
 
     override fun LoadData(connection: Connection) {

@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -80,8 +77,19 @@ class NextCloudConfigurationView {
                             )
                         )
                     },
-                    singleLine = true
+                    singleLine = true,
+                    isError = viewModel.NameErrorShown
                 )
+
+                BuildErrorText(
+                    modifier = Modifier
+                        .testTag("NameError"),
+                    shown = viewModel.NameErrorShown,
+                    text = stringResource(
+                        id = R.string.EnterName
+                    )
+                )
+
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -109,8 +117,19 @@ class NextCloudConfigurationView {
                             )
                         )
                     },
-                    singleLine = true
+                    singleLine = true,
+                    isError = viewModel.URLErrorShown
                 )
+
+                BuildErrorText(
+                    modifier = Modifier
+                        .testTag("URLError"),
+                    shown = viewModel.URLErrorShown,
+                    text = stringResource(
+                        id = R.string.EnterURL
+                    )
+                )
+
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -141,10 +160,18 @@ class NextCloudConfigurationView {
                         )
                     },
                     singleLine = true,
-                    keyboardActions = KeyboardActions {
-                        this.defaultKeyboardAction(ImeAction.Next)
-                    }
+                    isError = viewModel.UsernameErrorShown
                 )
+
+                BuildErrorText(
+                    modifier = Modifier
+                        .testTag("UsernameError"),
+                    shown = viewModel.UsernameErrorShown,
+                    text = stringResource(
+                        id = R.string.EnterUsername
+                    )
+                )
+
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -176,10 +203,18 @@ class NextCloudConfigurationView {
                         )
                     },
                     singleLine = true,
-                    keyboardActions = KeyboardActions {
-                        this.defaultKeyboardAction(ImeAction.Next)
-                    }
+                    isError = viewModel.PasswordErrorShown
                 )
+
+                BuildErrorText(
+                    modifier = Modifier
+                        .testTag("PasswordError"),
+                    shown = viewModel.PasswordErrorShown,
+                    text = stringResource(
+                        id = R.string.EnterPassword
+                    )
+                )
+
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -218,6 +253,28 @@ class NextCloudConfigurationView {
                     )
                 )
             }
+        }
+    }
+
+    @Composable
+    private fun BuildErrorText(
+        modifier: Modifier,
+        shown: Boolean,
+        text: String
+    ) {
+        if (shown) {
+            Text(
+                modifier = modifier
+                    .padding(
+                        12.dp,
+                        4.dp,
+                        0.dp,
+                        0.dp
+                    ),
+                text = text,
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption
+            )
         }
     }
 

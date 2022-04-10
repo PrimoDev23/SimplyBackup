@@ -15,28 +15,23 @@ class SFTPConfigurationViewModel @Inject constructor(
 ) : ConfigurationViewModelBase() {
 
     var Name by mutableStateOf("")
+    var NameErrorShown by mutableStateOf(false)
+
     var URL by mutableStateOf("")
+    var URLErrorShown by mutableStateOf(false)
+
     var Username by mutableStateOf("")
+    var UsernameErrorShown by mutableStateOf(false)
+
     var Password by mutableStateOf("")
+    var PasswordErrorShown by mutableStateOf(false)
+
     var RemotePath by mutableStateOf("")
+    var RemotePathErrorShown by mutableStateOf(false)
 
     override fun GetBaseConnection(): Connection {
-        when {
-            Name.isEmpty() -> {
-                throw FieldNotFilledException("Name")
-            }
-            URL.isEmpty() -> {
-                throw FieldNotFilledException("URL")
-            }
-            Username.isEmpty() -> {
-                throw FieldNotFilledException("Username")
-            }
-            Password.isEmpty() -> {
-                throw FieldNotFilledException("Password")
-            }
-            RemotePath.isEmpty() -> {
-                throw FieldNotFilledException("RemotePath")
-            }
+        if(!ValuesValid()){
+            throw FieldNotFilledException()
         }
 
         return Connection(
@@ -47,6 +42,16 @@ class SFTPConfigurationViewModel @Inject constructor(
             Password = Password,
             RemotePath = RemotePath
         )
+    }
+
+    private fun ValuesValid(): Boolean {
+        NameErrorShown = Name.isEmpty()
+        URLErrorShown = URL.isEmpty()
+        UsernameErrorShown = Username.isEmpty()
+        PasswordErrorShown = Password.isEmpty()
+        RemotePathErrorShown = RemotePath.isEmpty()
+
+        return !(NameErrorShown || URLErrorShown || UsernameErrorShown || PasswordErrorShown || RemotePathErrorShown)
     }
 
     override fun LoadData(connection: Connection) {
