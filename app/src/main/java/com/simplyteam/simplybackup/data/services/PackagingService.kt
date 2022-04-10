@@ -16,12 +16,12 @@ import kotlin.io.path.Path
 class PackagingService {
 
     fun CreatePackage(
-        context: Context,
+        filesDir: String,
         connection: Connection
     ): Result<File> {
         try {
             val file = File(
-                context.dataDir,
+                filesDir,
                 "backup-${connection.Name}-${
                     LocalDateTime.now()
                         .format(Constants.PackagingFormatter)

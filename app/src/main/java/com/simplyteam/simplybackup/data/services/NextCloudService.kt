@@ -17,10 +17,11 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class NextCloudService {
+class NextCloudService (
+    private val _context: Context
+): ICloudService {
 
     private fun CreateClient(
-        context: Context,
         connection: Connection
     ): OwnCloudClient {
         val serverUri = Uri.parse(connection.URL)
@@ -28,7 +29,7 @@ class NextCloudService {
         //Create a client
         val client = OwnCloudClientFactory.createOwnCloudClient(
             serverUri,
-            context,
+            _context,
             true
         )
         client.credentials = OwnCloudCredentialsFactory.newBasicCredentials(
@@ -43,15 +44,13 @@ class NextCloudService {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    suspend fun UploadFile(
-        context: Context,
+    override suspend fun UploadFile(
         connection: Connection,
         file: File
     ): Result<Boolean> {
         return suspendCoroutine { continuation ->
             try {
                 val client = CreateClient(
-                    context,
                     connection
                 )
 
@@ -68,7 +67,7 @@ class NextCloudService {
                     timeStamp
                 )
 
-                val handler = Handler(context.mainLooper)
+                val handler = Handler(_context.mainLooper)
 
                 operation.execute(
                     client,
@@ -95,19 +94,17 @@ class NextCloudService {
         }
     }
 
-    suspend fun GetFilesForConnection(
-        context: Context,
+    override suspend fun GetFilesForConnection(
         connection: Connection
     ): List<RemoteFile> {
         return suspendCoroutine { continuation ->
             val client = CreateClient(
-                context,
                 connection
             )
 
             val operation = ReadFolderRemoteOperation(connection.RemotePath)
 
-            val handler = Handler(context.mainLooper)
+            val handler = Handler(_context.mainLooper)
 
             operation.execute(
                 client,
@@ -144,20 +141,18 @@ class NextCloudService {
         }
     }
 
-    suspend fun DeleteFile(
-        context: Context,
+    override suspend fun DeleteFile(
         connection: Connection,
         remotePath: String
     ): Boolean {
         return suspendCoroutine { continuation ->
             val client = CreateClient(
-                context,
                 connection
             )
 
             val operation = RemoveFileRemoteOperation(remotePath)
 
-            val handler = Handler(context.mainLooper)
+            val handler = Handler(_context.mainLooper)
 
             operation.execute(
                 client,
@@ -177,23 +172,21 @@ class NextCloudService {
         }
     }
 
-    suspend fun DownloadFile(
-        context: Context,
+    override suspend fun DownloadFile(
         connection: Connection,
         remotePath: String
     ): File {
         return suspendCoroutine { continuation ->
             val client = CreateClient(
-                context,
                 connection
             )
 
             val operation = DownloadFileRemoteOperation(
                 remotePath,
-                context.filesDir.absolutePath
+                _context.filesDir.absolutePath
             )
 
-            val handler = Handler(context.mainLooper)
+            val handler = Handler(_context.mainLooper)
 
             operation.execute(
                 client,
@@ -201,7 +194,7 @@ class NextCloudService {
                     if (p1.isSuccess) {
                         continuation.resume(
                             File(
-                                context.filesDir.absolutePath,
+                                _context.filesDir.absolutePath,
                                 FileUtil.ExtractFileNameFromRemotePath(
                                     connection,
                                     remotePath

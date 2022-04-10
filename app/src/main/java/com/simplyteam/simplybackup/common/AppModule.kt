@@ -1,6 +1,7 @@
 package com.simplyteam.simplybackup.common
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
@@ -21,6 +22,7 @@ import com.simplyteam.simplybackup.presentation.views.main.SettingsView
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -48,15 +50,15 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetNextCloudService() = NextCloudService()
+    fun GetNextCloudService(@ApplicationContext appContext: Context) = NextCloudService(appContext)
 
     @Provides
     @Singleton
-    fun GetFtpService() = SFTPService()
+    fun GetFtpService(@ApplicationContext appContext: Context) = SFTPService(appContext)
 
     @Provides
     @Singleton
-    fun GetSchedulerService() = SchedulerService()
+    fun GetSchedulerService(@ApplicationContext appContext: Context) = SchedulerService(appContext)
 
     @Provides
     @Singleton
@@ -64,7 +66,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetNotificationService() = NotificationService()
+    fun GetNotificationService(@ApplicationContext appContext: Context) = NotificationService(appContext)
 
     //endregion Services
 

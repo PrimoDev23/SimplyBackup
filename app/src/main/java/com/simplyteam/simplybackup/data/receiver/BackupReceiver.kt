@@ -56,19 +56,17 @@ class BackupReceiver : BroadcastReceiver() {
                     conn?.let { connection ->
                         if (!connection.WifiOnly || IsWifiConnected(context)) {
                             packagingService.CreatePackage(
-                                context,
+                                context.filesDir.absolutePath,
                                 connection
                             )
                                 .onSuccess { file ->
                                     GlobalScope.launch {
                                         NotificationService.ShowBackingUpNotification(
-                                            context,
                                             connection
                                         )
                                         val uploadResult = when (connection.ConnectionType) {
                                             ConnectionType.NextCloud -> {
                                                 nextCloudService.UploadFile(
-                                                    context,
                                                     connection,
                                                     file
                                                 )
@@ -82,7 +80,6 @@ class BackupReceiver : BroadcastReceiver() {
                                         }
 
                                         NotificationService.HideBackingUpNotification(
-                                            context,
                                             connection
                                         )
 
@@ -96,7 +93,6 @@ class BackupReceiver : BroadcastReceiver() {
                                                     )
 
                                                     NotificationService.ShowSuccessNotification(
-                                                        context,
                                                         connection
                                                     )
                                                 }
@@ -105,7 +101,6 @@ class BackupReceiver : BroadcastReceiver() {
                                                 Timber.e(it)
 
                                                 NotificationService.ShowErrorNotification(
-                                                    context,
                                                     context.getString(R.string.ErrorException)
                                                         .format(connection.Name),
                                                     connection
@@ -119,7 +114,6 @@ class BackupReceiver : BroadcastReceiver() {
                                     Timber.e(it)
 
                                     NotificationService.ShowErrorNotification(
-                                        context,
                                         context.getString(R.string.ErrorPackaging)
                                             .format(connection.Name),
                                         connection
@@ -129,7 +123,6 @@ class BackupReceiver : BroadcastReceiver() {
                             Timber.e(WifiNotEnabledException())
 
                             NotificationService.ShowErrorNotification(
-                                context,
                                 context.getString(R.string.ErrorWifi)
                                     .format(connection.Name),
                                 connection
@@ -138,7 +131,6 @@ class BackupReceiver : BroadcastReceiver() {
 
                         //Reschedule even if the backup fails
                         schedulerService.ScheduleBackup(
-                            context,
                             connection
                         )
                     }

@@ -59,7 +59,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
                 connection.Id = id
                 schedulerService.ScheduleBackup(
-                    context,
                     connection
                 )
                 context.finish()
@@ -70,7 +69,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
                 if (updatedRows > 0) {
                     schedulerService.ScheduleBackup(
-                        context,
                         connection
                     )
                     context.finish()

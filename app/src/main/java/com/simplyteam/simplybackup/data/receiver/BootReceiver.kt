@@ -24,10 +24,10 @@ class BootReceiver : BroadcastReceiver() {
             p1?.let { intent ->
                 if(intent.action == Intent.ACTION_BOOT_COMPLETED) {
                     GlobalScope.launch {
-                        val connections = ConnectionRepository.GetAllConnections(context)
+                        val connections = ConnectionRepository.GetAllConnections()
 
                         for (connection in connections) {
-                            SchedulerService.ScheduleBackup(context, connection)
+                            SchedulerService.ScheduleBackup(connection)
                         }
                     }
                 }

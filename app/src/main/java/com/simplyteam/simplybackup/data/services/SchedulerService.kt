@@ -13,14 +13,16 @@ import timber.log.Timber
 import java.time.LocalDate
 import java.util.*
 
-class SchedulerService {
+class SchedulerService(
+    private val _context: Context
+) {
 
     private val _calendarInstance = Calendar.getInstance()
 
-    fun ScheduleBackup(context: Context, connection: Connection){
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun ScheduleBackup(connection: Connection){
+        val alarmManager = _context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intent = Intent(context, BackupReceiver::class.java)
+        val intent = Intent(_context, BackupReceiver::class.java)
         val bundle = Bundle()
         bundle.putSerializable("Connection", connection)
         intent.putExtra("Bundle", bundle)
@@ -30,7 +32,7 @@ class SchedulerService {
         Timber.d("Queued job ${connection.Name} for ${_calendarInstance.time}")
 
         val pendingIntent = PendingIntent.getBroadcast(
-            context,
+            _context,
             connection.Id.toInt(),
             intent,
             if (Build.VERSION.SDK_INT >= 31) {

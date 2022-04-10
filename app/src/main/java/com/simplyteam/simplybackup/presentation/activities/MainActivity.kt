@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
             RequestFullStorageAccess()
         }
 
-        NotificationService.CreateNotificationChannel(this)
+        NotificationService.CreateNotificationChannel()
 
         InitRepositories()
 

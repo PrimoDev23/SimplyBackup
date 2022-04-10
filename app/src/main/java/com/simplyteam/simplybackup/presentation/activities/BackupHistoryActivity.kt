@@ -36,10 +36,9 @@ class BackupHistoryActivity : ComponentActivity() {
         setContent {
             SimplyBackupTheme {
                 val viewModel: BackupHistoryViewModel = hiltViewModel()
-                val context = LocalContext.current
 
                 LaunchedEffect(key1 = true){
-                    viewModel.InitValues(context, connection)
+                    viewModel.InitValues(connection)
                 }
 
                 Scaffold(

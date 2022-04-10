@@ -1,7 +1,6 @@
 package com.simplyteam.simplybackup.data.services
 
 import android.content.Context
-import androidx.annotation.WorkerThread
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.simplyteam.simplybackup.data.models.Connection
@@ -10,20 +9,19 @@ import com.simplyteam.simplybackup.data.utils.FileUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.OutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class SFTPService {
+class SFTPService(
+    private val _context: Context
+) : ICloudService {
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun UploadFile(
+    override suspend fun UploadFile(
         connection: Connection,
         file: File
     ): Result<Boolean> {
@@ -68,7 +66,7 @@ class SFTPService {
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun GetFilesForConnection(
+    override suspend fun GetFilesForConnection(
         connection: Connection
     ): List<RemoteFile> {
         return suspendCoroutine { continuation ->
@@ -125,7 +123,7 @@ class SFTPService {
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun DeleteFile(
+    override suspend fun DeleteFile(
         connection: Connection,
         remotePath: String
     ): Boolean {
@@ -169,8 +167,7 @@ class SFTPService {
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun DownloadFile(
-        context: Context,
+    override suspend fun DownloadFile(
         connection: Connection,
         remotePath: String
     ): File {
@@ -196,7 +193,7 @@ class SFTPService {
                     channel.connect()
 
                     val file = File(
-                        context.filesDir,
+                        _context.filesDir,
                         FileUtil.ExtractFileNameFromRemotePath(
                             connection,
                             remotePath

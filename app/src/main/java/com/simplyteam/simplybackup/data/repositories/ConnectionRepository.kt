@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.data.repositories
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.simplyteam.simplybackup.data.daos.ConnectionDao
 import com.simplyteam.simplybackup.data.models.Connection
@@ -19,7 +18,7 @@ class ConnectionRepository(
             }
     }
 
-    suspend fun GetAllConnections(context: Context): List<Connection> {
+    suspend fun GetAllConnections(): List<Connection> {
         return _connectionDao.GetAllConnections()
     }
 

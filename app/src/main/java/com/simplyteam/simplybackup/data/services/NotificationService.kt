@@ -14,12 +14,14 @@ import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 
-class NotificationService {
+class NotificationService(
+    private val _context: Context
+) {
 
-    fun CreateNotificationChannel(context: Context) {
+    fun CreateNotificationChannel() {
         val notificationChannel = NotificationChannel(
-            context.getString(R.string.notification_channel_id),
-            context.getString(R.string.notification_channel_name),
+            _context.getString(R.string.notification_channel_id),
+            _context.getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_LOW
         )
 
@@ -28,34 +30,34 @@ class NotificationService {
         notificationChannel.enableVibration(true)
         notificationChannel.description = "Time for breakfast"
 
-        val notificationManager = context.getSystemService(
+        val notificationManager = _context.getSystemService(
             NotificationManager::class.java
         )
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    fun ShowBackingUpNotification(context: Context, connection: Connection) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun ShowBackingUpNotification(connection: Connection) {
+        val notificationManager = _context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification = NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
+        val notification = NotificationCompat.Builder(_context, _context.getString(R.string.notification_channel_id))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(context.getString(R.string.BackingUpNotificationTitle))
-            .setContentText(context.getString(R.string.BackingUpNotificationText).format(connection.Name))
+            .setContentTitle(_context.getString(R.string.BackingUpNotificationTitle))
+            .setContentText(_context.getString(R.string.BackingUpNotificationText).format(connection.Name))
             .build()
 
         notificationManager.notify(connection.Id.toInt(), notification)
     }
 
-    fun ShowErrorNotification(context: Context, text: String, connection: Connection) {
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
+    fun ShowErrorNotification(text: String, connection: Connection) {
+        val notificationManager = _context.getSystemService(NotificationManager::class.java)
 
-        val intent = Intent(context, BackupReceiver::class.java)
+        val intent = Intent(_context, BackupReceiver::class.java)
         val bundle = Bundle()
         bundle.putSerializable("Connection", connection)
         intent.putExtra("Bundle", bundle)
 
         val pendingIntent = PendingIntent.getBroadcast(
-            context,
+            _context,
             connection.Id.toInt() + Constants.NOTIFICATION_ID_OFFSET,
             intent,
             if (Build.VERSION.SDK_INT >= 31) {
@@ -65,14 +67,14 @@ class NotificationService {
             }
         )
 
-        val notification = NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
+        val notification = NotificationCompat.Builder(_context, _context.getString(R.string.notification_channel_id))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(context.getString(R.string.ErrorNotificationTitle))
+            .setContentTitle(_context.getString(R.string.ErrorNotificationTitle))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle())
             .addAction(
                 0,
-                context.getString(R.string.Retry),
+                _context.getString(R.string.Retry),
                 pendingIntent
             )
             .build()
@@ -80,20 +82,20 @@ class NotificationService {
         notificationManager.notify(connection.Id.toInt(), notification)
     }
 
-    fun ShowSuccessNotification(context: Context, connection: Connection) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun ShowSuccessNotification(connection: Connection) {
+        val notificationManager = _context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification = NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
+        val notification = NotificationCompat.Builder(_context, _context.getString(R.string.notification_channel_id))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(context.getString(R.string.SuccessNotificationTitle))
-            .setContentText(context.getString(R.string.SuccessNotificationText).format(connection.Name))
+            .setContentTitle(_context.getString(R.string.SuccessNotificationTitle))
+            .setContentText(_context.getString(R.string.SuccessNotificationText).format(connection.Name))
             .build()
 
         notificationManager.notify(connection.Id.toInt(), notification)
     }
 
-    fun HideBackingUpNotification(context: Context, connection: Connection) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun HideBackingUpNotification(connection: Connection) {
+        val notificationManager = _context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.cancel(connection.Id.toInt())
     }

@@ -237,8 +237,6 @@ class BackupHistoryView {
         val scope = rememberCoroutineScope()
 
         if (viewModel.BackupToDelete.value != null) {
-            val context = LocalContext.current
-
             AlertDialog(
                 modifier = Modifier
                     .testTag("DeleteDialog"),
@@ -280,7 +278,7 @@ class BackupHistoryView {
                             .testTag("DeleteDialogYes"),
                         onClick = {
                             scope.launch {
-                                viewModel.DeleteBackup(context)
+                                viewModel.DeleteBackup()
                             }
                         }
                     ) {
@@ -315,8 +313,6 @@ class BackupHistoryView {
         val scope = rememberCoroutineScope()
 
         if (viewModel.BackupToRestore.value != null) {
-            val context = LocalContext.current
-
             AlertDialog(
                 modifier = Modifier
                     .testTag("RestoreDialog"),
@@ -358,7 +354,7 @@ class BackupHistoryView {
                             .testTag("RestoreDialogYes"),
                         onClick = {
                             scope.launch {
-                                viewModel.RestoreBackup(context)
+                                viewModel.RestoreBackup()
                             }
                         }
                     ) {

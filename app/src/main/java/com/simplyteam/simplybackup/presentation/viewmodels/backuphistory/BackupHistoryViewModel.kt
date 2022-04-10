@@ -36,7 +36,6 @@ class BackupHistoryViewModel @Inject constructor(
     val BackupDetails = mutableStateOf(listOf<BackupDetail>())
 
     suspend fun InitValues(
-        context: Context,
         connection: Connection
     ) {
         try {
@@ -45,7 +44,6 @@ class BackupHistoryViewModel @Inject constructor(
             val files = when (connection.ConnectionType) {
                 ConnectionType.NextCloud -> {
                     _nextCloudService.GetFilesForConnection(
-                        context,
                         connection
                     )
 
@@ -112,7 +110,7 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToDelete.value = null
     }
 
-    suspend fun DeleteBackup(context: Context) {
+    suspend fun DeleteBackup() {
         BackupToDelete.value?.let { backup ->
             try {
                 Loading.value = true
@@ -121,7 +119,6 @@ class BackupHistoryViewModel @Inject constructor(
                 val result = when (backup.Connection.ConnectionType) {
                     ConnectionType.NextCloud -> {
                         _nextCloudService.DeleteFile(
-                            context,
                             backup.Connection,
                             backup.RemotePath
                         )
@@ -161,7 +158,7 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToRestore.value = null
     }
 
-    suspend fun RestoreBackup(context: Context) {
+    suspend fun RestoreBackup() {
         BackupToRestore.value?.let { backup ->
             try {
                 RestoreStatus.value =
@@ -172,14 +169,12 @@ class BackupHistoryViewModel @Inject constructor(
                 val file = when (backup.Connection.ConnectionType) {
                     ConnectionType.NextCloud -> {
                         _nextCloudService.DownloadFile(
-                            context,
                             backup.Connection,
                             backup.RemotePath
                         )
                     }
                     ConnectionType.SFTP -> {
                         _sFTPService.DownloadFile(
-                            context,
                             backup.Connection,
                             backup.RemotePath
                         )
