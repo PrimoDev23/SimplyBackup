@@ -15,6 +15,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject
 import com.simplyteam.simplybackup.data.models.RemoteFile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
@@ -39,35 +42,29 @@ class BackupHistoryViewModel @Inject constructor(
         try {
             Loading.value = true
 
-            when (connection.ConnectionType) {
+            val files = when (connection.ConnectionType) {
                 ConnectionType.NextCloud -> {
-                    val files = _nextCloudService.GetFilesForConnection(
+                    _nextCloudService.GetFilesForConnection(
                         context,
                         connection
                     )
-                    ShowErrorLoading.value = false
 
-                    BuildBackupDetails(
-                        connection,
-                        files.sortedByDescending { file ->
-                            file.TimeStamp
-                        }
-                    )
                 }
                 ConnectionType.SFTP -> {
-                    val files = _sFTPService.GetFilesForConnection(
+                    _sFTPService.GetFilesForConnection(
                         connection
-                    )
-                    ShowErrorLoading.value = false
-
-                    BuildBackupDetails(
-                        connection,
-                        files.sortedByDescending { file ->
-                            file.TimeStamp
-                        }
                     )
                 }
             }
+
+            ShowErrorLoading.value = false
+
+            BuildBackupDetails(
+                connection,
+                files.sortedByDescending { file ->
+                    file.TimeStamp
+                }
+            )
         } catch (ex: Exception) {
             Timber.e(ex)
 
@@ -172,7 +169,7 @@ class BackupHistoryViewModel @Inject constructor(
 
                 HideRestoreAlert()
 
-                val file = when(backup.Connection.ConnectionType){
+                val file = when (backup.Connection.ConnectionType) {
                     ConnectionType.NextCloud -> {
                         _nextCloudService.DownloadFile(
                             context,
