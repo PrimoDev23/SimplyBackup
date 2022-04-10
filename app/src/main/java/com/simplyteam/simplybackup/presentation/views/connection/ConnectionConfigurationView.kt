@@ -456,7 +456,7 @@ class ConnectionConfigurationView(
                     .height(70.dp)
                     .width(98.dp)
                     .padding(4.dp)
-                    .testTag(type.name),
+                    .testTag("${type.name}Selected"),
                 border = BorderStroke(
                     1.dp,
                     MaterialTheme.colors.primary

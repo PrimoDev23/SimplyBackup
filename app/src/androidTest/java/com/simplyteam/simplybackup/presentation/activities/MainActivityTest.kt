@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.presentation.activities
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
@@ -13,22 +12,18 @@ import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
-import com.simplyteam.simplybackup.data.utils.MathUtil
+import com.simplyteam.simplybackup.data.services.SFTPService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.runBlocking
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import timber.log.Timber
 import java.io.File
-import java.nio.file.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlin.io.path.Path
 
 
 @HiltAndroidTest
@@ -40,6 +35,8 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
+
+    private val TestConnectionType = ConnectionType.SFTP
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -56,13 +53,16 @@ class MainActivityTest {
     @Inject
     lateinit var NextCloudService: NextCloudService
 
+    @Inject
+    lateinit var SFTPService: SFTPService
+
     @Before
     fun Setup() {
         hiltRule.inject()
     }
 
     @Test
-    fun CreateNextCloudConnection() {
+    fun CreateConnection() {
         val connections = RetrieveConnections()
         val testValue = "TestEntry"
 
@@ -72,8 +72,10 @@ class MainActivityTest {
         composeRule.onNodeWithTag("AddConnection")
             .performClick()
 
-        composeRule.onNodeWithTag("NextCloud")
-            .performClick()
+        if (TestConnectionType != ConnectionType.NextCloud) {
+            composeRule.onNodeWithTag(TestConnectionType.name)
+                .performClick()
+        }
 
         composeRule.onNodeWithTag("Name")
             .performTextInput(testValue)
@@ -122,7 +124,7 @@ class MainActivityTest {
 
         val newConnection = newConnections.last()
 
-        assert(newConnection.ConnectionType == ConnectionType.NextCloud)
+        assert(newConnection.ConnectionType == TestConnectionType)
         assert(newConnection.Name == testValue)
         assert(newConnection.URL == testValue)
         assert(newConnection.Username == testValue)
@@ -185,6 +187,11 @@ class MainActivityTest {
     @Test
     fun EditConnection() {
         val id = InsertConnection()
+
+        var connection = RetrieveConnections().first {
+            it.Id == id
+        }
+
         val testValue = "ReplaceValue"
 
         composeRule.onNodeWithTag(Screen.CloudOverview.Route)
@@ -192,6 +199,9 @@ class MainActivityTest {
 
         composeRule.onNodeWithTag(id.toString())
             .performClick()
+
+        composeRule.onNodeWithTag("${connection.ConnectionType.name}Selected")
+            .assertExists()
 
         composeRule.onNodeWithTag("Name")
             .performTextReplacement(testValue)
@@ -206,7 +216,7 @@ class MainActivityTest {
             .performTextReplacement(testValue)
 
         composeRule.onNodeWithTag("RemotePath")
-            .performTextInput(testValue)
+            .performTextReplacement(testValue)
 
         composeRule.onNodeWithTag("ConfigurePaths")
             .performClick()
@@ -235,11 +245,10 @@ class MainActivityTest {
         composeRule.onNodeWithTag("Save")
             .performClick()
 
-        val connection = RetrieveConnections().first {
+        connection = RetrieveConnections().first {
             it.Id == id
         }
 
-        assert(connection.ConnectionType == ConnectionType.NextCloud)
         assert(connection.Name == testValue)
         assert(connection.URL == testValue)
         assert(connection.Username == testValue)
@@ -248,6 +257,8 @@ class MainActivityTest {
         assert(connection.WifiOnly)
         assert(connection.ScheduleType == ScheduleType.YEARLY)
         assert(connection.Paths.isNotEmpty())
+
+        Thread.sleep(1000)
 
         composeRule.onNodeWithTag(Screen.Home.Route)
             .performClick()
@@ -296,24 +307,7 @@ class MainActivityTest {
 
     @Test
     fun BackupHistory() {
-        var id: Long
-        runBlocking {
-            id = ConnectionRepository.InsertConnection(
-                Connection(
-                    ConnectionType = ConnectionType.NextCloud,
-                    Name = "Test",
-                    URL = BuildConfig.NEXTCLOUD_URL,
-                    Username = BuildConfig.NEXTCLOUD_USERNAME,
-                    Password = BuildConfig.NEXTCLOUD_PASSWORD,
-                    Paths = listOf(
-                        Path(
-                            "/sdcard/Pictures",
-                            PathType.DIRECTORY
-                        )
-                    )
-                )
-            )
-        }
+        val id = InsertConnection()
 
         val connection = RetrieveConnections().first {
             it.Id == id
@@ -336,38 +330,20 @@ class MainActivityTest {
         composeRule.onNodeWithTag("BackButton")
             .performClick()
 
-        PackagingService.CreatePackage(
-            composeRule.activity,
-            connection
-        )
+        UploadTestPackage(connection)
             .onSuccess {
-                val result: Result<Boolean>
-                runBlocking {
-                    result = NextCloudService.UploadFile(
-                        composeRule.activity,
-                        connection,
-                        it
-                    )
+                if (it) {
+                    composeRule.onNodeWithTag(connection.Name)
+                        .performClick()
+
+                    Thread.sleep(10000)
+
+                    composeRule.onNodeWithTag("HistoryList")
+                        .onChildren()
+                        .assertCountEquals(1)
+
+                    CleanupServer(connection)
                 }
-
-                result
-                    .onSuccess {
-                        if (it) {
-                            composeRule.onNodeWithTag(connection.Name)
-                                .performClick()
-
-                            Thread.sleep(10000)
-
-                            composeRule.onNodeWithTag("HistoryList")
-                                .onChildren()
-                                .assertCountEquals(1)
-
-                            DeleteAllNextCloudFiles(connection)
-                        }
-                    }
-                    .onFailure {
-                        throw it
-                    }
             }
             .onFailure {
                 throw it
@@ -382,64 +358,46 @@ class MainActivityTest {
             it.Id == id
         }
 
-        PackagingService.CreatePackage(
-            composeRule.activity,
-            connection
-        )
+        UploadTestPackage(connection)
             .onSuccess {
-                val result: Result<Boolean>
-                runBlocking {
-                    result = NextCloudService.UploadFile(
-                        composeRule.activity,
-                        connection,
-                        it
-                    )
+                if (it) {
+                    composeRule.onNodeWithTag(connection.Name)
+                        .performClick()
+
+                    Thread.sleep(10000)
+
+                    composeRule.onNodeWithTag("More")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("DeleteMenuItem")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("DeleteDialog")
+                        .assertExists()
+
+                    composeRule.onNodeWithTag("DeleteDialogCancel")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("DeleteDialog")
+                        .assertDoesNotExist()
+
+                    composeRule.onNodeWithTag("More")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("DeleteMenuItem")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("DeleteDialogYes")
+                        .performClick()
+
+                    Thread.sleep(10000)
+
+                    composeRule.onNodeWithTag("DeleteDialog")
+                        .assertDoesNotExist()
+
+                    composeRule.onNodeWithText(composeRule.activity.getString(R.string.NoFiles))
+                        .assertExists()
                 }
-
-                result
-                    .onSuccess {
-                        if (it) {
-                            composeRule.onNodeWithTag(connection.Name)
-                                .performClick()
-
-                            Thread.sleep(10000)
-
-                            composeRule.onNodeWithTag("More")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("DeleteMenuItem")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("DeleteDialog")
-                                .assertExists()
-
-                            composeRule.onNodeWithTag("DeleteDialogCancel")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("DeleteDialog")
-                                .assertDoesNotExist()
-
-                            composeRule.onNodeWithTag("More")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("DeleteMenuItem")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("DeleteDialogYes")
-                                .performClick()
-
-                            Thread.sleep(10000)
-
-                            composeRule.onNodeWithTag("DeleteDialog")
-                                .assertDoesNotExist()
-
-                            composeRule.onNodeWithText(composeRule.activity.getString(R.string.NoFiles))
-                                .assertExists()
-                        }
-                    }
-                    .onFailure {
-                        throw it
-                    }
             }
             .onFailure {
                 throw it
@@ -454,83 +412,65 @@ class MainActivityTest {
             it.Id == id
         }
 
-        PackagingService.CreatePackage(
-            composeRule.activity,
-            connection
-        )
+        UploadTestPackage(connection)
             .onSuccess {
-                val result: Result<Boolean>
-                runBlocking {
-                    result = NextCloudService.UploadFile(
-                        composeRule.activity,
-                        connection,
-                        it
-                    )
+                if (it) {
+                    composeRule.onNodeWithTag(connection.Name)
+                        .performClick()
+
+                    Thread.sleep(10000)
+
+                    composeRule.onNodeWithTag("More")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreMenuItem")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreDialog")
+                        .assertExists()
+
+                    composeRule.onNodeWithTag("RestoreDialogCancel")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreDialog")
+                        .assertDoesNotExist()
+
+                    val files = GetFilesRecursively(connection)
+
+                    for (path in connection.Paths) {
+                        val pathFile = File(path.Path)
+                        pathFile.delete()
+                    }
+
+                    composeRule.onNodeWithTag("More")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreMenuItem")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreDialogYes")
+                        .performClick()
+
+                    composeRule.onNodeWithTag("RestoreDialog")
+                        .assertDoesNotExist()
+
+                    composeRule.onNodeWithTag("CurrentlyRestoringDialog")
+                        .assertExists()
+
+                    Thread.sleep(10000)
+
+                    composeRule.onNodeWithTag("RestoreFinishedDialog")
+                        .assertExists()
+
+                    composeRule.onNodeWithTag("OkRestoreFinishedDialog")
+                        .performClick()
+
+                    CleanupServer(connection)
+
+                    for (checkFile in files) {
+                        assert(checkFile.exists())
+                    }
                 }
-
-                result
-                    .onSuccess {
-                        if (it) {
-                            composeRule.onNodeWithTag(connection.Name)
-                                .performClick()
-
-                            Thread.sleep(10000)
-
-                            composeRule.onNodeWithTag("More")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreMenuItem")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreDialog")
-                                .assertExists()
-
-                            composeRule.onNodeWithTag("RestoreDialogCancel")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreDialog")
-                                .assertDoesNotExist()
-
-                            val files = GetFilesRecursively(connection)
-
-                            for (path in connection.Paths){
-                                val pathFile = File(path.Path)
-                                pathFile.delete()
-                            }
-
-                            composeRule.onNodeWithTag("More")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreMenuItem")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreDialogYes")
-                                .performClick()
-
-                            composeRule.onNodeWithTag("RestoreDialog")
-                                .assertDoesNotExist()
-
-                            composeRule.onNodeWithTag("CurrentlyRestoringDialog")
-                                .assertExists()
-
-                            Thread.sleep(10000)
-
-                            composeRule.onNodeWithTag("RestoreFinishedDialog")
-                                .assertExists()
-
-                            composeRule.onNodeWithTag("OkRestoreFinishedDialog")
-                                .performClick()
-
-                            DeleteAllNextCloudFiles(connection)
-
-                            for (checkFile in files) {
-                                assert(checkFile.exists())
-                            }
-                        }
-                    }
-                    .onFailure {
-                        throw it
-                    }
             }
             .onFailure {
                 throw it
@@ -540,21 +480,44 @@ class MainActivityTest {
     private fun InsertConnection(): Long {
         var id: Long
         runBlocking {
-            id = ConnectionRepository.InsertConnection(
-                Connection(
-                    ConnectionType = ConnectionType.NextCloud,
-                    Name = "AndroidInstrumentationTest",
-                    URL = BuildConfig.NEXTCLOUD_URL,
-                    Username = BuildConfig.NEXTCLOUD_USERNAME,
-                    Password = BuildConfig.NEXTCLOUD_PASSWORD,
-                    Paths = listOf(
-                        Path(
-                            "/sdcard/TestFolder",
-                            PathType.DIRECTORY
+            when (TestConnectionType) {
+                ConnectionType.NextCloud -> {
+                    id = ConnectionRepository.InsertConnection(
+                        Connection(
+                            ConnectionType = ConnectionType.NextCloud,
+                            Name = "AndroidInstrumentationTest",
+                            URL = BuildConfig.NEXTCLOUD_URL,
+                            Username = BuildConfig.NEXTCLOUD_USERNAME,
+                            Password = BuildConfig.NEXTCLOUD_PASSWORD,
+                            Paths = listOf(
+                                Path(
+                                    "/sdcard/TestFolder",
+                                    PathType.DIRECTORY
+                                )
+                            )
                         )
                     )
-                )
-            )
+                }
+                ConnectionType.SFTP -> {
+                    id = ConnectionRepository.InsertConnection(
+                        Connection(
+                            ConnectionType = ConnectionType.SFTP,
+                            Name = "AndroidInstrumentationTest",
+                            URL = BuildConfig.SFTP_URL,
+                            Username = BuildConfig.SFTP_USERNAME,
+                            Password = BuildConfig.SFTP_PASSWORD,
+                            RemotePath = BuildConfig.SFTP_REMOTEPATH,
+                            Paths = listOf(
+                                Path(
+                                    "/sdcard/TestFolder",
+                                    PathType.DIRECTORY
+                                )
+                            )
+                        )
+                    )
+                }
+            }
+
         }
         return id
     }
@@ -569,7 +532,7 @@ class MainActivityTest {
         return connections
     }
 
-    private fun GetFilesRecursively(connection: Connection) : MutableList<File> {
+    private fun GetFilesRecursively(connection: Connection): MutableList<File> {
         val files = mutableListOf<File>()
 
         for (path in connection.Paths) {
@@ -578,7 +541,7 @@ class MainActivityTest {
             if (file.isDirectory) {
                 val innerFiles = GetFilesForDirectory(file)
                 files.addAll(innerFiles)
-            }else{
+            } else {
                 files.add(file)
             }
         }
@@ -603,22 +566,73 @@ class MainActivityTest {
         return list
     }
 
-    private fun DeleteAllNextCloudFiles(connection: Connection) {
+    private fun UploadTestPackage(connection: Connection): Result<Boolean> {
+        PackagingService.CreatePackage(
+            composeRule.activity,
+            connection
+        )
+            .onSuccess {
+                val result: Result<Boolean>
+                runBlocking {
+                    result = when (TestConnectionType) {
+                        ConnectionType.NextCloud -> {
+                            NextCloudService.UploadFile(
+                                composeRule.activity,
+                                connection,
+                                it
+                            )
+                        }
+                        ConnectionType.SFTP -> {
+                            SFTPService.UploadFile(
+                                connection,
+                                it
+                            )
+                        }
+                    }
+                }
+                return result
+            }
+            .onFailure {
+                throw it
+            }
+        return Result.failure(Exception())
+    }
+
+    private fun CleanupServer(connection: Connection) {
         val files: List<RemoteFile>
         runBlocking {
-            files = NextCloudService.GetFilesForConnection(
-                composeRule.activity,
-                connection
-            )
+            files = when (TestConnectionType) {
+                ConnectionType.NextCloud -> {
+                    NextCloudService.GetFilesForConnection(
+                        composeRule.activity,
+                        connection
+                    )
+                }
+                ConnectionType.SFTP -> {
+                    SFTPService.GetFilesForConnection(
+                        connection
+                    )
+                }
+            }
         }
 
         for (file in files) {
             runBlocking {
-                NextCloudService.DeleteFile(
-                    composeRule.activity,
-                    connection,
-                    file.RemotePath
-                )
+                when(TestConnectionType){
+                    ConnectionType.NextCloud -> {
+                        NextCloudService.DeleteFile(
+                            composeRule.activity,
+                            connection,
+                            file.RemotePath
+                        )
+                    }
+                    ConnectionType.SFTP -> {
+                        SFTPService.DeleteFile(
+                            connection,
+                            file.RemotePath
+                        )
+                    }
+                }
             }
         }
     }
