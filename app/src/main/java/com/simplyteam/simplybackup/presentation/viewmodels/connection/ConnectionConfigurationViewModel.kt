@@ -30,7 +30,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
     val CurrentPath = mutableStateOf("")
     val Paths = mutableStateOf(listOf<Path>())
 
-    val RemotePath = mutableStateOf("")
     val WifiOnly = mutableStateOf(false)
     val ScheduleTypeDialogShown = mutableStateOf(false)
     val ScheduleType = mutableStateOf(com.simplyteam.simplybackup.data.models.ScheduleType.DAILY)
@@ -47,7 +46,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
             val connection = (ViewModelMap[ConnectionType.value])!!.GetBaseConnection()
 
             connection.Id = _id.value
-            connection.RemotePath = RemotePath.value
             connection.WifiOnly = WifiOnly.value
             connection.Paths = Paths.value
             connection.ScheduleType = ScheduleType.value
@@ -128,7 +126,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
         _id.value = connection.Id
 
         ConnectionType.value = connection.ConnectionType
-        RemotePath.value = connection.RemotePath
         WifiOnly.value = connection.WifiOnly
         Paths.value = connection.Paths
         ScheduleType.value = connection.ScheduleType
