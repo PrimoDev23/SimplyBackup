@@ -37,7 +37,7 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private val TestConnectionType = ConnectionType.SFTP
+    private val TestConnectionType = ConnectionType.NextCloud
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -527,7 +527,7 @@ class MainActivityTest {
         var connections: List<Connection>
 
         runBlocking {
-            connections = ConnectionRepository.GetAllConnections(composeRule.activity)
+            connections = ConnectionRepository.GetAllConnections()
         }
 
         return connections
@@ -569,7 +569,7 @@ class MainActivityTest {
 
     private fun UploadTestPackage(connection: Connection): Result<Boolean> {
         PackagingService.CreatePackage(
-            composeRule.activity,
+            composeRule.activity.filesDir.absolutePath,
             connection
         )
             .onSuccess {
@@ -578,7 +578,6 @@ class MainActivityTest {
                     result = when (TestConnectionType) {
                         ConnectionType.NextCloud -> {
                             NextCloudService.UploadFile(
-                                composeRule.activity,
                                 connection,
                                 it
                             )
@@ -605,7 +604,6 @@ class MainActivityTest {
             files = when (TestConnectionType) {
                 ConnectionType.NextCloud -> {
                     NextCloudService.GetFilesForConnection(
-                        composeRule.activity,
                         connection
                     )
                 }
@@ -622,7 +620,6 @@ class MainActivityTest {
                 when(TestConnectionType){
                     ConnectionType.NextCloud -> {
                         NextCloudService.DeleteFile(
-                            composeRule.activity,
                             connection,
                             file.RemotePath
                         )
