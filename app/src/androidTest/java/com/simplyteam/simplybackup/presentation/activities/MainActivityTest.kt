@@ -17,6 +17,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -120,18 +121,18 @@ class MainActivityTest {
             .performClick()
 
         val newConnections = RetrieveConnections()
-        assert(newConnections.size == connections.size + 1)
+        assertEquals(newConnections.size, connections.size + 1)
 
         val newConnection = newConnections.last()
 
-        assert(newConnection.ConnectionType == TestConnectionType)
-        assert(newConnection.Name == testValue)
-        assert(newConnection.URL == testValue)
-        assert(newConnection.Username == testValue)
-        assert(newConnection.Password == testValue)
-        assert(newConnection.RemotePath == testValue)
+        assertEquals(newConnection.ConnectionType, TestConnectionType)
+        assertEquals(newConnection.Name, testValue)
+        assertEquals(newConnection.URL, testValue)
+        assertEquals(newConnection.Username, testValue)
+        assertEquals(newConnection.Password, testValue)
+        assertEquals(newConnection.RemotePath, testValue)
         assert(newConnection.WifiOnly)
-        assert(newConnection.ScheduleType == ScheduleType.MONTHLY)
+        assertEquals(newConnection.ScheduleType, ScheduleType.MONTHLY)
         assert(newConnection.Paths.isNotEmpty())
     }
 
@@ -249,13 +250,13 @@ class MainActivityTest {
             it.Id == id
         }
 
-        assert(connection.Name == testValue)
-        assert(connection.URL == testValue)
-        assert(connection.Username == testValue)
-        assert(connection.Password == testValue)
-        assert(connection.RemotePath == testValue)
+        assertEquals(connection.Name, testValue)
+        assertEquals(connection.URL, testValue)
+        assertEquals(connection.Username, testValue)
+        assertEquals(connection.Password, testValue)
+        assertEquals(connection.RemotePath, testValue)
         assert(connection.WifiOnly)
-        assert(connection.ScheduleType == ScheduleType.YEARLY)
+        assertEquals(connection.ScheduleType, ScheduleType.YEARLY)
         assert(connection.Paths.isNotEmpty())
 
         Thread.sleep(1000)
