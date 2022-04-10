@@ -118,6 +118,7 @@ class MainActivityTest {
             .performClick()
 
         composeRule.onNodeWithTag("Save")
+            .performScrollTo()
             .performClick()
 
         val newConnections = RetrieveConnections()
@@ -244,6 +245,7 @@ class MainActivityTest {
             .performClick()
 
         composeRule.onNodeWithTag("Save")
+            .performScrollTo()
             .performClick()
 
         connection = RetrieveConnections().first {
