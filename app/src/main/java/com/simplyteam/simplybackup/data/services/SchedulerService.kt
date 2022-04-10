@@ -22,31 +22,17 @@ class SchedulerService(
     fun ScheduleBackup(connection: Connection){
         val alarmManager = _context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intent = Intent(_context, BackupReceiver::class.java)
-        val bundle = Bundle()
-        bundle.putSerializable("Connection", connection)
-        intent.putExtra("Bundle", bundle)
-
         val time = GetNextSchedule(connection.ScheduleType).timeInMillis
 
-        Timber.d("Queued job ${connection.Name} for ${_calendarInstance.time}")
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            _context,
-            connection.Id.toInt(),
-            intent,
-            if (Build.VERSION.SDK_INT >= 31) {
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-            } else {
-                PendingIntent.FLAG_CANCEL_CURRENT
-            }
-        )
+        val pendingIntent = CreatePendingIntent(connection)
 
         alarmManager.set(
             AlarmManager.RTC,
             time,
             pendingIntent
         )
+
+        Timber.d("Queued job ${connection.Name} for ${_calendarInstance.time}")
     }
 
     fun GetNextSchedule(scheduleType: ScheduleType) : Calendar {
@@ -56,6 +42,34 @@ class SchedulerService(
             ScheduleType.MONTHLY -> GetNextMonthlySchedule()
             ScheduleType.YEARLY -> GetNextYearlySchedule()
         }
+    }
+
+    fun CancelBackup(connection: Connection){
+        val alarmManager = _context.getSystemService(AlarmManager::class.java)
+
+        val pendingIntent = CreatePendingIntent(connection)
+
+        alarmManager.cancel(pendingIntent)
+
+        Timber.d("Job ${connection.Name} canceled!")
+    }
+
+    private fun CreatePendingIntent(connection: Connection): PendingIntent{
+        val intent = Intent(_context, BackupReceiver::class.java)
+        val bundle = Bundle()
+        bundle.putSerializable("Connection", connection)
+        intent.putExtra("Bundle", bundle)
+
+        return PendingIntent.getBroadcast(
+            _context,
+            connection.Id.toInt(),
+            intent,
+            if (Build.VERSION.SDK_INT >= 31) {
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+            } else {
+                PendingIntent.FLAG_CANCEL_CURRENT
+            }
+        )
     }
 
     private fun GetNextDailySchedule() : Calendar {
