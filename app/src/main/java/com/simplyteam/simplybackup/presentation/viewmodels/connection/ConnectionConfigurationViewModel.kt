@@ -1,7 +1,9 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.connection
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
@@ -20,37 +22,37 @@ class ConnectionConfigurationViewModel @Inject constructor(
     private val schedulerService: SchedulerService,
     private val IconProvider: IconProvider
 ) : ViewModel() {
-    private val _id = mutableStateOf(0L)
+    private var _id = 0L
 
-    val ConnectionType =
+    var ConnectionType by
         mutableStateOf(com.simplyteam.simplybackup.data.models.ConnectionType.NextCloud)
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
-    val CurrentPath = mutableStateOf("")
-    val Paths = mutableStateOf(listOf<Path>())
+    var CurrentPath by mutableStateOf("")
+    var Paths by mutableStateOf(listOf<Path>())
 
-    val WifiOnly = mutableStateOf(false)
-    val ScheduleTypeDialogShown = mutableStateOf(false)
-    val ScheduleType = mutableStateOf(com.simplyteam.simplybackup.data.models.ScheduleType.DAILY)
+    var WifiOnly by mutableStateOf(false)
+    var ScheduleTypeDialogShown by mutableStateOf(false)
+    var ScheduleType by mutableStateOf(com.simplyteam.simplybackup.data.models.ScheduleType.DAILY)
 
     fun GetIconProvider() = IconProvider
 
     fun UpdateScheduleType(scheduleType: ScheduleType) {
-        ScheduleType.value = scheduleType
-        ScheduleTypeDialogShown.value = false
+        ScheduleType = scheduleType
+        ScheduleTypeDialogShown = false
     }
 
     suspend fun SaveConnection(context: ComponentActivity) {
         try {
-            val connection = (ViewModelMap[ConnectionType.value])!!.GetBaseConnection()
+            val connection = (ViewModelMap[ConnectionType])!!.GetBaseConnection()
 
-            connection.Id = _id.value
-            connection.WifiOnly = WifiOnly.value
-            connection.Paths = Paths.value
-            connection.ScheduleType = ScheduleType.value
+            connection.Id = _id
+            connection.WifiOnly = WifiOnly
+            connection.Paths = Paths
+            connection.ScheduleType = ScheduleType
 
-            if (_id.value == 0L) {
+            if (_id == 0L) {
                 val id = connectionRepository.InsertConnection(
                     connection
                 )
@@ -103,32 +105,32 @@ class ConnectionConfigurationViewModel @Inject constructor(
         try {
             val path = CreatePathObjectFromStringPath(stringPath)
 
-            val list = Paths.value.toMutableList()
+            val list = Paths.toMutableList()
 
             list.add(path)
 
-            Paths.value = list
-            CurrentPath.value = ""
+            Paths = list
+            CurrentPath = ""
         } catch (ex: Exception) {
             Timber.e(ex)
         }
     }
 
     fun RemovePath(path: Path) {
-        val list = Paths.value.toMutableList()
+        val list = Paths.toMutableList()
 
         list.remove(path)
 
-        Paths.value = list
+        Paths = list
     }
 
     fun LoadData(connection: Connection) {
-        _id.value = connection.Id
+        _id = connection.Id
 
-        ConnectionType.value = connection.ConnectionType
-        WifiOnly.value = connection.WifiOnly
-        Paths.value = connection.Paths
-        ScheduleType.value = connection.ScheduleType
+        ConnectionType = connection.ConnectionType
+        WifiOnly = connection.WifiOnly
+        Paths = connection.Paths
+        ScheduleType = connection.ScheduleType
 
         ViewModelMap[connection.ConnectionType]!!.LoadData(connection)
     }

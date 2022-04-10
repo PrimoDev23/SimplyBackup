@@ -1,7 +1,9 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.BackupDetail
 import com.simplyteam.simplybackup.data.models.Connection
@@ -26,20 +28,20 @@ class BackupHistoryViewModel @Inject constructor(
     private val _packagingService: PackagingService
 ) : ViewModel() {
 
-    val ShowErrorLoading = mutableStateOf(false)
+    var ShowErrorLoading by mutableStateOf(false)
 
-    val BackupToDelete = mutableStateOf<BackupDetail?>(null)
-    val BackupToRestore = mutableStateOf<BackupDetail?>(null)
-    val RestoreStatus = mutableStateOf(com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE)
+    var BackupToDelete by mutableStateOf<BackupDetail?>(null)
+    var BackupToRestore by mutableStateOf<BackupDetail?>(null)
+    var RestoreStatus by mutableStateOf(com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE)
 
-    val Loading = mutableStateOf(false)
-    val BackupDetails = mutableStateOf(listOf<BackupDetail>())
+    var Loading by mutableStateOf(false)
+    var BackupDetails by mutableStateOf(listOf<BackupDetail>())
 
     suspend fun InitValues(
         connection: Connection
     ) {
         try {
-            Loading.value = true
+            Loading = true
 
             val files = when (connection.ConnectionType) {
                 ConnectionType.NextCloud -> {
@@ -55,7 +57,7 @@ class BackupHistoryViewModel @Inject constructor(
                 }
             }
 
-            ShowErrorLoading.value = false
+            ShowErrorLoading = false
 
             BuildBackupDetails(
                 connection,
@@ -66,9 +68,9 @@ class BackupHistoryViewModel @Inject constructor(
         } catch (ex: Exception) {
             Timber.e(ex)
 
-            ShowErrorLoading.value = true
+            ShowErrorLoading = true
         } finally {
-            Loading.value = false
+            Loading = false
         }
     }
 
@@ -99,21 +101,21 @@ class BackupHistoryViewModel @Inject constructor(
             )
         }
 
-        BackupDetails.value = details
+        BackupDetails = details
     }
 
     fun ShowDeleteAlert(item: BackupDetail) {
-        BackupToDelete.value = item
+        BackupToDelete = item
     }
 
     fun HideDeleteAlert() {
-        BackupToDelete.value = null
+        BackupToDelete = null
     }
 
     suspend fun DeleteBackup() {
-        BackupToDelete.value?.let { backup ->
+        BackupToDelete?.let { backup ->
             try {
-                Loading.value = true
+                Loading = true
                 HideDeleteAlert()
 
                 val result = when (backup.Connection.ConnectionType) {
@@ -137,31 +139,31 @@ class BackupHistoryViewModel @Inject constructor(
             } catch (ex: Exception) {
                 Timber.e(ex)
             } finally {
-                Loading.value = false
+                Loading = false
             }
         }
     }
 
     private fun DeleteBackupFromList(item: BackupDetail) {
-        val list = BackupDetails.value.toMutableList()
+        val list = BackupDetails.toMutableList()
 
         list.remove(item)
 
-        BackupDetails.value = list
+        BackupDetails = list
     }
 
     fun ShowRestoreAlert(detail: BackupDetail) {
-        BackupToRestore.value = detail
+        BackupToRestore = detail
     }
 
     fun HideRestoreAlert() {
-        BackupToRestore.value = null
+        BackupToRestore = null
     }
 
     suspend fun RestoreBackup() {
-        BackupToRestore.value?.let { backup ->
+        BackupToRestore?.let { backup ->
             try {
-                RestoreStatus.value =
+                RestoreStatus =
                     com.simplyteam.simplybackup.data.models.RestoreStatus.RESTORING
 
                 HideRestoreAlert()
@@ -184,17 +186,17 @@ class BackupHistoryViewModel @Inject constructor(
                 _packagingService.RestorePackage(file)
                 file.delete()
 
-                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.SUCCESS
+                RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.SUCCESS
             } catch (ex: Exception) {
                 Timber.e(ex)
 
-                RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.ERROR
+                RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.ERROR
             }
         }
     }
 
     fun HideRestoreFinishedAlert() {
-        RestoreStatus.value = com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE
+        RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE
     }
 
 }

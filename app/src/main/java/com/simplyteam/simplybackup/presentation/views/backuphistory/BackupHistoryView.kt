@@ -34,7 +34,7 @@ class BackupHistoryView {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (viewModel.Loading.value) {
+            if (viewModel.Loading) {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -43,10 +43,10 @@ class BackupHistoryView {
             }
 
             when {
-                viewModel.ShowErrorLoading.value -> {
+                viewModel.ShowErrorLoading -> {
                     BuildErrorText(R.string.ErrorLoadingFiles)
                 }
-                !viewModel.Loading.value && viewModel.BackupDetails.value.isEmpty() -> {
+                !viewModel.Loading && viewModel.BackupDetails.isEmpty() -> {
                     BuildErrorText(R.string.NoFiles)
                 }
                 else -> {
@@ -56,7 +56,7 @@ class BackupHistoryView {
                             .padding(8.dp)
                             .testTag("HistoryList")
                     ) {
-                        items(viewModel.BackupDetails.value) { detail ->
+                        items(viewModel.BackupDetails) { detail ->
                             BuildFileCard(
                                 detail = detail,
                                 viewModel = viewModel
@@ -236,7 +236,7 @@ class BackupHistoryView {
     private fun BuildDeleteAlert(viewModel: BackupHistoryViewModel) {
         val scope = rememberCoroutineScope()
 
-        if (viewModel.BackupToDelete.value != null) {
+        if (viewModel.BackupToDelete != null) {
             AlertDialog(
                 modifier = Modifier
                     .testTag("DeleteDialog"),
@@ -312,7 +312,7 @@ class BackupHistoryView {
     private fun BuildRestoreAlert(viewModel: BackupHistoryViewModel) {
         val scope = rememberCoroutineScope()
 
-        if (viewModel.BackupToRestore.value != null) {
+        if (viewModel.BackupToRestore != null) {
             AlertDialog(
                 modifier = Modifier
                     .testTag("RestoreDialog"),
@@ -371,7 +371,7 @@ class BackupHistoryView {
 
     @Composable
     private fun BuildRestoringDialog(viewModel: BackupHistoryViewModel) {
-        if (viewModel.RestoreStatus.value == RestoreStatus.RESTORING) {
+        if (viewModel.RestoreStatus == RestoreStatus.RESTORING) {
             Dialog(
                 onDismissRequest = {}
             ) {
@@ -410,8 +410,8 @@ class BackupHistoryView {
 
     @Composable
     private fun BuildRestoreFinishedAlert(viewModel: BackupHistoryViewModel) {
-        if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS
-            || viewModel.RestoreStatus.value == RestoreStatus.ERROR
+        if (viewModel.RestoreStatus == RestoreStatus.SUCCESS
+            || viewModel.RestoreStatus == RestoreStatus.ERROR
         ) {
             AlertDialog(
                 modifier = Modifier
@@ -422,14 +422,14 @@ class BackupHistoryView {
                 title = {
                     Text(
                         text = stringResource(
-                            id = if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
+                            id = if (viewModel.RestoreStatus == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
                         )
                     )
                 },
                 text = {
                     Text(
                         text = stringResource(
-                            id = if (viewModel.RestoreStatus.value == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
+                            id = if (viewModel.RestoreStatus == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
                         )
                     )
                 },

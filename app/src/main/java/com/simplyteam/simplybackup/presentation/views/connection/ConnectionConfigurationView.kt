@@ -131,7 +131,7 @@ class ConnectionConfigurationView(
         viewModel: ConnectionConfigurationViewModel,
         type: ConnectionType
     ) {
-        if (viewModel.ConnectionType.value == type) {
+        if (viewModel.ConnectionType == type) {
             OutlinedButton(
                 modifier = Modifier
                     .height(70.dp)
@@ -157,7 +157,7 @@ class ConnectionConfigurationView(
                     .padding(4.dp)
                     .testTag(type.name),
                 onClick = {
-                    viewModel.ConnectionType.value = type
+                    viewModel.ConnectionType = type
                 }) {
                 viewModel.GetIconProvider()
                     .BuildIconFromConnectionType(
@@ -170,7 +170,7 @@ class ConnectionConfigurationView(
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     private fun BuildInformationFields(viewModel: ConnectionConfigurationViewModel) {
-        when (viewModel.ConnectionType.value) {
+        when (viewModel.ConnectionType) {
             ConnectionType.NextCloud -> {
                 _nextCloudConfigurationView.BuildInformationFields(
                     viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
@@ -215,9 +215,9 @@ class ConnectionConfigurationView(
                     Checkbox(
                         modifier = Modifier
                             .testTag("WifiOnly"),
-                        checked = viewModel.WifiOnly.value,
+                        checked = viewModel.WifiOnly,
                         onCheckedChange = {
-                            viewModel.WifiOnly.value = it
+                            viewModel.WifiOnly = it
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colors.primary
@@ -290,7 +290,7 @@ class ConnectionConfigurationView(
                     8.dp
                 )
                 .clickable {
-                    viewModel.ScheduleTypeDialogShown.value = true
+                    viewModel.ScheduleTypeDialogShown = true
                 }
                 .testTag("ScheduleTypeCard"),
             elevation = 2.dp
@@ -325,7 +325,7 @@ class ConnectionConfigurationView(
                             ),
                         style = MaterialTheme.typography.body2,
                         text = stringResource(
-                            id = when (viewModel.ScheduleType.value) {
+                            id = when (viewModel.ScheduleType) {
                                 ScheduleType.DAILY -> R.string.Daily
                                 ScheduleType.WEEKLY -> R.string.Weekly
                                 ScheduleType.MONTHLY -> R.string.Monthly
@@ -340,10 +340,10 @@ class ConnectionConfigurationView(
 
     @Composable
     private fun BuildScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
-        if (viewModel.ScheduleTypeDialogShown.value) {
+        if (viewModel.ScheduleTypeDialogShown) {
             Dialog(
                 onDismissRequest = {
-                    viewModel.ScheduleTypeDialogShown.value = false
+                    viewModel.ScheduleTypeDialogShown = false
                 }) {
                 Card(
                     modifier = Modifier
@@ -378,7 +378,7 @@ class ConnectionConfigurationView(
                             RadioButton(
                                 modifier = Modifier
                                     .testTag("DailyScheduleType"),
-                                selected = viewModel.ScheduleType.value == ScheduleType.DAILY,
+                                selected = viewModel.ScheduleType == ScheduleType.DAILY,
                                 onClick = {
                                     viewModel.UpdateScheduleType(ScheduleType.DAILY)
                                 }
@@ -407,7 +407,7 @@ class ConnectionConfigurationView(
                             RadioButton(
                                 modifier = Modifier
                                     .testTag("WeeklyScheduleType"),
-                                selected = viewModel.ScheduleType.value == ScheduleType.WEEKLY,
+                                selected = viewModel.ScheduleType == ScheduleType.WEEKLY,
                                 onClick = {
                                     viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
                                 }
@@ -436,7 +436,7 @@ class ConnectionConfigurationView(
                             RadioButton(
                                 modifier = Modifier
                                     .testTag("MonthlyScheduleType"),
-                                selected = viewModel.ScheduleType.value == ScheduleType.MONTHLY,
+                                selected = viewModel.ScheduleType == ScheduleType.MONTHLY,
                                 onClick = {
                                     viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
                                 }
@@ -465,7 +465,7 @@ class ConnectionConfigurationView(
                             RadioButton(
                                 modifier = Modifier
                                     .testTag("YearlyScheduleType"),
-                                selected = viewModel.ScheduleType.value == ScheduleType.YEARLY,
+                                selected = viewModel.ScheduleType == ScheduleType.YEARLY,
                                 onClick = {
                                     viewModel.UpdateScheduleType(ScheduleType.YEARLY)
                                 }

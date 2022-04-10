@@ -1,6 +1,8 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.connection
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
@@ -12,46 +14,46 @@ class SFTPConfigurationViewModel @Inject constructor(
 
 ) : ConfigurationViewModelBase() {
 
-    val Name = mutableStateOf("")
-    val URL = mutableStateOf("")
-    val Username = mutableStateOf("")
-    val Password = mutableStateOf("")
-    val RemotePath = mutableStateOf("")
+    var Name by mutableStateOf("")
+    var URL by mutableStateOf("")
+    var Username by mutableStateOf("")
+    var Password by mutableStateOf("")
+    var RemotePath by mutableStateOf("")
 
     override fun GetBaseConnection(): Connection {
         when {
-            Name.value.isEmpty() -> {
+            Name.isEmpty() -> {
                 throw FieldNotFilledException("Name")
             }
-            URL.value.isEmpty() -> {
+            URL.isEmpty() -> {
                 throw FieldNotFilledException("URL")
             }
-            Username.value.isEmpty() -> {
+            Username.isEmpty() -> {
                 throw FieldNotFilledException("Username")
             }
-            Password.value.isEmpty() -> {
+            Password.isEmpty() -> {
                 throw FieldNotFilledException("Password")
             }
-            RemotePath.value.isEmpty() -> {
+            RemotePath.isEmpty() -> {
                 throw FieldNotFilledException("RemotePath")
             }
         }
 
         return Connection(
             ConnectionType = ConnectionType.SFTP,
-            Name = Name.value,
-            URL = URL.value,
-            Username = Username.value,
-            Password = Password.value,
-            RemotePath = RemotePath.value
+            Name = Name,
+            URL = URL,
+            Username = Username,
+            Password = Password,
+            RemotePath = RemotePath
         )
     }
 
     override fun LoadData(connection: Connection) {
-        Name.value = connection.Name
-        URL.value = connection.URL
-        Username.value = connection.Username
-        Password.value = connection.Password
-        RemotePath.value = connection.RemotePath
+        Name = connection.Name
+        URL = connection.URL
+        Username = connection.Username
+        Password = connection.Password
+        RemotePath = connection.RemotePath
     }
 }

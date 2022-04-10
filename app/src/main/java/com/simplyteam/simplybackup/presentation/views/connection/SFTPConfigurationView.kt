@@ -64,9 +64,9 @@ class SFTPConfigurationView {
                             )
                         )
                     },
-                    value = viewModel.Name.value,
+                    value = viewModel.Name,
                     onValueChange = {
-                        viewModel.Name.value = it
+                        viewModel.Name = it
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -93,9 +93,9 @@ class SFTPConfigurationView {
                             )
                         )
                     },
-                    value = viewModel.URL.value,
+                    value = viewModel.URL,
                     onValueChange = {
-                        viewModel.URL.value = it
+                        viewModel.URL = it
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Uri,
@@ -122,9 +122,9 @@ class SFTPConfigurationView {
                             )
                         )
                     },
-                    value = viewModel.Username.value,
+                    value = viewModel.Username,
                     onValueChange = {
-                        viewModel.Username.value = it
+                        viewModel.Username = it
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -156,9 +156,9 @@ class SFTPConfigurationView {
                             )
                         )
                     },
-                    value = viewModel.Password.value,
+                    value = viewModel.Password,
                     onValueChange = {
-                        viewModel.Password.value = it
+                        viewModel.Password = it
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -191,9 +191,9 @@ class SFTPConfigurationView {
                             )
                         )
                     },
-                    value = viewModel.RemotePath.value,
+                    value = viewModel.RemotePath,
                     onValueChange = {
-                        viewModel.RemotePath.value = it
+                        viewModel.RemotePath = it
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,

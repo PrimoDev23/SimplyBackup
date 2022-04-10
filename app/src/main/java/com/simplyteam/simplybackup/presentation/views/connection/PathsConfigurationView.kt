@@ -43,9 +43,9 @@ class PathsConfigurationView {
                             .fillMaxWidth()
                             .padding(8.dp)
                             .testTag("CurrentPath"),
-                        value = viewModel.CurrentPath.value,
+                        value = viewModel.CurrentPath,
                         onValueChange = {
-                            viewModel.CurrentPath.value = it
+                            viewModel.CurrentPath = it
                         },
                         label = {
                             Text(
@@ -66,7 +66,7 @@ class PathsConfigurationView {
                             MaterialTheme.colors.primary
                         ),
                         onClick = {
-                            viewModel.AddPath(viewModel.CurrentPath.value)
+                            viewModel.AddPath(viewModel.CurrentPath)
                         }) {
                         Text(
                             text = stringResource(
@@ -88,7 +88,7 @@ class PathsConfigurationView {
                         .fillMaxSize()
                         .testTag("Paths")
                 ) {
-                    itemsIndexed(viewModel.Paths.value) { index, path ->
+                    itemsIndexed(viewModel.Paths) { index, path ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
