@@ -29,6 +29,11 @@ android {
             buildConfigField "String", "NEXTCLOUD_URL", properties.getProperty('NEXTCLOUD_URL')
             buildConfigField "String", "NEXTCLOUD_USERNAME", properties.getProperty('NEXTCLOUD_USERNAME')
             buildConfigField "String", "NEXTCLOUD_PASSWORD", properties.getProperty('NEXTCLOUD_PASSWORD')
+
+            buildConfigField "String", "SFTP_URL", properties.getProperty('SFTP_URL')
+            buildConfigField "String", "SFTP_USERNAME", properties.getProperty('SFTP_USERNAME')
+            buildConfigField "String", "SFTP_PASSWORD", properties.getProperty('SFTP_PASSWORD')
+            buildConfigField "String", "SFTP_REMOTEPATH", properties.getProperty('SFTP_REMOTEPATH')
         }
         release {
             minifyEnabled false
