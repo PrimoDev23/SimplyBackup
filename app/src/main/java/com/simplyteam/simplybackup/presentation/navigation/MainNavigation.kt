@@ -17,9 +17,9 @@ fun MainNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.Route
+        startDestination = Screen.History.Route
     ) {
-        composable(Screen.Home.Route) {
+        composable(Screen.History.Route) {
             HomeView(paddingValues)
         }
 

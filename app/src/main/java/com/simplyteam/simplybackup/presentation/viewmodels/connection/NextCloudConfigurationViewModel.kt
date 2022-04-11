@@ -17,8 +17,8 @@ class NextCloudConfigurationViewModel @Inject constructor(
     var Name by mutableStateOf("")
     var NameErrorShown by mutableStateOf(false)
 
-    var URL by mutableStateOf("")
-    var URLErrorShown by mutableStateOf(false)
+    var Host by mutableStateOf("")
+    var HostErrorShown by mutableStateOf(false)
 
     var Username by mutableStateOf("")
     var UsernameErrorShown by mutableStateOf(false)
@@ -36,7 +36,7 @@ class NextCloudConfigurationViewModel @Inject constructor(
         return Connection(
             ConnectionType = ConnectionType.NextCloud,
             Name = Name,
-            URL = URL,
+            Host = Host,
             Username = Username,
             Password = Password,
             RemotePath = RemotePath
@@ -45,16 +45,16 @@ class NextCloudConfigurationViewModel @Inject constructor(
 
     private fun ValuesValid(): Boolean {
         NameErrorShown = Name.isEmpty()
-        URLErrorShown = URL.isEmpty()
+        HostErrorShown = Host.isEmpty()
         UsernameErrorShown = Username.isEmpty()
         PasswordErrorShown = Password.isEmpty()
 
-        return !(NameErrorShown || URLErrorShown || UsernameErrorShown || PasswordErrorShown)
+        return !(NameErrorShown || HostErrorShown || UsernameErrorShown || PasswordErrorShown)
     }
 
     override fun LoadData(connection: Connection) {
         Name = connection.Name
-        URL = connection.URL
+        Host = connection.Host
         Username = connection.Username
         Password = connection.Password
         RemotePath = connection.RemotePath

@@ -24,7 +24,7 @@ class NextCloudService (
     private fun CreateClient(
         connection: Connection
     ): OwnCloudClient {
-        val serverUri = Uri.parse(connection.URL)
+        val serverUri = Uri.parse(connection.Host)
 
         //Create a client
         val client = OwnCloudClientFactory.createOwnCloudClient(
@@ -72,7 +72,7 @@ class NextCloudService (
                 operation.execute(
                     client,
                     { _, p1 ->
-                        Timber.d("Upload to ${connection.URL} succeed - ${p1.isSuccess}")
+                        Timber.d("Upload to ${connection.Host} succeed - ${p1.isSuccess}")
 
                         if (p1.isSuccess) {
                             continuation.resume(Result.success(true))

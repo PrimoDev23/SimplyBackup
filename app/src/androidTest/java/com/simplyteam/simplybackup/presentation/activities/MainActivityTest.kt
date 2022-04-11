@@ -81,7 +81,7 @@ class MainActivityTest {
         composeRule.onNodeWithTag("Name")
             .performTextInput(testValue)
 
-        composeRule.onNodeWithTag("URL")
+        composeRule.onNodeWithTag("Host")
             .performTextInput(testValue)
 
         composeRule.onNodeWithTag("Username")
@@ -128,7 +128,7 @@ class MainActivityTest {
 
         assertEquals(newConnection.ConnectionType, _testConnectionType)
         assertEquals(newConnection.Name, testValue)
-        assertEquals(newConnection.URL, testValue)
+        assertEquals(newConnection.Host, testValue)
         assertEquals(newConnection.Username, testValue)
         assertEquals(newConnection.Password, testValue)
         assertEquals(newConnection.RemotePath, testValue)
@@ -145,7 +145,7 @@ class MainActivityTest {
             it.Id == id
         }
 
-        composeRule.onNodeWithTag(Screen.Home.Route)
+        composeRule.onNodeWithTag(Screen.History.Route)
             .performClick()
 
         composeRule.onNodeWithTag("History")
@@ -175,7 +175,7 @@ class MainActivityTest {
 
         assert(RetrieveConnections().size == connectionSize - 1)
 
-        composeRule.onNodeWithTag(Screen.Home.Route)
+        composeRule.onNodeWithTag(Screen.History.Route)
             .performClick()
 
         composeRule.onNodeWithTag("History")
@@ -208,7 +208,7 @@ class MainActivityTest {
         composeRule.onNodeWithTag("Name")
             .performTextReplacement(testValue)
 
-        composeRule.onNodeWithTag("URL")
+        composeRule.onNodeWithTag("Host")
             .performTextReplacement(testValue)
 
         composeRule.onNodeWithTag("Username")
@@ -253,7 +253,7 @@ class MainActivityTest {
         }
 
         assertEquals(connection.Name, testValue)
-        assertEquals(connection.URL, testValue)
+        assertEquals(connection.Host, testValue)
         assertEquals(connection.Username, testValue)
         assertEquals(connection.Password, testValue)
         assertEquals(connection.RemotePath, testValue)
@@ -263,7 +263,7 @@ class MainActivityTest {
 
         Thread.sleep(1000)
 
-        composeRule.onNodeWithTag(Screen.Home.Route)
+        composeRule.onNodeWithTag(Screen.History.Route)
             .performClick()
 
         composeRule.onNodeWithTag("History")
@@ -489,7 +489,7 @@ class MainActivityTest {
                         Connection(
                             ConnectionType = ConnectionType.NextCloud,
                             Name = "AndroidInstrumentationTest",
-                            URL = BuildConfig.NEXTCLOUD_URL,
+                            Host = BuildConfig.NEXTCLOUD_HOST,
                             Username = BuildConfig.NEXTCLOUD_USERNAME,
                             Password = BuildConfig.NEXTCLOUD_PASSWORD,
                             Paths = listOf(
@@ -506,7 +506,7 @@ class MainActivityTest {
                         Connection(
                             ConnectionType = ConnectionType.SFTP,
                             Name = "AndroidInstrumentationTest",
-                            URL = BuildConfig.SFTP_URL,
+                            Host = BuildConfig.SFTP_HOST,
                             Username = BuildConfig.SFTP_USERNAME,
                             Password = BuildConfig.SFTP_PASSWORD,
                             RemotePath = BuildConfig.SFTP_REMOTEPATH,

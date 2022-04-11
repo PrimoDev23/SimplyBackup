@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">SimplyBackup</string>
     <string name="Connections">Connections</string>
-    <string name="Home">Home</string>
     <string name="Settings">Settings</string>
     <string name="ConfigureConnection">Configure connection</string>
     <string name="NextCloud" translatable="false">NextCloud</string>
-    <string name="URL" translatable="false">URL</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="Name">Name</string>
@@ -54,8 +52,9 @@
     <string name="RestoringBackupError">Couldn\'t restore the backup!</string>
     <string name="SFTP" translatable="false">SFTP</string>
     <string name="EnterName">Please enter a name</string>
-    <string name="EnterURL">Please enter an URL</string>
+    <string name="EnterHost">Please enter a host</string>
     <string name="EnterUsername">Please enter an username</string>
     <string name="EnterPassword">Please enter a password</string>
     <string name="EnterRemotePath">Please enter a remote path</string>
+    <string name="Host">Host</string>
 </resources>

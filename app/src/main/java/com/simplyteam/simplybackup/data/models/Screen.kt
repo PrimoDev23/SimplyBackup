@@ -10,10 +10,10 @@ sealed class Screen(
 
     //region Main
 
-    object Home : Screen(
-        Route = "home",
-        Title = R.string.Home,
-        Icon = R.drawable.ic_baseline_home_24
+    object History : Screen(
+        Route = "history",
+        Title = R.string.History,
+        Icon = R.drawable.ic_baseline_manage_history_24
     )
     object Connections : Screen(
         Route = "connections",

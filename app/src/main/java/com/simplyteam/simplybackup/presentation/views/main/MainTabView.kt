@@ -42,7 +42,7 @@ private fun TopBar() {
 @Composable
 private fun BottomBar(navController: NavController) {
     val items = listOf(
-        Screen.Home,
+        Screen.History,
         Screen.Connections,
         Screen.Settings
     )

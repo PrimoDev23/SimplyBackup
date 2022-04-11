@@ -26,11 +26,11 @@ android {
             Properties properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-            buildConfigField "String", "NEXTCLOUD_URL", properties.getProperty('NEXTCLOUD_URL')
+            buildConfigField "String", "NEXTCLOUD_HOST", properties.getProperty('NEXTCLOUD_HOST')
             buildConfigField "String", "NEXTCLOUD_USERNAME", properties.getProperty('NEXTCLOUD_USERNAME')
             buildConfigField "String", "NEXTCLOUD_PASSWORD", properties.getProperty('NEXTCLOUD_PASSWORD')
 
-            buildConfigField "String", "SFTP_URL", properties.getProperty('SFTP_URL')
+            buildConfigField "String", "SFTP_HOST", properties.getProperty('SFTP_HOST')
             buildConfigField "String", "SFTP_USERNAME", properties.getProperty('SFTP_USERNAME')
             buildConfigField "String", "SFTP_PASSWORD", properties.getProperty('SFTP_PASSWORD')
             buildConfigField "String", "SFTP_REMOTEPATH", properties.getProperty('SFTP_REMOTEPATH')

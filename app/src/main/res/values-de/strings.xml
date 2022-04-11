@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">SimplyBackup</string>
     <string name="Connections">Verbindungen</string>
-    <string name="Home">Startseite</string>
     <string name="Settings">Einstellungen</string>
     <string name="ConfigureConnection">Verbindung konfigurieren</string>
     <string name="Username">Nutzername</string>
@@ -48,8 +47,9 @@
     <string name="RestoringBackupSucceed">Das Backup wurde erfolgreich wiederhergestellt!</string>
     <string name="RestoringBackupError">Das Backup konnte nicht wiederhergestellt werden!</string>
     <string name="EnterName">Bitte tragen Sie einen Namen ein</string>
-    <string name="EnterURL">Bitte tragen Sie eine URL ein</string>
+    <string name="EnterHost">Bitte tragen Sie einen Host ein</string>
     <string name="EnterUsername">Bitte tragen Sie einen Nutzernamen ein</string>
     <string name="EnterPassword">Bitte tragen Sie ein Passwort ein</string>
     <string name="EnterRemotePath">Bitte geben Sie einen Remotepfad ein</string>
+    <string name="Host">Host</string>
 </resources>

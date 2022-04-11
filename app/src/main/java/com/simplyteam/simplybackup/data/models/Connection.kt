@@ -11,7 +11,7 @@ data class Connection(
     var Id: Long = 0,
     val ConnectionType : ConnectionType,
     val Name : String,
-    val URL : String,
+    val Host : String,
     val Username : String,
     val Password : String,
     var RemotePath: String = "",

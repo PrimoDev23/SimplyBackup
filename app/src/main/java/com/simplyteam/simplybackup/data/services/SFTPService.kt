@@ -29,7 +29,7 @@ class SFTPService(
             val client = JSch()
             val session = client.getSession(
                 connection.Username,
-                connection.URL,
+                connection.Host,
                 22
             )
             var channel: ChannelSftp? = null
@@ -74,7 +74,7 @@ class SFTPService(
                 val client = JSch()
                 val session = client.getSession(
                     connection.Username,
-                    connection.URL,
+                    connection.Host,
                     22
                 )
                 var channel: ChannelSftp? = null
@@ -132,7 +132,7 @@ class SFTPService(
                 val client = JSch()
                 val session = client.getSession(
                     connection.Username,
-                    connection.URL,
+                    connection.Host,
                     22
                 )
                 var channel: ChannelSftp? = null
@@ -176,7 +176,7 @@ class SFTPService(
                 val client = JSch()
                 val session = client.getSession(
                     connection.Username,
-                    connection.URL,
+                    connection.Host,
                     22
                 )
                 var channel: ChannelSftp? = null

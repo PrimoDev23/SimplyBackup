@@ -91,17 +91,17 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag("URL"),
+                    .testTag("Host"),
                 label = {
                     Text(
                         text = stringResource(
-                            id = R.string.URL
+                            id = R.string.Host
                         )
                     )
                 },
-                value = viewModel.URL,
+                value = viewModel.Host,
                 onValueChange = {
-                    viewModel.URL = it
+                    viewModel.Host = it
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
@@ -111,20 +111,20 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_baseline_link_24),
                         contentDescription = stringResource(
-                            id = R.string.URL
+                            id = R.string.Host
                         )
                     )
                 },
                 singleLine = true,
-                isError = viewModel.URLErrorShown
+                isError = viewModel.HostErrorShown
             )
 
             TextFieldErrorText(
                 modifier = Modifier
-                    .testTag("URLError"),
-                shown = viewModel.URLErrorShown,
+                    .testTag("HostError"),
+                shown = viewModel.HostErrorShown,
                 text = stringResource(
-                    id = R.string.EnterURL
+                    id = R.string.EnterHost
                 )
             )
 
