@@ -23,7 +23,7 @@ fun MainNavigation(
             HomeView(paddingValues)
         }
 
-        composable(Screen.ConnectionOverview.Route) {
+        composable(Screen.Connections.Route) {
             ConnectionOverviewView(paddingValues)
         }
 
