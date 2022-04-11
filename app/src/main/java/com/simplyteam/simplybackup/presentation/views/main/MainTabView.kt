@@ -43,7 +43,7 @@ private fun TopBar() {
 private fun BottomBar(navController: NavController) {
     val items = listOf(
         Screen.Home,
-        Screen.Connectionverview,
+        Screen.ConnectionOverview,
         Screen.Settings
     )
 

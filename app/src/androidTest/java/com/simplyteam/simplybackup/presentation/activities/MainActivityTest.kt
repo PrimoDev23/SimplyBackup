@@ -37,7 +37,7 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private val TestConnectionType = ConnectionType.NextCloud
+    private val _testConnectionType = ConnectionType.NextCloud
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -67,14 +67,14 @@ class MainActivityTest {
         val connections = RetrieveConnections()
         val testValue = "TestEntry"
 
-        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
+        composeRule.onNodeWithTag(Screen.ConnectionOverview.Route)
             .performClick()
 
         composeRule.onNodeWithTag("AddConnection")
             .performClick()
 
-        if (TestConnectionType != ConnectionType.NextCloud) {
-            composeRule.onNodeWithTag(TestConnectionType.name)
+        if (_testConnectionType != ConnectionType.NextCloud) {
+            composeRule.onNodeWithTag(_testConnectionType.name)
                 .performClick()
         }
 
@@ -126,7 +126,7 @@ class MainActivityTest {
 
         val newConnection = newConnections.last()
 
-        assertEquals(newConnection.ConnectionType, TestConnectionType)
+        assertEquals(newConnection.ConnectionType, _testConnectionType)
         assertEquals(newConnection.Name, testValue)
         assertEquals(newConnection.URL, testValue)
         assertEquals(newConnection.Username, testValue)
@@ -165,7 +165,7 @@ class MainActivityTest {
 
         val connectionSize = RetrieveConnections().size
 
-        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
+        composeRule.onNodeWithTag(Screen.ConnectionOverview.Route)
             .performClick()
 
         val deleteButton =
@@ -196,7 +196,7 @@ class MainActivityTest {
 
         val testValue = "ReplaceValue"
 
-        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
+        composeRule.onNodeWithTag(Screen.ConnectionOverview.Route)
             .performClick()
 
         composeRule.onNodeWithTag(id.toString())
@@ -483,7 +483,7 @@ class MainActivityTest {
     private fun InsertConnection(): Long {
         var id: Long
         runBlocking {
-            when (TestConnectionType) {
+            when (_testConnectionType) {
                 ConnectionType.NextCloud -> {
                     id = ConnectionRepository.InsertConnection(
                         Connection(
@@ -577,7 +577,7 @@ class MainActivityTest {
             .onSuccess {
                 val result: Result<Boolean>
                 runBlocking {
-                    result = when (TestConnectionType) {
+                    result = when (_testConnectionType) {
                         ConnectionType.NextCloud -> {
                             NextCloudService.UploadFile(
                                 connection,
@@ -603,7 +603,7 @@ class MainActivityTest {
     private fun CleanupServer(connection: Connection) {
         val files: List<RemoteFile>
         runBlocking {
-            files = when (TestConnectionType) {
+            files = when (_testConnectionType) {
                 ConnectionType.NextCloud -> {
                     NextCloudService.GetFilesForConnection(
                         connection
@@ -619,7 +619,7 @@ class MainActivityTest {
 
         for (file in files) {
             runBlocking {
-                when(TestConnectionType){
+                when(_testConnectionType){
                     ConnectionType.NextCloud -> {
                         NextCloudService.DeleteFile(
                             connection,

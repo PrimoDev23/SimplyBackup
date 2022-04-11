@@ -127,7 +127,7 @@ private fun ConnectionButton(
     viewModel: ConnectionConfigurationViewModel,
     type: ConnectionType
 ) {
-    if (viewModel.ConnectionType == type) {
+    if (viewModel.SelectedConnectionType == type) {
         OutlinedButton(
             modifier = Modifier
                 .height(70.dp)
@@ -152,7 +152,7 @@ private fun ConnectionButton(
                 .padding(4.dp)
                 .testTag(type.name),
             onClick = {
-                viewModel.ConnectionType = type
+                viewModel.SelectedConnectionType = type
             }) {
             ConnectionIcon(
                 connectionType = type
@@ -166,7 +166,7 @@ private fun ConnectionButton(
 private fun InformationFields(
     viewModel: ConnectionConfigurationViewModel
 ) {
-    when (viewModel.ConnectionType) {
+    when (viewModel.SelectedConnectionType) {
         ConnectionType.NextCloud -> {
             NextCloudInformationFields(
                 viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
@@ -321,7 +321,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                         ),
                     style = MaterialTheme.typography.body2,
                     text = stringResource(
-                        id = when (viewModel.ScheduleType) {
+                        id = when (viewModel.SelectedScheduleType) {
                             ScheduleType.DAILY -> R.string.Daily
                             ScheduleType.WEEKLY -> R.string.Weekly
                             ScheduleType.MONTHLY -> R.string.Monthly
@@ -374,7 +374,7 @@ private fun ScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
                         RadioButton(
                             modifier = Modifier
                                 .testTag("DailyScheduleType"),
-                            selected = viewModel.ScheduleType == ScheduleType.DAILY,
+                            selected = viewModel.SelectedScheduleType == ScheduleType.DAILY,
                             onClick = {
                                 viewModel.UpdateScheduleType(ScheduleType.DAILY)
                             }
@@ -403,7 +403,7 @@ private fun ScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
                         RadioButton(
                             modifier = Modifier
                                 .testTag("WeeklyScheduleType"),
-                            selected = viewModel.ScheduleType == ScheduleType.WEEKLY,
+                            selected = viewModel.SelectedScheduleType == ScheduleType.WEEKLY,
                             onClick = {
                                 viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
                             }
@@ -432,7 +432,7 @@ private fun ScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
                         RadioButton(
                             modifier = Modifier
                                 .testTag("MonthlyScheduleType"),
-                            selected = viewModel.ScheduleType == ScheduleType.MONTHLY,
+                            selected = viewModel.SelectedScheduleType == ScheduleType.MONTHLY,
                             onClick = {
                                 viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
                             }
@@ -461,7 +461,7 @@ private fun ScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
                         RadioButton(
                             modifier = Modifier
                                 .testTag("YearlyScheduleType"),
-                            selected = viewModel.ScheduleType == ScheduleType.YEARLY,
+                            selected = viewModel.SelectedScheduleType == ScheduleType.YEARLY,
                             onClick = {
                                 viewModel.UpdateScheduleType(ScheduleType.YEARLY)
                             }

@@ -43,7 +43,7 @@
     <string name="ErrorLoadingFiles">Dateien zum Backup konnten nicht geladen werden…</string>
     <string name="NoFiles">Es gibt noch keine Dateien für dieses Backup…</string>
     <string name="RestoreAlertText">Sind Sie sicher, dass sie das Backup wiederherstellen möchten? Es können Dateien dadurch überschrieben werden!</string>
-    <string name="RestoringBackup">Backup wird wiederhergestellt...</string>
+    <string name="RestoringBackup">Backup wird wiederhergestellt…</string>
     <string name="OK">OK</string>
     <string name="RestoringBackupSucceed">Das Backup wurde erfolgreich wiederhergestellt!</string>
     <string name="RestoringBackupError">Das Backup konnte nicht wiederhergestellt werden!</string>

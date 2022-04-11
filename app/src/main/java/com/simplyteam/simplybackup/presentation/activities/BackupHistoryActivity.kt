@@ -20,7 +20,6 @@ import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackup
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.backuphistory.BackupHistoryView
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class BackupHistoryActivity : ComponentActivity() {

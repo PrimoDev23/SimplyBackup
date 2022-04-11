@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,9 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject
 import com.simplyteam.simplybackup.data.models.RemoteFile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.simplyteam.simplybackup.data.models.RestoreStatus
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
@@ -32,7 +29,7 @@ class BackupHistoryViewModel @Inject constructor(
 
     var BackupToDelete by mutableStateOf<BackupDetail?>(null)
     var BackupToRestore by mutableStateOf<BackupDetail?>(null)
-    var RestoreStatus by mutableStateOf(com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE)
+    var CurrentRestoreStatus by mutableStateOf(RestoreStatus.IDLE)
 
     var Loading by mutableStateOf(false)
     var BackupDetails by mutableStateOf(listOf<BackupDetail>())
@@ -163,8 +160,8 @@ class BackupHistoryViewModel @Inject constructor(
     suspend fun RestoreBackup() {
         BackupToRestore?.let { backup ->
             try {
-                RestoreStatus =
-                    com.simplyteam.simplybackup.data.models.RestoreStatus.RESTORING
+                CurrentRestoreStatus =
+                    RestoreStatus.RESTORING
 
                 HideRestoreAlert()
 
@@ -186,17 +183,17 @@ class BackupHistoryViewModel @Inject constructor(
                 _packagingService.RestorePackage(file)
                 file.delete()
 
-                RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.SUCCESS
+                CurrentRestoreStatus = RestoreStatus.SUCCESS
             } catch (ex: Exception) {
                 Timber.e(ex)
 
-                RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.ERROR
+                CurrentRestoreStatus = RestoreStatus.ERROR
             }
         }
     }
 
     fun HideRestoreFinishedAlert() {
-        RestoreStatus = com.simplyteam.simplybackup.data.models.RestoreStatus.IDLE
+        CurrentRestoreStatus = RestoreStatus.IDLE
     }
 
 }

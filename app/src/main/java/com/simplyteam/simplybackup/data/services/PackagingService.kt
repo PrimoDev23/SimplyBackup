@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.data.services
 
-import android.content.Context
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.PathType

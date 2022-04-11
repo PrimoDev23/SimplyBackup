@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.common
 
-import com.simplyteam.simplybackup.BuildConfig
 import java.time.format.DateTimeFormatter
 
 object Constants {

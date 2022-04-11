@@ -22,8 +22,8 @@ class ConnectionConfigurationViewModel @Inject constructor(
 ) : ViewModel() {
     private var _id = 0L
 
-    var ConnectionType by
-        mutableStateOf(com.simplyteam.simplybackup.data.models.ConnectionType.NextCloud)
+    var SelectedConnectionType by
+        mutableStateOf(ConnectionType.NextCloud)
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
@@ -32,21 +32,21 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
     var WifiOnly by mutableStateOf(false)
     var ScheduleTypeDialogShown by mutableStateOf(false)
-    var ScheduleType by mutableStateOf(com.simplyteam.simplybackup.data.models.ScheduleType.DAILY)
+    var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
 
     fun UpdateScheduleType(scheduleType: ScheduleType) {
-        ScheduleType = scheduleType
+        SelectedScheduleType = scheduleType
         ScheduleTypeDialogShown = false
     }
 
     suspend fun SaveConnection(context: ComponentActivity) {
         try {
-            val connection = (ViewModelMap[ConnectionType])!!.GetBaseConnection()
+            val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
 
             connection.Id = _id
             connection.WifiOnly = WifiOnly
             connection.Paths = Paths
-            connection.ScheduleType = ScheduleType
+            connection.ScheduleType = SelectedScheduleType
 
             if (_id == 0L) {
                 val id = connectionRepository.InsertConnection(
@@ -123,10 +123,10 @@ class ConnectionConfigurationViewModel @Inject constructor(
     fun LoadData(connection: Connection) {
         _id = connection.Id
 
-        ConnectionType = connection.ConnectionType
+        SelectedConnectionType = connection.ConnectionType
         WifiOnly = connection.WifiOnly
         Paths = connection.Paths
-        ScheduleType = connection.ScheduleType
+        SelectedScheduleType = connection.ScheduleType
 
         ViewModelMap[connection.ConnectionType]!!.LoadData(connection)
     }

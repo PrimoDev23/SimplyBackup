@@ -368,7 +368,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoringDialog(viewModel: BackupHistoryViewModel) {
-    if (viewModel.RestoreStatus == RestoreStatus.RESTORING) {
+    if (viewModel.CurrentRestoreStatus == RestoreStatus.RESTORING) {
         Dialog(
             onDismissRequest = {}
         ) {
@@ -407,8 +407,8 @@ private fun RestoringDialog(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoreFinishedAlert(viewModel: BackupHistoryViewModel) {
-    if (viewModel.RestoreStatus == RestoreStatus.SUCCESS
-        || viewModel.RestoreStatus == RestoreStatus.ERROR
+    if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS
+        || viewModel.CurrentRestoreStatus == RestoreStatus.ERROR
     ) {
         AlertDialog(
             modifier = Modifier
@@ -419,14 +419,14 @@ private fun RestoreFinishedAlert(viewModel: BackupHistoryViewModel) {
             title = {
                 Text(
                     text = stringResource(
-                        id = if (viewModel.RestoreStatus == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
+                        id = if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
                     )
                 )
             },
             text = {
                 Text(
                     text = stringResource(
-                        id = if (viewModel.RestoreStatus == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
+                        id = if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
                     )
                 )
             },

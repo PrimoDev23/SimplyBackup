@@ -23,10 +23,9 @@ import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ConnectionConfigurationActivity : ComponentActivity() {
