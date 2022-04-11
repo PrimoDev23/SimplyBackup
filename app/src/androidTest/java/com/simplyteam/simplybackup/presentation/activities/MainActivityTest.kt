@@ -67,7 +67,7 @@ class MainActivityTest {
         val connections = RetrieveConnections()
         val testValue = "TestEntry"
 
-        composeRule.onNodeWithTag(Screen.CloudOverview.Route)
+        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
             .performClick()
 
         composeRule.onNodeWithTag("AddConnection")
@@ -165,7 +165,7 @@ class MainActivityTest {
 
         val connectionSize = RetrieveConnections().size
 
-        composeRule.onNodeWithTag(Screen.CloudOverview.Route)
+        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
             .performClick()
 
         val deleteButton =
@@ -196,7 +196,7 @@ class MainActivityTest {
 
         val testValue = "ReplaceValue"
 
-        composeRule.onNodeWithTag(Screen.CloudOverview.Route)
+        composeRule.onNodeWithTag(Screen.Connectionverview.Route)
             .performClick()
 
         composeRule.onNodeWithTag(id.toString())

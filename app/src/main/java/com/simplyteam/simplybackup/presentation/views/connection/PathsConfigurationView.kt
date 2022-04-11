@@ -16,111 +16,107 @@ import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
 
-class PathsConfigurationView {
-
-    @Composable
-    fun Build(
-        paddingValues: PaddingValues,
-        viewModel: ConnectionConfigurationViewModel
+@Composable
+fun PathsConfigurationView(
+    paddingValues: PaddingValues,
+    viewModel: ConnectionConfigurationViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
     ) {
-        Column(
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = 2.dp
         ) {
-            Card(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                elevation = 2.dp
             ) {
-                Column(
+                OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .testTag("CurrentPath"),
-                        value = viewModel.CurrentPath,
-                        onValueChange = {
-                            viewModel.CurrentPath = it
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(
-                                    id = R.string.Path
-                                )
-                            )
-                        }
-                    )
-
-                    OutlinedButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .testTag("AddPath"),
-                        border = BorderStroke(
-                            1.dp,
-                            MaterialTheme.colors.primary
-                        ),
-                        onClick = {
-                            viewModel.AddPath(viewModel.CurrentPath)
-                        }) {
+                        .padding(8.dp)
+                        .testTag("CurrentPath"),
+                    value = viewModel.CurrentPath,
+                    onValueChange = {
+                        viewModel.CurrentPath = it
+                    },
+                    label = {
                         Text(
                             text = stringResource(
-                                id = R.string.AddPath
+                                id = R.string.Path
                             )
                         )
                     }
+                )
+
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .testTag("AddPath"),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colors.primary
+                    ),
+                    onClick = {
+                        viewModel.AddPath(viewModel.CurrentPath)
+                    }) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.AddPath
+                        )
+                    )
                 }
             }
+        }
 
-            Card(
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp),
+            elevation = 2.dp
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
-                elevation = 2.dp
+                    .fillMaxSize()
+                    .testTag("Paths")
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("Paths")
-                ) {
-                    itemsIndexed(viewModel.Paths) { index, path ->
-                        Row(
+                itemsIndexed(viewModel.Paths) { index, path ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(8.dp),
-                                text = path.Path
-                            )
+                            text = path.Path
+                        )
 
-                            IconButton(
-                                modifier = Modifier
-                                    .testTag("DeletePath"),
-                                onClick = {
-                                    viewModel.RemovePath(path)
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(
-                                        id = R.string.Delete
-                                    )
-                                )
+                        IconButton(
+                            modifier = Modifier
+                                .testTag("DeletePath"),
+                            onClick = {
+                                viewModel.RemovePath(path)
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(
+                                    id = R.string.Delete
+                                )
+                            )
                         }
                     }
                 }
             }
         }
     }
-
 }

@@ -10,25 +10,29 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.Connection
 import com.simplyteam.simplybackup.presentation.views.connection.ConnectionConfigurationView
 import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurationView
 
-class ConnectionConfigurationNavigation constructor(
-    private val _connectionConfigurationView: ConnectionConfigurationView,
-    private val _pathsConfigurationView: PathsConfigurationView
+@Composable
+fun ConnectionConfigurationNavigation(
+    navController: NavHostController,
+    paddingValues: PaddingValues,
+    viewModel: ConnectionConfigurationViewModel
 ) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.ConnectionConfiguration.Route
+    ) {
+        composable(Screen.ConnectionConfiguration.Route) {
+            ConnectionConfigurationView(
+                paddingValues = paddingValues,
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
 
-    @Composable
-    fun Build(navController: NavHostController, paddingValues: PaddingValues, viewModel: ConnectionConfigurationViewModel) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.ConnectionConfiguration.Route
-        ) {
-            composable(Screen.ConnectionConfiguration.Route) {
-                _connectionConfigurationView.Build(paddingValues, navController, viewModel)
-            }
-
-            composable(Screen.PathsConfiguration.Route) {
-                _pathsConfigurationView.Build(paddingValues, viewModel)
-            }
+        composable(Screen.PathsConfiguration.Route) {
+            PathsConfigurationView(
+                paddingValues,
+                viewModel
+            )
         }
     }
-
 }

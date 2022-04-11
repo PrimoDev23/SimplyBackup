@@ -1,7 +1,6 @@
 package com.simplyteam.simplybackup.presentation.activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -23,10 +22,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var MainTabView: MainTabView
-
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
 
@@ -73,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SimplyBackupTheme {
-                MainTabView.Build()
+                MainTabView()
             }
         }
     }

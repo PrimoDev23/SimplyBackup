@@ -30,10 +30,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ConnectionConfigurationActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var ConnectionConfigurationNavigation: ConnectionConfigurationNavigation
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,7 +57,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                             navController = navController
                         )
                     }) {
-                    ConnectionConfigurationNavigation.Build(navController, it, viewModel)
+                    ConnectionConfigurationNavigation(navController, it, viewModel)
                 }
             }
         }

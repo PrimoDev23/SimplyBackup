@@ -9,7 +9,6 @@ import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
-import com.simplyteam.simplybackup.presentation.views.IconProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import java.io.File
@@ -19,8 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConnectionConfigurationViewModel @Inject constructor(
     private val connectionRepository: ConnectionRepository,
-    private val schedulerService: SchedulerService,
-    private val IconProvider: IconProvider
+    private val schedulerService: SchedulerService
 ) : ViewModel() {
     private var _id = 0L
 
@@ -35,8 +33,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
     var WifiOnly by mutableStateOf(false)
     var ScheduleTypeDialogShown by mutableStateOf(false)
     var ScheduleType by mutableStateOf(com.simplyteam.simplybackup.data.models.ScheduleType.DAILY)
-
-    fun GetIconProvider() = IconProvider
 
     fun UpdateScheduleType(scheduleType: ScheduleType) {
         ScheduleType = scheduleType

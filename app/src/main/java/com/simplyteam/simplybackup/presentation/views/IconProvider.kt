@@ -15,51 +15,48 @@ import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
 
-class IconProvider {
-
-    @Composable
-    fun BuildIconFromConnectionType(connectionType: ConnectionType) {
-        when (connectionType) {
-            ConnectionType.NextCloud -> BuildNextcloudIcon()
-            ConnectionType.SFTP -> BuildFtpIcon()
-        }
+@Composable
+fun ConnectionIcon(connectionType: ConnectionType) {
+    when (connectionType) {
+        ConnectionType.NextCloud -> NextcloudIcon()
+        ConnectionType.SFTP -> SftpIcon()
     }
+}
 
-    @Composable
-    private fun BuildNextcloudIcon() {
-        Image(
-            modifier = Modifier
-                .size(64.dp),
+@Composable
+private fun NextcloudIcon() {
+    Image(
+        modifier = Modifier
+            .size(64.dp),
+        painter = painterResource(
+            id = R.drawable.logo_nextcloud_blue
+        ),
+        contentDescription = stringResource(
+            id = R.string.NextCloud
+        )
+    )
+}
+
+@Composable
+private fun SftpIcon() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
             painter = painterResource(
-                id = R.drawable.logo_nextcloud_blue
+                id = R.drawable.ic_baseline_folder_24
             ),
             contentDescription = stringResource(
-                id = R.string.NextCloud
-            )
+                id = R.string.SFTP
+            ),
+            tint = MaterialTheme.colors.onBackground
+        )
+
+        Text(
+            text = stringResource(
+                id = R.string.SFTP
+            ),
+            color = MaterialTheme.colors.onBackground
         )
     }
-
-    @Composable
-    private fun BuildFtpIcon() {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                painter = painterResource(
-                    id = R.drawable.ic_baseline_folder_24),
-                contentDescription = stringResource(
-                    id = R.string.SFTP
-                ),
-                tint = MaterialTheme.colors.onBackground
-            )
-
-            Text(
-                text = stringResource(
-                    id = R.string.SFTP
-                ),
-                color = MaterialTheme.colors.onBackground
-            )
-        }
-    }
-
 }

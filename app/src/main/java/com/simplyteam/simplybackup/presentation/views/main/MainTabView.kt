@@ -13,81 +13,76 @@ import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
 
-class MainTabView constructor(
-    private val _mainNavigation: MainNavigation
-) {
+@Composable
+fun MainTabView() {
+    val navController = rememberNavController()
 
-    @Composable
-    fun Build() {
-        val navController = rememberNavController()
-
-        Scaffold(
-            topBar = {
-                BuildTopBar()
-            },
-            bottomBar = {
-                BuildBottomBar(
-                    navController = navController
-                )
-            }
-        ) {
-            _mainNavigation.Build(
-                navController = navController,
-                paddingValues = it
+    Scaffold(
+        topBar = {
+            TopBar()
+        },
+        bottomBar = {
+            BottomBar(
+                navController = navController
             )
         }
-    }
-
-    @Composable
-    private fun BuildTopBar() {
-
-    }
-
-    @Composable
-    private fun BuildBottomBar(navController: NavController) {
-        val items = listOf(
-            Screen.Home,
-            Screen.CloudOverview,
-            Screen.Settings
+    ) {
+        MainNavigation(
+            navController = navController,
+            paddingValues = it
         )
+    }
+}
 
-        val navBackStackEntry = navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry.value?.destination?.route
+@Composable
+private fun TopBar() {
 
-        BottomNavigation(
-            elevation = 4.dp
-        ) {
-            for (item in items) {
-                BottomNavigationItem(
-                    modifier = Modifier
-                        .testTag(item.Route),
-                    label = {
-                        Text(
-                            text = stringResource(
-                                id = item.Title
-                            )
+}
+
+@Composable
+private fun BottomBar(navController: NavController) {
+    val items = listOf(
+        Screen.Home,
+        Screen.Connectionverview,
+        Screen.Settings
+    )
+
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+    BottomNavigation(
+        elevation = 4.dp
+    ) {
+        for (item in items) {
+            BottomNavigationItem(
+                modifier = Modifier
+                    .testTag(item.Route),
+                label = {
+                    Text(
+                        text = stringResource(
+                            id = item.Title
                         )
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = item.Icon),
-                            contentDescription = stringResource(
-                                id = item.Title
-                            )
+                    )
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = item.Icon),
+                        contentDescription = stringResource(
+                            id = item.Title
                         )
-                    },
-                    selected = currentRoute == item.Route,
-                    onClick = {
-                        navController.navigate(item.Route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+                    )
+                },
+                selected = currentRoute == item.Route,
+                onClick = {
+                    navController.navigate(item.Route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
 
-                    })
-            }
+                })
         }
     }
 }

@@ -8,7 +8,6 @@ import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.utils.MathUtil
-import com.simplyteam.simplybackup.presentation.views.IconProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -18,8 +17,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val _historyRepository: HistoryRepository,
     private val _connectionRepository: ConnectionRepository,
-    private val _schedulerService: SchedulerService,
-    private val _iconProvider: IconProvider
+    private val _schedulerService: SchedulerService
 ) : ViewModel() {
     fun GetConnections() = _connectionRepository.Connections.value
 
@@ -41,6 +39,4 @@ class HomeViewModel @Inject constructor(
             })
         )
     }
-
-    fun GetIconProvider() = _iconProvider
 }

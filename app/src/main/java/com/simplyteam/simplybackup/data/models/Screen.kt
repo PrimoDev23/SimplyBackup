@@ -15,8 +15,8 @@ sealed class Screen(
         Title = R.string.Home,
         Icon = R.drawable.ic_baseline_home_24
     )
-    object CloudOverview : Screen(
-        Route = "cloudOverview",
+    object Connectionverview : Screen(
+        Route = "connectionOverview",
         Title = R.string.Connections,
         Icon = R.drawable.ic_baseline_cloud_24
     )

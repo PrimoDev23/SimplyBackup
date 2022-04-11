@@ -25,9 +25,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BackupHistoryActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var BackupHistoryView: BackupHistoryView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,7 +43,7 @@ class BackupHistoryActivity : ComponentActivity() {
                         BuildTopBar()
                     }
                 ) {
-                    BackupHistoryView.Build(
+                    BackupHistoryView(
                         paddingValues = it,
                         viewModel = viewModel
                     )

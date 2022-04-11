@@ -20,170 +20,167 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HomeViewModel
+import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 
-class HomeView {
+@Composable
+fun HomeView(paddingValues: PaddingValues) {
+    val viewModel: HomeViewModel = hiltViewModel()
 
-    @Composable
-    fun Build(paddingValues: PaddingValues) {
-        val viewModel: HomeViewModel = hiltViewModel()
-
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-                    .testTag("History")
-            ) {
-                items(viewModel.GetConnections()) { connection ->
-                    BuildHistoryCard(
-                        viewModel = viewModel,
-                        connection = connection
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun BuildHistoryCard(
-        viewModel: HomeViewModel,
-        connection: Connection
-    ) {
-        val context = LocalContext.current
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
                 .padding(8.dp)
-                .clickable {
-                    val intent = Intent(
-                        context,
-                        BackupHistoryActivity::class.java
-                    )
-                    intent.putExtra(
-                        "Connection",
-                        connection
-                    )
-
-                    context.startActivity(intent)
-                }
-                .testTag(connection.Name),
-            elevation = 2.dp
+                .testTag("History")
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                val data = viewModel.BuildHistoryDataForConnection(connection)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .width(65.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        viewModel.GetIconProvider()
-                            .BuildIconFromConnectionType(
-                                connectionType = data.Type
-                            )
-                    }
-
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                12.dp,
-                                8.dp,
-                                8.dp,
-                                0.dp
-                            ),
-                        text = data.Name,
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Divider()
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BuildInformationField(
-                        modifier = Modifier
-                            .weight(1f),
-                        titleId = R.string.LastBackup,
-                        text = data.LastBackup
-                    )
-
-                    BuildInformationField(
-                        modifier = Modifier
-                            .weight(1f),
-                        titleId = R.string.LastBackupSize,
-                        text = data.LastBackupSize
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BuildInformationField(
-                        modifier = Modifier
-                            .weight(1f),
-                        titleId = R.string.NextBackup,
-                        text = data.NextBackup
-                    )
-
-                    BuildInformationField(
-                        modifier = Modifier
-                            .weight(1f),
-                        titleId = R.string.TotalBackupSize,
-                        text = data.TotalBackedUpSize
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun BuildInformationField(
-        modifier: Modifier,
-        titleId: Int,
-        text: String
-    ) {
-        Column(
-            modifier = modifier
-                .padding(8.dp)
-        ) {
-            Text(
-                text = stringResource(
-                    id = titleId
-                ),
-                style = MaterialTheme.typography.subtitle1
-            )
-
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.body2
+            items(viewModel.GetConnections()) { connection ->
+                HistoryCard(
+                    viewModel = viewModel,
+                    connection = connection
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun HistoryCard(
+    viewModel: HomeViewModel,
+    connection: Connection
+) {
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                val intent = Intent(
+                    context,
+                    BackupHistoryActivity::class.java
+                )
+                intent.putExtra(
+                    "Connection",
+                    connection
+                )
+
+                context.startActivity(intent)
+            }
+            .testTag(connection.Name),
+        elevation = 2.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            val data = viewModel.BuildHistoryDataForConnection(connection)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier
+                        .width(65.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    ConnectionIcon(
+                        connectionType = data.Type
+                    )
+                }
+
+                Text(
+                    modifier = Modifier
+                        .padding(
+                            12.dp,
+                            8.dp,
+                            8.dp,
+                            0.dp
+                        ),
+                    text = data.Name,
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Divider()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HistoryInformation(
+                    modifier = Modifier
+                        .weight(1f),
+                    titleId = R.string.LastBackup,
+                    text = data.LastBackup
+                )
+
+                HistoryInformation(
+                    modifier = Modifier
+                        .weight(1f),
+                    titleId = R.string.LastBackupSize,
+                    text = data.LastBackupSize
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HistoryInformation(
+                    modifier = Modifier
+                        .weight(1f),
+                    titleId = R.string.NextBackup,
+                    text = data.NextBackup
+                )
+
+                HistoryInformation(
+                    modifier = Modifier
+                        .weight(1f),
+                    titleId = R.string.TotalBackupSize,
+                    text = data.TotalBackedUpSize
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HistoryInformation(
+    modifier: Modifier,
+    titleId: Int,
+    text: String
+) {
+    Column(
+        modifier = modifier
+            .padding(8.dp)
+    ) {
+        Text(
+            text = stringResource(
+                id = titleId
+            ),
+            style = MaterialTheme.typography.subtitle1
+        )
+
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body2
+            )
         }
     }
 }

@@ -27,181 +27,178 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.presentation.activities.ConnectionConfigurationActivity
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
+import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)
-class ConnectionOverviewView {
+@Composable
+fun ConnectionOverviewView(paddingValues: PaddingValues) {
+    val viewModel: ConnectionOverviewViewModel = hiltViewModel()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    @Composable
-    fun Build(paddingValues: PaddingValues) {
-        val viewModel: ConnectionOverviewViewModel = hiltViewModel()
-        val scope = rememberCoroutineScope()
-        val context = LocalContext.current
-
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(
-                        1f,
-                        fill = true
-                    )
-                    .padding(8.dp)
-            ) {
-                items(viewModel.GetConnections()) { item ->
-                    BuildConnectionCard(
-                        item = item,
-                        viewModel = viewModel
-                    )
-                }
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .testTag("AddConnection"),
-                border = BorderStroke(
-                    1.dp,
-                    MaterialTheme.colors.primary
-                ),
-                onClick = {
-                    scope.launch {
-                        context.startActivity(
-                            Intent(
-                                context,
-                                ConnectionConfigurationActivity::class.java
-                            )
-                        )
-                    }
-                }) {
-                Icon(
-                    modifier = Modifier
-                        .padding(
-                            0.dp,
-                            0.dp,
-                            8.dp,
-                            0.dp
-                        ),
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(
-                        id = R.string.ConfigureConnection
-                    )
+                .weight(
+                    1f,
+                    fill = true
                 )
-                Text(
-                    text = stringResource(
-                        id = R.string.ConfigureConnection
-                    )
+                .padding(8.dp)
+        ) {
+            items(viewModel.GetConnections()) { item ->
+                ConnectionCard(
+                    item = item,
+                    viewModel = viewModel
                 )
             }
         }
-    }
-
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    private fun BuildConnectionCard(
-        item: Connection,
-        viewModel: ConnectionOverviewViewModel
-    ) {
-        val scope = rememberCoroutineScope()
-        val context = LocalContext.current
-
-        Card(
+        OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-                .clickable {
-                    val intent = Intent(
-                        context,
-                        ConnectionConfigurationActivity::class.java
-                    )
-
-                    intent.putExtra(
-                        "Connection",
-                        item
-                    )
+                .testTag("AddConnection"),
+            border = BorderStroke(
+                1.dp,
+                MaterialTheme.colors.primary
+            ),
+            onClick = {
+                scope.launch {
                     context.startActivity(
-                        intent
+                        Intent(
+                            context,
+                            ConnectionConfigurationActivity::class.java
+                        )
                     )
                 }
-                .testTag(item.Id.toString()),
-            elevation = 2.dp
-        ) {
-            Column(
+            }) {
+            Icon(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .width(65.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        viewModel.GetIconProvider()
-                            .BuildIconFromConnectionType(
-                                connectionType = item.ConnectionType
-                            )
-                    }
+                    .padding(
+                        0.dp,
+                        0.dp,
+                        8.dp,
+                        0.dp
+                    ),
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(
+                    id = R.string.ConfigureConnection
+                )
+            )
+            Text(
+                text = stringResource(
+                    id = R.string.ConfigureConnection
+                )
+            )
+        }
+    }
+}
 
-                    Column(
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun ConnectionCard(
+    item: Connection,
+    viewModel: ConnectionOverviewViewModel
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                val intent = Intent(
+                    context,
+                    ConnectionConfigurationActivity::class.java
+                )
+
+                intent.putExtra(
+                    "Connection",
+                    item
+                )
+                context.startActivity(
+                    intent
+                )
+            }
+            .testTag(item.Id.toString()),
+        elevation = 2.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier
+                        .width(65.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    ConnectionIcon(
+                        connectionType = item.ConnectionType
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(
+                            8.dp,
+                            0.dp
+                        )
+                        .weight(1f)
+                ) {
+                    Text(
                         modifier = Modifier
-                            .fillMaxHeight()
                             .padding(
                                 8.dp,
+                                8.dp,
+                                8.dp,
                                 0.dp
-                            )
-                            .weight(1f)
-                    ) {
+                            ),
+                        text = item.Name,
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
                             modifier = Modifier
                                 .padding(
                                     8.dp,
+                                    0.dp,
                                     8.dp,
-                                    8.dp,
-                                    0.dp
+                                    8.dp
                                 ),
-                            text = item.Name,
-                            style = MaterialTheme.typography.subtitle1,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(
-                                        8.dp,
-                                        0.dp,
-                                        8.dp,
-                                        8.dp
-                                    ),
-                                text = item.Username,
-                                style = MaterialTheme.typography.body2,
-                                fontStyle = FontStyle.Italic
-                            )
-                        }
-                    }
-
-                    IconButton(onClick = {
-                        scope.launch {
-                            viewModel.DeleteConnection(item)
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(
-                                id = R.string.Delete
-                            )
+                            text = item.Username,
+                            style = MaterialTheme.typography.body2,
+                            fontStyle = FontStyle.Italic
                         )
                     }
+                }
+
+                IconButton(onClick = {
+                    scope.launch {
+                        viewModel.DeleteConnection(item)
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(
+                            id = R.string.Delete
+                        )
+                    )
                 }
             }
         }
