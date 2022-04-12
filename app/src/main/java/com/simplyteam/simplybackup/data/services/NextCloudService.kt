@@ -116,7 +116,7 @@ class NextCloudService (
                             val file =
                                 obj as com.owncloud.android.lib.resources.files.model.RemoteFile
 
-                            if (file.mimeType == "application/zip" && file.remotePath.contains("-${connection.Name}-")) {
+                            if (file.remotePath.contains("-${connection.Name}-") && file.remotePath.endsWith(".zip")) {
                                 files.add(
                                     RemoteFile(
                                         file.remotePath,
