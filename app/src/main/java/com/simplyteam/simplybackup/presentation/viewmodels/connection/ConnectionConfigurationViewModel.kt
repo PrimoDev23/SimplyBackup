@@ -30,6 +30,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
     var CurrentPath by mutableStateOf("")
     var Paths by mutableStateOf(listOf<Path>())
 
+    var BackupPassword by mutableStateOf("")
     var WifiOnly by mutableStateOf(false)
     var ScheduleTypeDialogShown by mutableStateOf(false)
     var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
@@ -44,6 +45,8 @@ class ConnectionConfigurationViewModel @Inject constructor(
             val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
 
             connection.Id = _id
+
+            connection.BackupPassword = BackupPassword
             connection.WifiOnly = WifiOnly
             connection.Paths = Paths
             connection.ScheduleType = SelectedScheduleType
@@ -124,6 +127,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
         _id = connection.Id
 
         SelectedConnectionType = connection.ConnectionType
+        BackupPassword = connection.BackupPassword
         WifiOnly = connection.WifiOnly
         Paths = connection.Paths
         SelectedScheduleType = connection.ScheduleType

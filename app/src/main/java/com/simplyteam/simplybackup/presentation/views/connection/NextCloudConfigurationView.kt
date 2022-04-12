@@ -230,7 +230,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Next
                 ),
                 leadingIcon = {
                     Icon(
@@ -242,13 +242,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                singleLine = true,
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyBoardController?.hide()
-                        focusManager.clearFocus(true)
-                    }
-                )
+                singleLine = true
             )
         }
     }

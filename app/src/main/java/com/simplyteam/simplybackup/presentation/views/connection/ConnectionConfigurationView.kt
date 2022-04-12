@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,9 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
@@ -54,11 +62,11 @@ fun ConnectionConfigurationView(
             viewModel = viewModel
         )
 
-        InformationFields(
+        TypeSpecificOptions(
             viewModel = viewModel
         )
 
-        WifiOnlyCard(
+        ExtraInformationCard(
             viewModel = viewModel
         )
 
@@ -163,7 +171,7 @@ private fun ConnectionButton(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun InformationFields(
+private fun TypeSpecificOptions(
     viewModel: ConnectionConfigurationViewModel
 ) {
     when (viewModel.SelectedConnectionType) {
@@ -180,8 +188,12 @@ private fun InformationFields(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun WifiOnlyCard(viewModel: ConnectionConfigurationViewModel) {
+private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
+    val keyBoardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,6 +215,45 @@ private fun WifiOnlyCard(viewModel: ConnectionConfigurationViewModel) {
                     8.dp
                 )
         ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("BackupPassword"),
+                label = {
+                    Text(
+                        text = stringResource(
+                            id = R.string.BackupPassword
+                        )
+                    )
+                },
+                value = viewModel.BackupPassword,
+                onValueChange = {
+                    viewModel.BackupPassword = it
+                },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_baseline_vpn_key_24
+                        ),
+                        contentDescription = stringResource(
+                            id = R.string.BackupPassword
+                        )
+                    )
+                },
+                singleLine = true,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyBoardController?.hide()
+                        focusManager.clearFocus(true)
+                    }
+                )
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),

@@ -57,4 +57,5 @@
     <string name="EnterPassword">Please enter a password</string>
     <string name="EnterRemotePath">Please enter a remote path</string>
     <string name="Host">Host</string>
+    <string name="BackupPassword">Backup password</string>
 </resources>

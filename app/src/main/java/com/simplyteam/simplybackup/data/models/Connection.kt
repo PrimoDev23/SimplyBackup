@@ -15,6 +15,7 @@ data class Connection(
     val Username : String,
     val Password : String,
     var RemotePath: String = "",
+    var BackupPassword: String = "",
     var WifiOnly: Boolean = false,
     var Paths : List<Path> = listOf(),
     var ScheduleType : ScheduleType = com.simplyteam.simplybackup.data.models.ScheduleType.DAILY

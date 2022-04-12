@@ -52,4 +52,5 @@
     <string name="EnterPassword">Bitte tragen Sie ein Passwort ein</string>
     <string name="EnterRemotePath">Bitte geben Sie einen Remotepfad ein</string>
     <string name="Host">Host</string>
+    <string name="BackupPassword">Backup-Passwort</string>
 </resources>

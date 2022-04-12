@@ -90,6 +90,9 @@ dependencies {
     implementation "com.squareup.moshi:moshi:1.13.0"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:1.13.0"
 
+    //Zip
+    implementation "net.lingala.zip4j:zip4j:2.10.0"
+
     //Nextcloud
     implementation 'com.github.nextcloud:android-library:-SNAPSHOT'
     implementation "commons-httpclient:commons-httpclient:3.1@jar"

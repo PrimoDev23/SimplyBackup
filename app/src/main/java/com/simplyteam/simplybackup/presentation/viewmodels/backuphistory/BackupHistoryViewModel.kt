@@ -180,7 +180,7 @@ class BackupHistoryViewModel @Inject constructor(
                     }
                 }
 
-                _packagingService.RestorePackage(file)
+                _packagingService.RestorePackage(file, backup.Connection)
                 file.delete()
 
                 CurrentRestoreStatus = RestoreStatus.SUCCESS

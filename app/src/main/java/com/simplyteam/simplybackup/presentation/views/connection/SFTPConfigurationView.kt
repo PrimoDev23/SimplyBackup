@@ -230,7 +230,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Next
                 ),
                 leadingIcon = {
                     Icon(
@@ -243,13 +243,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.RemotePathErrorShown,
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyBoardController?.hide()
-                        focusManager.clearFocus(true)
-                    }
-                )
+                isError = viewModel.RemotePathErrorShown
             )
 
             TextFieldErrorText(

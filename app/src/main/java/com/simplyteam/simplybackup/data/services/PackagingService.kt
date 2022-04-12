@@ -3,16 +3,33 @@ package com.simplyteam.simplybackup.data.services
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.PathType
+import net.lingala.zip4j.io.inputstream.ZipInputStream
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.LocalFileHeader
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.AesKeyStrength
+import net.lingala.zip4j.model.enums.EncryptionMethod
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 
+
 class PackagingService {
+
+    fun BuildZipParameters(encrypted: Boolean): ZipParameters {
+        val zipParameters = ZipParameters()
+        //zipParameters.isIncludeRootFolder = true
+
+        if (encrypted) {
+            zipParameters.isEncryptFiles = true
+            zipParameters.encryptionMethod = EncryptionMethod.AES
+            zipParameters.aesKeyStrength = AesKeyStrength.KEY_STRENGTH_256
+        }
+
+        return zipParameters
+    }
 
     fun CreatePackage(
         filesDir: String,
@@ -27,9 +44,16 @@ class PackagingService {
                 }.zip"
             )
 
-            //Create a new zip file
-            ZipOutputStream(BufferedOutputStream(FileOutputStream(file))).use { stream ->
+            val zipParameters = BuildZipParameters(connection.BackupPassword.isNotEmpty())
 
+            if (connection.BackupPassword.isNotEmpty()) {
+                ZipOutputStream(
+                    BufferedOutputStream(FileOutputStream(file)),
+                    connection.BackupPassword.toCharArray()
+                )
+            } else {
+                ZipOutputStream(BufferedOutputStream(FileOutputStream(file)))
+            }.use { stream ->
                 //Add every entry
                 for (path in connection.Paths) {
                     val backupFile = File(path.Path)
@@ -38,18 +62,21 @@ class PackagingService {
                         PathType.FILE -> {
                             AddFileToZip(
                                 stream,
-                                file
+                                zipParameters,
+                                backupFile
                             )
                         }
                         PathType.DIRECTORY -> {
+                            //zipParameters.rootFolderNameInZip = backupFile.absolutePath
+
                             AddDirectoryToZip(
                                 stream,
+                                zipParameters,
                                 backupFile
                             )
                         }
                     }
                 }
-                stream.finish()
             }
             return Result.success(file)
         } catch (ex: Exception) {
@@ -57,45 +84,61 @@ class PackagingService {
         }
     }
 
-    fun RestorePackage(zipFile: File) {
-        ZipInputStream(BufferedInputStream(FileInputStream(zipFile))).use {
-            var zipEntry = it.nextEntry
-
-            while (zipEntry != null) {
-
-                val file = File(zipEntry.name)
+    fun RestorePackage(
+        zipFile: File,
+        connection: Connection
+    ) {
+        if (connection.BackupPassword.isNotEmpty()) {
+            ZipInputStream(
+                FileInputStream(zipFile),
+                connection.BackupPassword.toCharArray()
+            )
+        } else {
+            ZipInputStream(FileInputStream(zipFile))
+        }.use { stream ->
+            var localFileHeader: LocalFileHeader? = stream.nextEntry
+            while (localFileHeader != null) {
+                val file = File("/${localFileHeader.fileName}")
 
                 CreateDirectories(file)
 
                 Files.copy(
-                    it,
+                    stream,
                     Path(file.absolutePath),
                     StandardCopyOption.REPLACE_EXISTING
                 )
 
-                zipEntry = it.nextEntry
+                localFileHeader = stream.nextEntry
             }
         }
     }
 
     private fun AddFileToZip(
         stream: ZipOutputStream,
+        zipParameters: ZipParameters,
         file: File
     ) {
-        val entry = ZipEntry(file.absolutePath)
         val bytes = file.readBytes()
 
-        stream.putNextEntry(entry)
+        val path = if (file.absolutePath.startsWith("/")) {
+            file.absolutePath.removePrefix("/")
+        } else {
+            file.absolutePath
+        }
+
+        zipParameters.fileNameInZip = path
+        zipParameters.lastModifiedFileTime = file.lastModified()
+
+        stream.putNextEntry(zipParameters)
         stream.write(
-            bytes,
-            0,
-            bytes.size
+            bytes
         )
         stream.closeEntry()
     }
 
     private fun AddDirectoryToZip(
         stream: ZipOutputStream,
+        zipParameters: ZipParameters,
         dir: File
     ) {
         val dirFiles = dir.listFiles()
@@ -103,13 +146,17 @@ class PackagingService {
         dirFiles?.let { files ->
             for (file in files) {
                 if (file.isDirectory) {
+                    //zipParameters.rootFolderNameInZip = file.absolutePath
+
                     AddDirectoryToZip(
                         stream,
+                        zipParameters,
                         file
                     )
                 } else {
                     AddFileToZip(
                         stream,
+                        zipParameters,
                         file
                     )
                 }
