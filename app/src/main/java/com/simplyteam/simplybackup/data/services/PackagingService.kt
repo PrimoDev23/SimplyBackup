@@ -18,9 +18,8 @@ import kotlin.io.path.Path
 
 class PackagingService {
 
-    fun BuildZipParameters(encrypted: Boolean): ZipParameters {
+    private fun BuildZipParameters(encrypted: Boolean): ZipParameters {
         val zipParameters = ZipParameters()
-        //zipParameters.isIncludeRootFolder = true
 
         if (encrypted) {
             zipParameters.isEncryptFiles = true
@@ -67,8 +66,6 @@ class PackagingService {
                             )
                         }
                         PathType.DIRECTORY -> {
-                            //zipParameters.rootFolderNameInZip = backupFile.absolutePath
-
                             AddDirectoryToZip(
                                 stream,
                                 zipParameters,
@@ -146,8 +143,6 @@ class PackagingService {
         dirFiles?.let { files ->
             for (file in files) {
                 if (file.isDirectory) {
-                    //zipParameters.rootFolderNameInZip = file.absolutePath
-
                     AddDirectoryToZip(
                         stream,
                         zipParameters,
