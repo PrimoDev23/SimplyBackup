@@ -3,16 +3,22 @@ package com.simplyteam.simplybackup.presentation.views.main
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,8 +39,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ConnectionOverviewView(paddingValues: PaddingValues) {
-    val viewModel: ConnectionOverviewViewModel = hiltViewModel()
+fun ConnectionOverviewView(
+    paddingValues: PaddingValues,
+    viewModel: ConnectionOverviewViewModel,
+    lazyListState: LazyListState
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -45,11 +54,12 @@ fun ConnectionOverviewView(paddingValues: PaddingValues) {
     ) {
         LazyColumn(
             modifier = Modifier
-                .weight(
-                    1f,
-                    fill = true
-                )
-                .padding(8.dp)
+                .weight(1f)
+                .padding(
+                    8.dp,
+                    0.dp
+                ),
+            state = lazyListState
         ) {
             items(viewModel.GetConnections()) { item ->
                 ConnectionCard(
@@ -57,44 +67,6 @@ fun ConnectionOverviewView(paddingValues: PaddingValues) {
                     viewModel = viewModel
                 )
             }
-        }
-        OutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .testTag("AddConnection"),
-            border = BorderStroke(
-                1.dp,
-                MaterialTheme.colors.primary
-            ),
-            onClick = {
-                scope.launch {
-                    context.startActivity(
-                        Intent(
-                            context,
-                            ConnectionConfigurationActivity::class.java
-                        )
-                    )
-                }
-            }) {
-            Icon(
-                modifier = Modifier
-                    .padding(
-                        0.dp,
-                        0.dp,
-                        8.dp,
-                        0.dp
-                    ),
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(
-                    id = R.string.ConfigureConnection
-                )
-            )
-            Text(
-                text = stringResource(
-                    id = R.string.ConfigureConnection
-                )
-            )
         }
     }
 }
@@ -108,98 +80,82 @@ private fun ConnectionCard(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                val intent = Intent(
-                    context,
-                    ConnectionConfigurationActivity::class.java
-                )
-
-                intent.putExtra(
-                    "Connection",
-                    item
-                )
-                context.startActivity(
-                    intent
+                viewModel.StartConfiguration(context, item)
+            }
+            .testTag(item.Id.toString())
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .width(65.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                ConnectionIcon(
+                    connectionType = item.ConnectionType
                 )
             }
-            .testTag(item.Id.toString()),
-        elevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier
-                        .width(65.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    ConnectionIcon(
-                        connectionType = item.ConnectionType
-                    )
-                }
 
-                Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(
+                        8.dp,
+                        0.dp
+                    )
+                    .weight(1f)
+            ) {
+                Text(
                     modifier = Modifier
-                        .fillMaxHeight()
                         .padding(
                             8.dp,
+                            8.dp,
+                            8.dp,
                             0.dp
-                        )
-                        .weight(1f)
-                ) {
+                        ),
+                    text = item.Name,
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold
+                )
+
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier
                             .padding(
                                 8.dp,
+                                0.dp,
                                 8.dp,
-                                8.dp,
-                                0.dp
+                                8.dp
                             ),
-                        text = item.Name,
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
+                        text = item.Username,
+                        style = MaterialTheme.typography.body2,
+                        fontStyle = FontStyle.Italic
                     )
-
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(
-                            modifier = Modifier
-                                .padding(
-                                    8.dp,
-                                    0.dp,
-                                    8.dp,
-                                    8.dp
-                                ),
-                            text = item.Username,
-                            style = MaterialTheme.typography.body2,
-                            fontStyle = FontStyle.Italic
-                        )
-                    }
                 }
+            }
 
-                IconButton(onClick = {
+            IconButton(
+                onClick = {
                     scope.launch {
                         viewModel.DeleteConnection(item)
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(
-                            id = R.string.Delete
-                        )
-                    )
                 }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(
+                        id = R.string.Delete
+                    )
+                )
             }
         }
     }

@@ -2,7 +2,10 @@ package com.simplyteam.simplybackup.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val Primary = Color(0xFF03a9f4)
+val PrimaryLight = Color(0xFF67daff)
+val PrimaryDark = Color(0xFF007ac1)
+
+val Secondary = Color(0xFFff9800)
+val SecondaryLight = Color(0xFFffc947)
+val SecondaryDark = Color(0xFFc66900)

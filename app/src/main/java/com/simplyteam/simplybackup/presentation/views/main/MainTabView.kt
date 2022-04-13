@@ -1,46 +1,136 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
+import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 
 @Composable
 fun MainTabView() {
     val navController = rememberNavController()
+    val currentScreen = remember {
+        mutableStateOf<Screen>(Screen.History)
+    }
+
+    val historyViewModel = hiltViewModel<HistoryViewModel>()
+    val overviewViewModel = hiltViewModel<ConnectionOverviewViewModel>()
+
+    val historyLazyListState = rememberLazyListState()
+    val overViewLazyListState = rememberLazyListState()
+
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
-            TopBar()
+            TopBar(
+                currentScreen = currentScreen,
+                historyLazyListState = historyLazyListState,
+                overViewLazyListState = overViewLazyListState
+            )
         },
         bottomBar = {
             BottomBar(
-                navController = navController
+                navController = navController,
+                currentScreen = currentScreen
             )
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier
+                    .testTag("AddConnection"),
+                onClick = {
+                    overviewViewModel.StartConfiguration(
+                        context,
+                        null
+                    )
+                },
+                backgroundColor = MaterialTheme.colors.primaryVariant
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.ConfigureConnection)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        isFloatingActionButtonDocked = true
     ) {
         MainNavigation(
             navController = navController,
-            paddingValues = it
+            paddingValues = it,
+            historyViewModel = historyViewModel,
+            overviewViewModel = overviewViewModel,
+            historyLazyListState = historyLazyListState,
+            overViewLazyListState = overViewLazyListState
         )
     }
 }
 
 @Composable
-private fun TopBar() {
+private fun TopBar(
+    currentScreen: MutableState<Screen>,
+    historyLazyListState: LazyListState,
+    overViewLazyListState: LazyListState
+) {
+    val currentLazyListState = when (currentScreen.value) {
+        Screen.History -> {
+            historyLazyListState
+        }
+        Screen.Connections -> {
+            overViewLazyListState
+        }
+        else -> {
+            throw Exception("Undefined LazyListState")
+        }
+    }
 
+    val elevation by animateDpAsState(
+        if (currentLazyListState.firstVisibleItemIndex == 0) {
+            minOf(
+                currentLazyListState.firstVisibleItemScrollOffset.toFloat().dp,
+                AppBarDefaults.TopAppBarElevation
+            )
+        } else {
+            AppBarDefaults.TopAppBarElevation
+        }
+    )
+
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(
+                    id = currentScreen.value.Title
+                )
+            )
+        },
+        elevation = elevation,
+        backgroundColor = MaterialTheme.colors.background
+    )
 }
 
 @Composable
-private fun BottomBar(navController: NavController) {
+private fun BottomBar(
+    navController: NavController,
+    currentScreen: MutableState<Screen>
+) {
     val items = listOf(
         Screen.History,
         Screen.Connections,
@@ -50,9 +140,7 @@ private fun BottomBar(navController: NavController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    BottomNavigation(
-        elevation = 4.dp
-    ) {
+    BottomNavigation {
         for (item in items) {
             BottomNavigationItem(
                 modifier = Modifier
@@ -81,7 +169,7 @@ private fun BottomBar(navController: NavController) {
                         launchSingleTop = true
                         restoreState = true
                     }
-
+                    currentScreen.value = item
                 })
         }
     }

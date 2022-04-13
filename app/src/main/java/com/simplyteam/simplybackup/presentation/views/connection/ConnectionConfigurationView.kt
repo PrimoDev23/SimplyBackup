@@ -108,7 +108,11 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         LazyRow(
             modifier = Modifier
@@ -197,7 +201,11 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
                 8.dp,
                 8.dp
             ),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         Column(
             modifier = Modifier
@@ -292,7 +300,11 @@ private fun PathConfigurationCard(
                 navController.navigate(Screen.PathsConfiguration.Route)
             }
             .testTag("ConfigurePaths"),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         Row(
             modifier = Modifier
@@ -338,7 +350,11 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel = hiltV
                 menuExpanded = true
             }
             .testTag("ScheduleTypeCard"),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         Column(
             modifier = Modifier

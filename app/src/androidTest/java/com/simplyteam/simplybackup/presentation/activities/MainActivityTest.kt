@@ -114,7 +114,7 @@ class MainActivityTest {
         composeRule.onNodeWithTag("ScheduleTypeCard")
             .performClick()
 
-        composeRule.onNodeWithTag("MonthlyScheduleType")
+        composeRule.onNodeWithTag("MonthlyMenuItem")
             .performClick()
 
         composeRule.onNodeWithTag("Save")
@@ -241,7 +241,7 @@ class MainActivityTest {
         composeRule.onNodeWithTag("ScheduleTypeCard")
             .performClick()
 
-        composeRule.onNodeWithTag("YearlyScheduleType")
+        composeRule.onNodeWithTag("YearlyMenuItem")
             .performClick()
 
         composeRule.onNodeWithTag("Save")

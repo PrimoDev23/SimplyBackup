@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,9 +24,6 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfig
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
-    val keyBoardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,7 +33,11 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 8.dp,
                 8.dp
             ),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         Column(
             modifier = Modifier

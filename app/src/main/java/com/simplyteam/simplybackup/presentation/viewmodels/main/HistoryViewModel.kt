@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HistoryViewModel @Inject constructor(
     private val _historyRepository: HistoryRepository,
     private val _connectionRepository: ConnectionRepository,
     private val _schedulerService: SchedulerService

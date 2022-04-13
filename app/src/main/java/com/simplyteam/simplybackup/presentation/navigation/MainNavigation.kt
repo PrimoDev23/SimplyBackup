@@ -1,30 +1,45 @@
 package com.simplyteam.simplybackup.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.main.ConnectionOverviewView
-import com.simplyteam.simplybackup.presentation.views.main.HomeView
+import com.simplyteam.simplybackup.presentation.views.main.HistoryView
 import com.simplyteam.simplybackup.presentation.views.main.SettingsView
 
 @Composable
 fun MainNavigation(
     navController: NavHostController,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    historyViewModel: HistoryViewModel,
+    overviewViewModel: ConnectionOverviewViewModel,
+    historyLazyListState: LazyListState,
+    overViewLazyListState: LazyListState
 ) {
     NavHost(
         navController = navController,
         startDestination = Screen.History.Route
     ) {
         composable(Screen.History.Route) {
-            HomeView(paddingValues)
+            HistoryView(
+                paddingValues = paddingValues,
+                viewModel = historyViewModel,
+                lazyListState = historyLazyListState
+            )
         }
 
         composable(Screen.Connections.Route) {
-            ConnectionOverviewView(paddingValues)
+            ConnectionOverviewView(
+                paddingValues = paddingValues,
+                viewModel = overviewViewModel,
+                lazyListState = overViewLazyListState
+            )
         }
 
         composable(Screen.Settings.Route) {

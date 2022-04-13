@@ -30,7 +30,11 @@ fun PathsConfigurationView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            elevation = 2.dp
+            elevation = 0.dp,
+            border = BorderStroke(
+                1.dp,
+                MaterialTheme.colors.onBackground.copy(0.12f)
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -75,45 +79,39 @@ fun PathsConfigurationView(
             }
         }
 
-        Card(
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .padding(8.dp),
-            elevation = 2.dp
+                .padding(8.dp, 0.dp)
+                .testTag("Paths")
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("Paths")
-            ) {
-                itemsIndexed(viewModel.Paths) { index, path ->
-                    Row(
+            itemsIndexed(viewModel.Paths) { index, path ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp, 0.dp, 0.dp, 0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(8.dp),
-                            text = path.Path
-                        )
+                        text = path.Path
+                    )
 
-                        IconButton(
-                            modifier = Modifier
-                                .testTag("DeletePath"),
-                            onClick = {
-                                viewModel.RemovePath(path)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(
-                                    id = R.string.Delete
-                                )
-                            )
+                    IconButton(
+                        modifier = Modifier
+                            .testTag("DeletePath"),
+                        onClick = {
+                            viewModel.RemovePath(path)
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(
+                                id = R.string.Delete
+                            )
+                        )
                     }
                 }
             }

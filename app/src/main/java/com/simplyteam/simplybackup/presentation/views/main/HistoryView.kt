@@ -1,9 +1,11 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
 import android.content.Intent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -19,13 +21,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
-import com.simplyteam.simplybackup.presentation.viewmodels.main.HomeViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 
 @Composable
-fun HomeView(paddingValues: PaddingValues) {
-    val viewModel: HomeViewModel = hiltViewModel()
-
+fun HistoryView(
+    paddingValues: PaddingValues,
+    viewModel: HistoryViewModel,
+    lazyListState: LazyListState
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,8 +38,12 @@ fun HomeView(paddingValues: PaddingValues) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
-                .testTag("History")
+                .padding(
+                    8.dp,
+                    0.dp
+                )
+                .testTag("History"),
+            state = lazyListState
         ) {
             items(viewModel.GetConnections()) { connection ->
                 HistoryCard(
@@ -49,7 +57,7 @@ fun HomeView(paddingValues: PaddingValues) {
 
 @Composable
 private fun HistoryCard(
-    viewModel: HomeViewModel,
+    viewModel: HistoryViewModel,
     connection: Connection
 ) {
     val context = LocalContext.current
@@ -71,7 +79,11 @@ private fun HistoryCard(
                 context.startActivity(intent)
             }
             .testTag(connection.Name),
-        elevation = 2.dp
+        elevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colors.onBackground.copy(0.12f)
+        )
     ) {
         Column(
             modifier = Modifier

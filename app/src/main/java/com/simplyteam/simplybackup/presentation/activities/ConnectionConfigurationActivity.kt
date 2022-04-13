@@ -79,9 +79,21 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         navController: NavHostController,
         scrollState: ScrollState
     ) {
+        val navBackStackEntry = navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry.value?.destination?.route
+
+        val currentScreen = when(currentRoute){
+            Screen.ConnectionConfiguration.Route -> {
+                Screen.ConnectionConfiguration
+            }
+            else -> {
+                Screen.PathsConfiguration
+            }
+        }
+
         val elevation by animateDpAsState(
-            if(scrollState.value != 0){
-                4.dp
+            if(scrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration){
+                AppBarDefaults.TopAppBarElevation
             }else{
                 0.dp
             }
@@ -90,13 +102,12 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         TopAppBar(
             title = {
-                val navBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry.value?.destination?.route
 
-                var resId = Screen.ConnectionConfiguration.Title
 
-                if (currentRoute == Screen.PathsConfiguration.Route) {
-                    resId = Screen.PathsConfiguration.Title
+                val resId = if (currentRoute == Screen.PathsConfiguration.Route) {
+                    Screen.PathsConfiguration.Title
+                }else{
+                    Screen.ConnectionConfiguration.Title
                 }
 
                 Text(
@@ -110,12 +121,9 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     modifier = Modifier
                         .testTag("BackButton"),
                     onClick = {
-                        val navBackStackEntry = navController.currentBackStackEntry
-                        val currentRoute = navBackStackEntry?.destination?.route
-
-                        if (currentRoute == Screen.ConnectionConfiguration.Route) {
+                        if (currentScreen == Screen.ConnectionConfiguration) {
                             activity.finish()
-                        } else if (currentRoute == Screen.PathsConfiguration.Route) {
+                        } else if (currentScreen == Screen.PathsConfiguration) {
                             navController.popBackStack()
                         }
                     }) {
@@ -125,7 +133,8 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     )
                 }
             },
-            elevation = elevation
+            elevation = elevation,
+            backgroundColor = MaterialTheme.colors.background
         )
     }
 }
