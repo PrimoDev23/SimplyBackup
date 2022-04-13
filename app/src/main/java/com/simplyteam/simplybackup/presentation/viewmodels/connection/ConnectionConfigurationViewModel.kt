@@ -32,13 +32,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
     var BackupPassword by mutableStateOf("")
     var WifiOnly by mutableStateOf(false)
-    var ScheduleTypeDialogShown by mutableStateOf(false)
     var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
-
-    fun UpdateScheduleType(scheduleType: ScheduleType) {
-        SelectedScheduleType = scheduleType
-        ScheduleTypeDialogShown = false
-    }
 
     suspend fun SaveConnection(context: ComponentActivity) {
         try {

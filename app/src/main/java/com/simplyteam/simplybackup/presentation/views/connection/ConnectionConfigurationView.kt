@@ -12,10 +12,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,8 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -75,10 +76,6 @@ fun ConnectionConfigurationView(
         )
 
         ScheduleTypeCard(
-            viewModel = viewModel
-        )
-
-        ScheduleTypeDialog(
             viewModel = viewModel
         )
 
@@ -326,7 +323,11 @@ private fun PathConfigurationCard(
 }
 
 @Composable
-private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
+private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel = hiltViewModel()) {
+    var menuExpanded by remember {
+        mutableStateOf(false)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -337,7 +338,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                 8.dp
             )
             .clickable {
-                viewModel.ScheduleTypeDialogShown = true
+                menuExpanded = true
             }
             .testTag("ScheduleTypeCard"),
         elevation = 2.dp
@@ -381,149 +382,117 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                     )
                 )
             }
-        }
-    }
-}
 
-@Composable
-private fun ScheduleTypeDialog(viewModel: ConnectionConfigurationViewModel) {
-    if (viewModel.ScheduleTypeDialogShown) {
-        Dialog(
-            onDismissRequest = {
-                viewModel.ScheduleTypeDialogShown = false
-            }) {
-            Card(
+            DropdownMenu(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                expanded = menuExpanded,
+                onDismissRequest = {
+                    menuExpanded = false
+                }
             ) {
-                Column {
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .testTag("DailyMenuItem"),
+                    onClick = {
+                        viewModel.SelectedScheduleType = ScheduleType.DAILY
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        4.dp,
+                        8.dp
+                    )
+                ) {
                     Text(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(
+                                20.dp,
+                                0.dp,
+                                0.dp,
+                                0.dp
+                            ),
                         text = stringResource(
-                            id = R.string.SelectScheduleType
-                        ),
-                        fontWeight = FontWeight.Bold
+                            id = R.string.Daily
+                        )
                     )
+                }
 
-                    Divider()
-
-                    Row(
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .testTag("WeeklyMenuItem"),
+                    onClick = {
+                        viewModel.SelectedScheduleType = ScheduleType.WEEKLY
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        4.dp,
+                        8.dp
+                    )
+                ) {
+                    Text(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(
-                                8.dp,
+                                20.dp,
+                                0.dp,
+                                0.dp,
                                 0.dp
-                            )
-                            .clickable {
-                                viewModel.UpdateScheduleType(ScheduleType.DAILY)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        RadioButton(
-                            modifier = Modifier
-                                .testTag("DailyScheduleType"),
-                            selected = viewModel.SelectedScheduleType == ScheduleType.DAILY,
-                            onClick = {
-                                viewModel.UpdateScheduleType(ScheduleType.DAILY)
-                            }
+                            ),
+                        text = stringResource(
+                            id = R.string.Weekly
                         )
+                    )
+                }
 
-                        Text(
-                            text = stringResource(
-                                id = R.string.Daily
-                            )
-                        )
-                    }
-
-                    Row(
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .testTag("MonthlyMenuItem"),
+                    onClick = {
+                        viewModel.SelectedScheduleType = ScheduleType.MONTHLY
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        4.dp,
+                        8.dp
+                    )
+                ) {
+                    Text(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(
-                                8.dp,
+                                20.dp,
+                                0.dp,
+                                0.dp,
                                 0.dp
-                            )
-                            .clickable {
-                                viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        RadioButton(
-                            modifier = Modifier
-                                .testTag("WeeklyScheduleType"),
-                            selected = viewModel.SelectedScheduleType == ScheduleType.WEEKLY,
-                            onClick = {
-                                viewModel.UpdateScheduleType(ScheduleType.WEEKLY)
-                            }
+                            ),
+                        text = stringResource(
+                            id = R.string.Monthly
                         )
+                    )
+                }
 
-                        Text(
-                            text = stringResource(
-                                id = R.string.Weekly
-                            )
-                        )
-                    }
-
-                    Row(
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .testTag("YearlyMenuItem"),
+                    onClick = {
+                        viewModel.SelectedScheduleType = ScheduleType.YEARLY
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        4.dp,
+                        8.dp
+                    )
+                ) {
+                    Text(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(
-                                8.dp,
+                                20.dp,
+                                0.dp,
+                                0.dp,
                                 0.dp
-                            )
-                            .clickable {
-                                viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        RadioButton(
-                            modifier = Modifier
-                                .testTag("MonthlyScheduleType"),
-                            selected = viewModel.SelectedScheduleType == ScheduleType.MONTHLY,
-                            onClick = {
-                                viewModel.UpdateScheduleType(ScheduleType.MONTHLY)
-                            }
+                            ),
+                        text = stringResource(
+                            id = R.string.Yearly
                         )
-
-                        Text(
-                            text = stringResource(
-                                id = R.string.Monthly
-                            )
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                8.dp,
-                                0.dp
-                            )
-                            .clickable {
-                                viewModel.UpdateScheduleType(ScheduleType.YEARLY)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        RadioButton(
-                            modifier = Modifier
-                                .testTag("YearlyScheduleType"),
-                            selected = viewModel.SelectedScheduleType == ScheduleType.YEARLY,
-                            onClick = {
-                                viewModel.UpdateScheduleType(ScheduleType.YEARLY)
-                            }
-                        )
-
-                        Text(
-                            text = stringResource(
-                                id = R.string.Yearly
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
