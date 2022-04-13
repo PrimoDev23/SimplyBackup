@@ -20,8 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.Screen
-import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
+import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel

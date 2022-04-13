@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.presentation.activities.ui.theme.SimplyBackupTheme
+import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.backuphistory.BackupHistoryView
 import dagger.hilt.android.AndroidEntryPoint
