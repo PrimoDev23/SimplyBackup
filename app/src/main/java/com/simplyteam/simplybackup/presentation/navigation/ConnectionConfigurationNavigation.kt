@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.navigation
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -14,7 +15,8 @@ import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurat
 fun ConnectionConfigurationNavigation(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    viewModel: ConnectionConfigurationViewModel
+    viewModel: ConnectionConfigurationViewModel,
+    scrollState: ScrollState
 ) {
     NavHost(
         navController = navController,
@@ -24,7 +26,8 @@ fun ConnectionConfigurationNavigation(
             ConnectionConfigurationView(
                 paddingValues = paddingValues,
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                scrollState = scrollState
             )
         }
 

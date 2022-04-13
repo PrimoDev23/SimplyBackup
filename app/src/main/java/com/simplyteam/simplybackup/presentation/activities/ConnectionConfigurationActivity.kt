@@ -3,11 +3,15 @@ package com.simplyteam.simplybackup.presentation.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -44,26 +48,44 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
                 viewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
 
-                LaunchedEffect(key1 = true){
+                LaunchedEffect(key1 = true) {
                     connection?.let {
                         viewModel.LoadData(connection)
                     }
                 }
 
+                val scrollState = rememberScrollState()
+
                 Scaffold(
                     topBar = {
                         BuildTopBar(
-                            navController = navController
+                            navController = navController,
+                            scrollState = scrollState
                         )
                     }) {
-                    ConnectionConfigurationNavigation(navController, it, viewModel)
+                    ConnectionConfigurationNavigation(
+                        navController = navController,
+                        paddingValues = it,
+                        viewModel = viewModel,
+                        scrollState = scrollState
+                    )
                 }
             }
         }
     }
 
     @Composable
-    private fun BuildTopBar(navController: NavHostController) {
+    private fun BuildTopBar(
+        navController: NavHostController,
+        scrollState: ScrollState
+    ) {
+        val elevation by animateDpAsState(
+            if(scrollState.value != 0){
+                4.dp
+            }else{
+                0.dp
+            }
+        )
         val activity = LocalContext.current as ComponentActivity
 
         TopAppBar(
@@ -73,7 +95,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
                 var resId = Screen.ConnectionConfiguration.Title
 
-                if(currentRoute == Screen.PathsConfiguration.Route){
+                if (currentRoute == Screen.PathsConfiguration.Route) {
                     resId = Screen.PathsConfiguration.Title
                 }
 
@@ -88,22 +110,22 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     modifier = Modifier
                         .testTag("BackButton"),
                     onClick = {
-                    val navBackStackEntry = navController.currentBackStackEntry
-                    val currentRoute = navBackStackEntry?.destination?.route
+                        val navBackStackEntry = navController.currentBackStackEntry
+                        val currentRoute = navBackStackEntry?.destination?.route
 
-                    if(currentRoute == Screen.ConnectionConfiguration.Route) {
-                        activity.finish()
-                    }else if(currentRoute == Screen.PathsConfiguration.Route){
-                        navController.popBackStack()
-                    }
-                }) {
+                        if (currentRoute == Screen.ConnectionConfiguration.Route) {
+                            activity.finish()
+                        } else if (currentRoute == Screen.PathsConfiguration.Route) {
+                            navController.popBackStack()
+                        }
+                    }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back"
                     )
                 }
             },
-            elevation = 4.dp
+            elevation = elevation
         )
     }
 }

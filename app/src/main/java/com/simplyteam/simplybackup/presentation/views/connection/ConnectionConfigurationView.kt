@@ -1,15 +1,12 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -47,11 +44,11 @@ import kotlinx.coroutines.launch
 fun ConnectionConfigurationView(
     paddingValues: PaddingValues,
     navController: NavHostController,
-    viewModel: ConnectionConfigurationViewModel
+    viewModel: ConnectionConfigurationViewModel,
+    scrollState: ScrollState
 ) {
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as ComponentActivity
-    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
