@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.presentation.activities.ConnectionConfigurationActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
@@ -15,12 +16,23 @@ import javax.inject.Inject
 @HiltViewModel
 class ConnectionOverviewViewModel @Inject constructor(
     private val _connectionRepository: ConnectionRepository,
+    private val _connectionSearchService: ConnectionSearchService,
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
 
     val ListState = LazyListState()
 
-    fun GetConnections() = _connectionRepository.Connections.value
+    fun GetConnections() = _connectionSearchService.FilteredItems
+
+    fun GetSearchText() = _connectionSearchService.GetSearchText()
+
+    fun Search(searchText: String) {
+        _connectionSearchService.Search(searchText)
+    }
+
+    fun ResetSearch() {
+        _connectionSearchService.Search("")
+    }
 
     suspend fun DeleteConnection(connection: Connection) {
         try {

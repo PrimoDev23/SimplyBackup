@@ -150,7 +150,7 @@ class MainActivityTest {
 
         composeRule.onNodeWithTag("History")
             .onChildren()
-            .assertCountEquals(1)
+            .assertCountEquals(2)
 
         composeRule.onNodeWithContentDescription(connection.ConnectionType.name)
             .assertExists()
@@ -168,10 +168,8 @@ class MainActivityTest {
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
 
-        val deleteButton =
-            composeRule.onAllNodesWithContentDescription(composeRule.activity.getString(R.string.Delete))[0]
-
-        deleteButton.performClick()
+        composeRule.onAllNodesWithTag("DeleteConnection")[0]
+            .performClick()
 
         assert(RetrieveConnections().size == connectionSize - 1)
 
@@ -180,7 +178,7 @@ class MainActivityTest {
 
         composeRule.onNodeWithTag("History")
             .onChildren()
-            .assertCountEquals(0)
+            .assertCountEquals(1)
 
         composeRule.onNodeWithText("Test")
             .assertDoesNotExist()
@@ -268,7 +266,7 @@ class MainActivityTest {
 
         composeRule.onNodeWithTag("History")
             .onChildren()
-            .assertCountEquals(1)
+            .assertCountEquals(2)
 
         composeRule.onNodeWithText(testValue)
             .assertExists()

@@ -1,22 +1,12 @@
 package com.simplyteam.simplybackup.data.repositories
 
-import androidx.compose.runtime.mutableStateOf
 import com.simplyteam.simplybackup.data.daos.ConnectionDao
 import com.simplyteam.simplybackup.data.models.Connection
-import kotlinx.coroutines.InternalCoroutinesApi
 
 class ConnectionRepository(
     private val _connectionDao: ConnectionDao
 ) {
-    val Connections = mutableStateOf<List<Connection>>(listOf())
-
-    @OptIn(InternalCoroutinesApi::class)
-    suspend fun Init() {
-        _connectionDao.GetAllConnectionsFlow()
-            .collect {
-                Connections.value = it
-            }
-    }
+    val ConnectionsFlow = _connectionDao.GetAllConnectionsFlow()
 
     suspend fun GetAllConnections(): List<Connection> {
         return _connectionDao.GetAllConnections()

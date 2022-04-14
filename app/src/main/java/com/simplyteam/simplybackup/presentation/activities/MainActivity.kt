@@ -11,10 +11,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
+import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import com.simplyteam.simplybackup.presentation.views.main.MainTabView
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var ConnectionRepository: ConnectionRepository
+    lateinit var ConnectionSearchService: ConnectionSearchService
+
+    @Inject
+    lateinit var HistorySearchService: HistorySearchService
 
     @Inject
     lateinit var HistoryRepository: HistoryRepository
@@ -64,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
         NotificationService.CreateNotificationChannel()
 
-        InitRepositories()
+        CollectFlows()
 
         setContent {
             SimplyBackupTheme {
@@ -77,9 +81,13 @@ class MainActivity : ComponentActivity() {
         _storageAccessLauncher.launch(_storageAccessIntent)
     }
 
-    private fun InitRepositories() {
+    private fun CollectFlows() {
         lifecycleScope.launchWhenStarted {
-            ConnectionRepository.Init()
+            ConnectionSearchService.Collect()
+        }
+
+        lifecycleScope.launchWhenStarted {
+            HistorySearchService.Collect()
         }
 
         lifecycleScope.launchWhenStarted {

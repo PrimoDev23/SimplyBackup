@@ -6,19 +6,30 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
+import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 
@@ -42,10 +53,96 @@ fun HistoryView(
                 .testTag("History"),
             state = viewModel.ListState
         ) {
+            item {
+                SearchBox(
+                    viewModel = viewModel
+                )
+            }
             items(viewModel.GetConnections()) { connection ->
                 HistoryCard(
                     viewModel = viewModel,
                     connection = connection
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun SearchBox(viewModel: HistoryViewModel) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    Card(
+        modifier = Modifier
+            .padding(
+                16.dp,
+                0.dp
+            )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(
+                        12.dp,
+                        0.dp,
+                        0.dp,
+                        0.dp
+                    ),
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(
+                    id = R.string.Search
+                )
+            )
+
+            BasicTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        8.dp,
+                        0.dp,
+                        0.dp,
+                        0.dp
+                    ),
+                value = viewModel.GetSearchText(),
+                onValueChange = {
+                    viewModel.Search(it)
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        focusManager.clearFocus(true)
+                        keyboardController?.hide()
+                    }
+                ),
+                singleLine = true,
+                cursorBrush = Brush.horizontalGradient(
+                    listOf(
+                        MaterialTheme.colors.onBackground,
+                        MaterialTheme.colors.onBackground,
+                    )
+                ),
+                textStyle = MaterialTheme.typography.subtitle1.copy(MaterialTheme.colors.onBackground)
+            )
+
+            IconButton(
+                onClick = {
+                    viewModel.ResetSearch()
+
+                    focusManager.clearFocus(true)
+                    keyboardController?.hide()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(
+                        id = R.string.Delete
+                    )
                 )
             }
         }

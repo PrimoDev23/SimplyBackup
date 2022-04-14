@@ -56,4 +56,7 @@
     <string name="EnterRemotePath">Please enter a remote path</string>
     <string name="Host">Host</string>
     <string name="BackupPassword">Backup password</string>
+    <string name="Search">Search</string>
+    <string name="Back">Back</string>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>

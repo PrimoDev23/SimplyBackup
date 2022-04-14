@@ -7,6 +7,8 @@ import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
+import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
+import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,7 +35,31 @@ class AppModule {
 
     //endregion DB
 
+    //region Repos
+
+    @Provides
+    @Singleton
+    fun GetConnectionRepository(simplyBackupDatabase: SimplyBackupDatabase) = ConnectionRepository(
+        simplyBackupDatabase.connectionDao
+    )
+
+    @Provides
+    @Singleton
+    fun GetHistoryRepository(simplyBackupDatabase: SimplyBackupDatabase) = HistoryRepository(
+        simplyBackupDatabase.historyDao
+    )
+
+    //endregion Repos
+
     //region Services
+
+    @Provides
+    @Singleton
+    fun GetConnectionSearchService(connectionRepository: ConnectionRepository) = ConnectionSearchService(connectionRepository)
+
+    @Provides
+    @Singleton
+    fun GetHistorySearchService(connectionRepository: ConnectionRepository) = HistorySearchService(connectionRepository)
 
     @Provides
     @Singleton
@@ -53,24 +79,9 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetNotificationService(@ApplicationContext appContext: Context) = NotificationService(appContext)
+    fun GetNotificationService(@ApplicationContext appContext: Context) =
+        NotificationService(appContext)
 
     //endregion Services
-
-    //region Repos
-
-    @Provides
-    @Singleton
-    fun GetConnectionRepository(simplyBackupDatabase: SimplyBackupDatabase) = ConnectionRepository(
-        simplyBackupDatabase.connectionDao
-    )
-
-    @Provides
-    @Singleton
-    fun GetHistoryRepository(simplyBackupDatabase: SimplyBackupDatabase) = HistoryRepository(
-        simplyBackupDatabase.historyDao
-    )
-
-    //endregion Repos
 
 }

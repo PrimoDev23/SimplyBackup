@@ -8,6 +8,8 @@ import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
+import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
@@ -16,12 +18,23 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val _historyRepository: HistoryRepository,
+    private val _historySearchService: HistorySearchService,
     private val _connectionRepository: ConnectionRepository,
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
     val ListState = LazyListState()
 
-    fun GetConnections() = _connectionRepository.Connections.value
+    fun GetConnections() = _historySearchService.FilteredItems
+
+    fun GetSearchText() = _historySearchService.GetSearchText()
+
+    fun Search(searchText: String) {
+        _historySearchService.Search(searchText)
+    }
+
+    fun ResetSearch() {
+        _historySearchService.Search("")
+    }
 
     fun BuildHistoryDataForConnection(connection: Connection) : HistoryData {
         val entries = _historyRepository.History.value.filter {
