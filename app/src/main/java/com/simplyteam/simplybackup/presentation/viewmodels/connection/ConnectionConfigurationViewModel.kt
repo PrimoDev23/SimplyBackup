@@ -10,6 +10,7 @@ import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import java.io.File
@@ -57,7 +58,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
                 schedulerService.ScheduleBackup(
                     connection
                 )
-                context.finish()
+                context.FinishActivityWithAnimation()
             } else {
                 val updatedRows = connectionRepository.UpdateConnection(
                     connection
@@ -67,7 +68,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
                     schedulerService.ScheduleBackup(
                         connection
                     )
-                    context.finish()
+                    context.FinishActivityWithAnimation()
                 } else {
                     throw UpdateFailedException()
                 }

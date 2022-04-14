@@ -1,7 +1,11 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
+import android.content.Context
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
@@ -10,7 +14,9 @@ import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.data.utils.MathUtil
+import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -53,5 +59,18 @@ class HistoryViewModel @Inject constructor(
                 it.Size
             })
         )
+    }
+
+    fun OpenHistory(context: ComponentActivity, connection: Connection) {
+        val intent = Intent(
+            context,
+            BackupHistoryActivity::class.java
+        )
+        intent.putExtra(
+            "Connection",
+            connection
+        )
+
+        context.StartActivityWithAnimation(intent)
     }
 }

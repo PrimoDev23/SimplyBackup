@@ -2,6 +2,7 @@ package com.simplyteam.simplybackup.presentation.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.backuphistory.BackupHistoryView
@@ -96,7 +98,7 @@ class BackupHistoryActivity : ComponentActivity() {
                     modifier = Modifier
                         .testTag("BackButton"),
                     onClick = {
-                        activity.finish()
+                        activity.FinishActivityWithAnimation()
                     }
                 ) {
                     Icon(
@@ -107,5 +109,10 @@ class BackupHistoryActivity : ComponentActivity() {
             },
             elevation = elevation
         )
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
     }
 }

@@ -19,9 +19,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
@@ -117,7 +119,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                         .testTag("BackButton"),
                     onClick = {
                         if (currentScreen == Screen.ConnectionConfiguration) {
-                            activity.finish()
+                            activity.FinishActivityWithAnimation()
                         } else if (currentScreen == Screen.PathsConfiguration) {
                             navController.popBackStack()
                         }
@@ -131,5 +133,10 @@ class ConnectionConfigurationActivity : ComponentActivity() {
             elevation = elevation,
             backgroundColor = MaterialTheme.colors.background
         )
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
     }
 }

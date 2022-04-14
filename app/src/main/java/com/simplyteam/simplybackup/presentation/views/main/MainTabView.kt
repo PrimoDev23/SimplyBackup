@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -33,7 +34,7 @@ fun MainTabView() {
     val historyViewModel = hiltViewModel<HistoryViewModel>()
     val overviewViewModel = hiltViewModel<ConnectionOverviewViewModel>()
 
-    val context = LocalContext.current
+    val context = LocalContext.current as ComponentActivity
 
     Scaffold(
         topBar = {

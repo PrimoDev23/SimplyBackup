@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -150,7 +151,7 @@ private fun ConnectionItem(
     viewModel: ConnectionOverviewViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val context = LocalContext.current as ComponentActivity
 
     Column(
         modifier = Modifier

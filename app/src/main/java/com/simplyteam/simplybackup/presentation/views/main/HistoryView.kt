@@ -1,6 +1,7 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -161,16 +162,7 @@ private fun HistoryCard(
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                val intent = Intent(
-                    context,
-                    BackupHistoryActivity::class.java
-                )
-                intent.putExtra(
-                    "Connection",
-                    connection
-                )
-
-                context.startActivity(intent)
+                viewModel.OpenHistory(context as ComponentActivity, connection)
             }
             .testTag(connection.Name),
         elevation = 0.dp,

@@ -1,13 +1,15 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
-import android.content.Context
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.activities.ConnectionConfigurationActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
@@ -45,7 +47,7 @@ class ConnectionOverviewViewModel @Inject constructor(
     }
 
     fun StartConfiguration(
-        context: Context,
+        context: ComponentActivity,
         item: Connection?
     ) {
         val intent = Intent(
@@ -60,7 +62,7 @@ class ConnectionOverviewViewModel @Inject constructor(
             )
         }
 
-        context.startActivity(
+        context.StartActivityWithAnimation(
             intent
         )
     }
