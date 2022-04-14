@@ -44,9 +44,6 @@ fun ConnectionOverviewView(
     viewModel: ConnectionOverviewViewModel,
     lazyListState: LazyListState
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,11 +51,7 @@ fun ConnectionOverviewView(
     ) {
         LazyColumn(
             modifier = Modifier
-                .weight(1f)
-                .padding(
-                    8.dp,
-                    0.dp
-                ),
+                .weight(1f),
             state = lazyListState
         ) {
             items(viewModel.GetConnections()) { item ->
@@ -83,7 +76,6 @@ private fun ConnectionCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 viewModel.StartConfiguration(context, item)
             }
@@ -91,7 +83,8 @@ private fun ConnectionCard(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
