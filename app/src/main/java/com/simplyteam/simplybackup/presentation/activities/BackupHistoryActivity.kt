@@ -38,7 +38,7 @@ class BackupHistoryActivity : ComponentActivity() {
                 val viewModel: BackupHistoryViewModel = hiltViewModel()
                 val lazyListState = rememberLazyListState()
 
-                LaunchedEffect(key1 = true){
+                LaunchedEffect(key1 = true) {
                     viewModel.InitValues(connection)
                 }
 
@@ -46,6 +46,20 @@ class BackupHistoryActivity : ComponentActivity() {
                     topBar = {
                         BuildTopBar(
                             listState = lazyListState
+                        )
+                    },
+                    snackbarHost = {
+                        SnackbarHost(
+                            modifier = Modifier
+                                .testTag("RestoreSnackbar"),
+                            hostState = viewModel.RestoreSnackbarState,
+                            snackbar = {
+                                Snackbar(
+                                    snackbarData = it,
+                                    backgroundColor = MaterialTheme.colors.background,
+                                    contentColor = MaterialTheme.colors.onBackground
+                                )
+                            }
                         )
                     }
                 ) {
@@ -86,8 +100,8 @@ class BackupHistoryActivity : ComponentActivity() {
                     modifier = Modifier
                         .testTag("BackButton"),
                     onClick = {
-                    activity.finish()
-                }
+                        activity.finish()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
@@ -98,6 +112,4 @@ class BackupHistoryActivity : ComponentActivity() {
             elevation = elevation
         )
     }
-
-
 }

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -295,15 +296,12 @@ private fun RestoreControls(viewModel: BackupHistoryViewModel) {
     RestoringDialog(
         viewModel = viewModel
     )
-
-    RestoreFinishedAlert(
-        viewModel
-    )
 }
 
 @Composable
 private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     if (viewModel.BackupToRestore != null) {
         AlertDialog(
@@ -347,7 +345,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
                         .testTag("RestoreDialogYes"),
                     onClick = {
                         scope.launch {
-                            viewModel.RestoreBackup()
+                            viewModel.RestoreBackup(context)
                         }
                     }
                 ) {
@@ -398,53 +396,6 @@ private fun RestoringDialog(viewModel: BackupHistoryViewModel) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun RestoreFinishedAlert(viewModel: BackupHistoryViewModel) {
-    if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS
-        || viewModel.CurrentRestoreStatus == RestoreStatus.ERROR
-    ) {
-        AlertDialog(
-            modifier = Modifier
-                .testTag("RestoreFinishedDialog"),
-            onDismissRequest = {
-                viewModel.HideRestoreFinishedAlert()
-            },
-            title = {
-                Text(
-                    text = stringResource(
-                        id = if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS) R.string.SuccessNotificationTitle else R.string.ErrorNotificationTitle
-                    )
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(
-                        id = if (viewModel.CurrentRestoreStatus == RestoreStatus.SUCCESS) R.string.RestoringBackupSucceed else R.string.RestoringBackupError
-                    )
-                )
-            },
-            dismissButton = {
-                TextButton(
-                    modifier = Modifier
-                        .testTag("OkRestoreFinishedDialog"),
-                    onClick = {
-                        viewModel.HideRestoreFinishedAlert()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.OK
-                        )
-                    )
-                }
-            },
-            confirmButton = {
-
-            }
-        )
     }
 }
 

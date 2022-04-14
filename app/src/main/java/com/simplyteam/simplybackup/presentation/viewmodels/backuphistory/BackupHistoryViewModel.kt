@@ -1,12 +1,13 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 
+import android.content.Context
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.simplyteam.simplybackup.data.models.BackupDetail
-import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.data.models.ConnectionType
+import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.services.SFTPService
 import com.simplyteam.simplybackup.data.services.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
@@ -15,8 +16,6 @@ import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject
-import com.simplyteam.simplybackup.data.models.RemoteFile
-import com.simplyteam.simplybackup.data.models.RestoreStatus
 
 @HiltViewModel
 class BackupHistoryViewModel @Inject constructor(
@@ -25,6 +24,7 @@ class BackupHistoryViewModel @Inject constructor(
     private val _packagingService: PackagingService
 ) : ViewModel() {
 
+    val RestoreSnackbarState = SnackbarHostState()
     var ShowErrorLoading by mutableStateOf(false)
 
     var BackupToDelete by mutableStateOf<BackupDetail?>(null)
@@ -157,7 +157,7 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToRestore = null
     }
 
-    suspend fun RestoreBackup() {
+    suspend fun RestoreBackup(context: Context) {
         BackupToRestore?.let { backup ->
             try {
                 CurrentRestoreStatus =
@@ -184,10 +184,12 @@ class BackupHistoryViewModel @Inject constructor(
                 file.delete()
 
                 CurrentRestoreStatus = RestoreStatus.SUCCESS
+                RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupSucceed))
             } catch (ex: Exception) {
                 Timber.e(ex)
 
                 CurrentRestoreStatus = RestoreStatus.ERROR
+                RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupError))
             }
         }
     }

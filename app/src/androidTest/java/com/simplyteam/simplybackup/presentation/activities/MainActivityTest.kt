@@ -462,11 +462,8 @@ class MainActivityTest {
 
                     Thread.sleep(10000)
 
-                    composeRule.onNodeWithTag("RestoreFinishedDialog")
+                    composeRule.onNodeWithTag("RestoreSnackbar")
                         .assertExists()
-
-                    composeRule.onNodeWithTag("OkRestoreFinishedDialog")
-                        .performClick()
 
                     CleanupServer(connection)
 
