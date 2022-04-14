@@ -2,6 +2,7 @@ package com.simplyteam.simplybackup.presentation.views.backuphistory
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun BackupHistoryView(
     paddingValues: PaddingValues,
-    viewModel: BackupHistoryViewModel
+    viewModel: BackupHistoryViewModel,
+    listState: LazyListState
 ) {
     Column(
         modifier = Modifier
@@ -51,10 +53,11 @@ fun BackupHistoryView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .testTag("HistoryList")
+                        .testTag("HistoryList"),
+                    state = listState
                 ) {
                     items(viewModel.BackupDetails) { detail ->
-                        FileCard(
+                        FileItem(
                             detail = detail,
                             viewModel = viewModel
                         )
@@ -74,7 +77,7 @@ fun BackupHistoryView(
 }
 
 @Composable
-private fun FileCard(
+private fun FileItem(
     detail: BackupDetail,
     viewModel: BackupHistoryViewModel
 ) {
@@ -82,147 +85,140 @@ private fun FileCard(
         mutableStateOf(false)
     }
 
-    Card(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 2.dp
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        Icon(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(
-                        8.dp,
-                        8.dp,
-                        4.dp,
-                        8.dp
-                    ),
-                painter = painterResource(
-                    id = R.drawable.ic_baseline_folder_zip_24
+                .padding(
+                    8.dp,
+                    8.dp,
+                    4.dp,
+                    8.dp
                 ),
-                contentDescription = "ZIP"
-            )
+            painter = painterResource(
+                id = R.drawable.ic_baseline_folder_zip_24
+            ),
+            contentDescription = "ZIP"
+        )
 
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    4.dp,
+                    8.dp,
+                    8.dp,
+                    8.dp
+                ),
+            text = detail.Date,
+            style = MaterialTheme.typography.subtitle1
+        )
+
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 modifier = Modifier
-                    .weight(1f)
                     .padding(
                         4.dp,
                         8.dp,
-                        8.dp,
+                        0.dp,
                         8.dp
                     ),
-                text = detail.Date,
-                style = MaterialTheme.typography.subtitle1
+                text = detail.Size,
+                style = MaterialTheme.typography.body2
             )
+        }
 
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    modifier = Modifier
-                        .padding(
-                            4.dp,
-                            8.dp,
-                            0.dp,
-                            8.dp
-                        ),
-                    text = detail.Size,
-                    style = MaterialTheme.typography.body2
+        Column {
+            IconButton(
+                modifier = Modifier
+                    .testTag("More"),
+                onClick = {
+                    menuExpanded = true
+                }) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.ic_baseline_more_vert_24
+                    ),
+                    contentDescription = ""
                 )
             }
 
-            Column {
-                IconButton(
+            DropdownMenu(
+                modifier = Modifier
+                    .width(240.dp),
+                expanded = menuExpanded,
+                onDismissRequest = {
+                    menuExpanded = false
+                },
+            ) {
+                DropdownMenuItem(
                     modifier = Modifier
-                        .testTag("More"),
+                        .testTag("DeleteMenuItem"),
                     onClick = {
-                        menuExpanded = true
-                    }) {
+                        viewModel.ShowDeleteAlert(detail)
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        24.dp,
+                        8.dp
+                    )
+                ) {
                     Icon(
-                        painter = painterResource(
-                            id = R.drawable.ic_baseline_more_vert_24
-                        ),
-                        contentDescription = ""
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(
+                            id = R.string.Delete
+                        )
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                20.dp,
+                                0.dp,
+                                0.dp,
+                                0.dp
+                            ),
+                        text = stringResource(
+                            id = R.string.Delete
+                        )
                     )
                 }
 
-                DropdownMenu(
+                DropdownMenuItem(
                     modifier = Modifier
-                        .width(240.dp),
-                    expanded = menuExpanded,
-                    onDismissRequest = {
+                        .testTag("RestoreMenuItem"),
+                    onClick = {
+                        viewModel.ShowRestoreAlert(detail)
                         menuExpanded = false
                     },
+                    contentPadding = PaddingValues(
+                        24.dp,
+                        8.dp
+                    )
                 ) {
-                    DropdownMenuItem(
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_baseline_restore_24
+                        ),
+                        contentDescription = stringResource(
+                            id = R.string.Restore
+                        )
+                    )
+                    Text(
                         modifier = Modifier
-                            .testTag("DeleteMenuItem"),
-                        onClick = {
-                            viewModel.ShowDeleteAlert(detail)
-                            menuExpanded = false
-                        },
-                        contentPadding = PaddingValues(
-                            24.dp,
-                            8.dp
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(
-                                id = R.string.Delete
-                            )
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(
-                                    20.dp,
-                                    0.dp,
-                                    0.dp,
-                                    0.dp
-                                ),
-                            text = stringResource(
-                                id = R.string.Delete
-                            )
-                        )
-                    }
-
-                    DropdownMenuItem(
-                        modifier = Modifier
-                            .testTag("RestoreMenuItem"),
-                        onClick = {
-                            viewModel.ShowRestoreAlert(detail)
-                            menuExpanded = false
-                        },
-                        contentPadding = PaddingValues(
-                            24.dp,
-                            8.dp
-                        )
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.ic_baseline_restore_24
+                            .padding(
+                                20.dp,
+                                0.dp,
+                                0.dp,
+                                0.dp
                             ),
-                            contentDescription = stringResource(
-                                id = R.string.Restore
-                            )
+                        text = stringResource(
+                            id = R.string.Restore
                         )
-                        Text(
-                            modifier = Modifier
-                                .padding(
-                                    20.dp,
-                                    0.dp,
-                                    0.dp,
-                                    0.dp
-                                ),
-                            text = stringResource(
-                                id = R.string.Restore
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
