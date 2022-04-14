@@ -343,7 +343,7 @@ class MainActivityTest {
 
                     composeRule.onNodeWithTag("HistoryList")
                         .onChildren()
-                        .assertCountEquals(1)
+                        .assertCountEquals(4)
 
                     CleanupServer(connection)
                 }
