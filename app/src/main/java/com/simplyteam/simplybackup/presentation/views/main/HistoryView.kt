@@ -27,8 +27,7 @@ import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 @Composable
 fun HistoryView(
     paddingValues: PaddingValues,
-    viewModel: HistoryViewModel,
-    lazyListState: LazyListState
+    viewModel: HistoryViewModel
 ) {
     Column(
         modifier = Modifier
@@ -43,7 +42,7 @@ fun HistoryView(
                     0.dp
                 )
                 .testTag("History"),
-            state = lazyListState
+            state = viewModel.ListState
         ) {
             items(viewModel.GetConnections()) { connection ->
                 HistoryCard(

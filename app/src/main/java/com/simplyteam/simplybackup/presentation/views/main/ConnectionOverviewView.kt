@@ -31,8 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ConnectionOverviewView(
     paddingValues: PaddingValues,
-    viewModel: ConnectionOverviewViewModel,
-    lazyListState: LazyListState
+    viewModel: ConnectionOverviewViewModel
 ) {
     Column(
         modifier = Modifier
@@ -42,7 +41,7 @@ fun ConnectionOverviewView(
         LazyColumn(
             modifier = Modifier
                 .weight(1f),
-            state = lazyListState
+            state = viewModel.ListState
         ) {
             items(viewModel.GetConnections()) { item ->
                 ConnectionItem(

@@ -36,7 +36,6 @@ class BackupHistoryActivity : ComponentActivity() {
         setContent {
             SimplyBackupTheme {
                 val viewModel: BackupHistoryViewModel = hiltViewModel()
-                val lazyListState = rememberLazyListState()
 
                 LaunchedEffect(key1 = true) {
                     viewModel.InitValues(connection)
@@ -45,7 +44,7 @@ class BackupHistoryActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         BuildTopBar(
-                            listState = lazyListState
+                            viewModel = viewModel
                         )
                     },
                     snackbarHost = {
@@ -65,8 +64,7 @@ class BackupHistoryActivity : ComponentActivity() {
                 ) {
                     BackupHistoryView(
                         paddingValues = it,
-                        viewModel = viewModel,
-                        listState = lazyListState
+                        viewModel = viewModel
                     )
                 }
             }
@@ -74,13 +72,13 @@ class BackupHistoryActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun BuildTopBar(listState: LazyListState) {
+    private fun BuildTopBar(viewModel: BackupHistoryViewModel) {
         val activity = LocalContext.current as ComponentActivity
 
         val elevation by animateDpAsState(
-            if (listState.firstVisibleItemIndex == 0) {
+            if (viewModel.ListState.firstVisibleItemIndex == 0) {
                 minOf(
-                    listState.firstVisibleItemScrollOffset.toFloat().dp,
+                    viewModel.ListState.firstVisibleItemScrollOffset.toFloat().dp,
                     AppBarDefaults.TopAppBarElevation
                 )
             } else {

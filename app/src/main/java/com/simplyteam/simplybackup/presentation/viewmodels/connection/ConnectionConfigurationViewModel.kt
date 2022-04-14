@@ -1,6 +1,7 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.connection
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +21,8 @@ class ConnectionConfigurationViewModel @Inject constructor(
     private val connectionRepository: ConnectionRepository,
     private val schedulerService: SchedulerService
 ) : ViewModel() {
+    val ScrollState = ScrollState(0)
+
     private var _id = 0L
 
     var SelectedConnectionType by

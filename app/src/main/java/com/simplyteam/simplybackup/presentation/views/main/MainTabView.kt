@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.presentation.views.main
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,17 +32,14 @@ fun MainTabView() {
     val historyViewModel = hiltViewModel<HistoryViewModel>()
     val overviewViewModel = hiltViewModel<ConnectionOverviewViewModel>()
 
-    val historyLazyListState = rememberLazyListState()
-    val overViewLazyListState = rememberLazyListState()
-
     val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopBar(
                 currentScreen = currentScreen,
-                historyLazyListState = historyLazyListState,
-                overViewLazyListState = overViewLazyListState
+                historyViewModel = historyViewModel,
+                overviewViewModel = overviewViewModel
             )
         },
         bottomBar = {
@@ -77,9 +73,7 @@ fun MainTabView() {
             navController = navController,
             paddingValues = it,
             historyViewModel = historyViewModel,
-            overviewViewModel = overviewViewModel,
-            historyLazyListState = historyLazyListState,
-            overViewLazyListState = overViewLazyListState
+            overviewViewModel = overviewViewModel
         )
     }
 }
@@ -87,15 +81,15 @@ fun MainTabView() {
 @Composable
 private fun TopBar(
     currentScreen: MutableState<Screen>,
-    historyLazyListState: LazyListState,
-    overViewLazyListState: LazyListState
+    historyViewModel: HistoryViewModel,
+    overviewViewModel: ConnectionOverviewViewModel
 ) {
     val currentLazyListState = when (currentScreen.value) {
         Screen.History -> {
-            historyLazyListState
+            historyViewModel.ListState
         }
         Screen.Connections -> {
-            overViewLazyListState
+            overviewViewModel.ListState
         }
         else -> {
             throw Exception("Undefined LazyListState")

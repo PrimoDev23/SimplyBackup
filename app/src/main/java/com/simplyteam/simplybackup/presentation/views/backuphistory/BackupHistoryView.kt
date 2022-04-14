@@ -26,8 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BackupHistoryView(
     paddingValues: PaddingValues,
-    viewModel: BackupHistoryViewModel,
-    listState: LazyListState
+    viewModel: BackupHistoryViewModel
 ) {
     Column(
         modifier = Modifier
@@ -55,7 +54,7 @@ fun BackupHistoryView(
                         .fillMaxWidth()
                         .padding(8.dp)
                         .testTag("HistoryList"),
-                    state = listState
+                    state = viewModel.ListState
                 ) {
                     items(viewModel.BackupDetails) { detail ->
                         FileItem(

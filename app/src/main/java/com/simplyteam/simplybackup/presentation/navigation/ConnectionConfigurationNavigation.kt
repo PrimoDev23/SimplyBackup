@@ -15,8 +15,7 @@ import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurat
 fun ConnectionConfigurationNavigation(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    viewModel: ConnectionConfigurationViewModel,
-    scrollState: ScrollState
+    viewModel: ConnectionConfigurationViewModel
 ) {
     NavHost(
         navController = navController,
@@ -26,8 +25,7 @@ fun ConnectionConfigurationNavigation(
             ConnectionConfigurationView(
                 paddingValues = paddingValues,
                 navController = navController,
-                viewModel = viewModel,
-                scrollState = scrollState
+                viewModel = viewModel
             )
         }
 

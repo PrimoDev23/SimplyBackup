@@ -1,6 +1,7 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 
 import android.content.Context
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,8 @@ class BackupHistoryViewModel @Inject constructor(
     private val _sFTPService: SFTPService,
     private val _packagingService: PackagingService
 ) : ViewModel() {
+
+    val ListState = LazyListState()
 
     val RestoreSnackbarState = SnackbarHostState()
     var ShowErrorLoading by mutableStateOf(false)

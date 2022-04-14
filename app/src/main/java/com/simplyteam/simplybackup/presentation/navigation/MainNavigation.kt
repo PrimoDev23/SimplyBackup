@@ -18,9 +18,7 @@ fun MainNavigation(
     navController: NavHostController,
     paddingValues: PaddingValues,
     historyViewModel: HistoryViewModel,
-    overviewViewModel: ConnectionOverviewViewModel,
-    historyLazyListState: LazyListState,
-    overViewLazyListState: LazyListState
+    overviewViewModel: ConnectionOverviewViewModel
 ) {
     NavHost(
         navController = navController,
@@ -29,16 +27,14 @@ fun MainNavigation(
         composable(Screen.History.Route) {
             HistoryView(
                 paddingValues = paddingValues,
-                viewModel = historyViewModel,
-                lazyListState = historyLazyListState
+                viewModel = historyViewModel
             )
         }
 
         composable(Screen.Connections.Route) {
             ConnectionOverviewView(
                 paddingValues = paddingValues,
-                viewModel = overviewViewModel,
-                lazyListState = overViewLazyListState
+                viewModel = overviewViewModel
             )
         }
 

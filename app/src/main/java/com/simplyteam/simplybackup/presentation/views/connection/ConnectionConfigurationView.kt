@@ -44,8 +44,7 @@ import kotlinx.coroutines.launch
 fun ConnectionConfigurationView(
     paddingValues: PaddingValues,
     navController: NavHostController,
-    viewModel: ConnectionConfigurationViewModel,
-    scrollState: ScrollState
+    viewModel: ConnectionConfigurationViewModel
 ) {
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as ComponentActivity
@@ -54,7 +53,7 @@ fun ConnectionConfigurationView(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .verticalScroll(scrollState)
+            .verticalScroll(viewModel.ScrollState)
     ) {
         ConnectionTypeRow(
             viewModel = viewModel

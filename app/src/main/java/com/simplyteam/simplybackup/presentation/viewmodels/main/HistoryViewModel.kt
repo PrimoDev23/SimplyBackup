@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
@@ -18,6 +19,8 @@ class HistoryViewModel @Inject constructor(
     private val _connectionRepository: ConnectionRepository,
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
+    val ListState = LazyListState()
+
     fun GetConnections() = _connectionRepository.Connections.value
 
     fun BuildHistoryDataForConnection(connection: Connection) : HistoryData {

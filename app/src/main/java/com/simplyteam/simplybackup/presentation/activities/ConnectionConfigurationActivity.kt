@@ -54,20 +54,17 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     }
                 }
 
-                val scrollState = rememberScrollState()
-
                 Scaffold(
                     topBar = {
                         BuildTopBar(
                             navController = navController,
-                            scrollState = scrollState
+                            viewModel = viewModel
                         )
                     }) {
                     ConnectionConfigurationNavigation(
                         navController = navController,
                         paddingValues = it,
-                        viewModel = viewModel,
-                        scrollState = scrollState
+                        viewModel = viewModel
                     )
                 }
             }
@@ -77,7 +74,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
     @Composable
     private fun BuildTopBar(
         navController: NavHostController,
-        scrollState: ScrollState
+        viewModel: ConnectionConfigurationViewModel
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
@@ -92,7 +89,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         }
 
         val elevation by animateDpAsState(
-            if(scrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration){
+            if(viewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration){
                 AppBarDefaults.TopAppBarElevation
             }else{
                 0.dp
