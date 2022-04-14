@@ -57,14 +57,14 @@ class BackupHistoryViewModel @Inject constructor(
                 }
             }
 
-            ShowErrorLoading = false
-
             BuildBackupDetails(
                 connection,
                 files.sortedByDescending { file ->
                     file.TimeStamp
                 }
             )
+
+            ShowErrorLoading = false
         } catch (ex: Exception) {
             Timber.e(ex)
 
