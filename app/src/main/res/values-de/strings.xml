@@ -29,7 +29,6 @@
     <string name="ErrorNotificationTitle">Fehler beim Backup</string>
     <string name="SuccessNotificationTitle">Backup erfolgreich</string>
     <string name="SuccessNotificationText">Das Backup %s wurde erfolgreich ausgeführt</string>
-    <string name="ErrorUpload">Der Upload des Backups %s ist fehlgeschlagen (%s)</string>
     <string name="ErrorException">Das Backup für %s ist mit einer Ausnahme fehlgeschlagen (siehe logcat)</string>
     <string name="ErrorPackaging">Das Zippen der Dateien für %s ist fehlgeschlagen</string>
     <string name="ErrorWifi">Es bestand keine WLAN-Verbindung beim Backup von %s</string>
@@ -43,7 +42,6 @@
     <string name="NoFiles">Es gibt noch keine Dateien für dieses Backup…</string>
     <string name="RestoreAlertText">Sind Sie sicher, dass sie das Backup wiederherstellen möchten? Es können Dateien dadurch überschrieben werden!</string>
     <string name="RestoringBackup">Backup wird wiederhergestellt…</string>
-    <string name="OK">OK</string>
     <string name="RestoringBackupSucceed">Das Backup wurde erfolgreich wiederhergestellt!</string>
     <string name="RestoringBackupError">Das Backup konnte nicht wiederhergestellt werden!</string>
     <string name="EnterName">Bitte tragen Sie einen Namen ein</string>

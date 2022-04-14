@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.presentation.views.backuphistory
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -361,7 +360,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoringDialog(viewModel: BackupHistoryViewModel) {
-    if (viewModel.CurrentRestoreStatus == RestoreStatus.RESTORING) {
+    if (viewModel.CurrentlyRestoring) {
         Dialog(
             onDismissRequest = {}
         ) {

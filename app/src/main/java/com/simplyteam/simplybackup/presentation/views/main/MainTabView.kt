@@ -1,7 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

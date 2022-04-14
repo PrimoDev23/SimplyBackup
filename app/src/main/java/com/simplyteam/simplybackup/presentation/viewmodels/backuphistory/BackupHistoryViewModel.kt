@@ -32,7 +32,7 @@ class BackupHistoryViewModel @Inject constructor(
 
     var BackupToDelete by mutableStateOf<BackupDetail?>(null)
     var BackupToRestore by mutableStateOf<BackupDetail?>(null)
-    var CurrentRestoreStatus by mutableStateOf(RestoreStatus.IDLE)
+    var CurrentlyRestoring by mutableStateOf(false)
 
     var Loading by mutableStateOf(false)
     var BackupDetails by mutableStateOf(listOf<BackupDetail>())
@@ -163,8 +163,8 @@ class BackupHistoryViewModel @Inject constructor(
     suspend fun RestoreBackup(context: Context) {
         BackupToRestore?.let { backup ->
             try {
-                CurrentRestoreStatus =
-                    RestoreStatus.RESTORING
+                CurrentlyRestoring =
+                    true
 
                 HideRestoreAlert()
 
@@ -186,19 +186,14 @@ class BackupHistoryViewModel @Inject constructor(
                 _packagingService.RestorePackage(file, backup.Connection)
                 file.delete()
 
-                CurrentRestoreStatus = RestoreStatus.SUCCESS
+                CurrentlyRestoring = false
                 RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupSucceed))
             } catch (ex: Exception) {
                 Timber.e(ex)
 
-                CurrentRestoreStatus = RestoreStatus.ERROR
+                CurrentlyRestoring = false
                 RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupError))
             }
         }
     }
-
-    fun HideRestoreFinishedAlert() {
-        CurrentRestoreStatus = RestoreStatus.IDLE
-    }
-
 }
