@@ -3,6 +3,7 @@ package com.simplyteam.simplybackup.presentation.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -33,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ConnectionConfigurationActivity : ComponentActivity() {
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +43,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         setContent {
             SimplyBackupTheme {
-                val navController = rememberNavController()
+                val navController = rememberAnimatedNavController()
                 val viewModel = hiltViewModel<ConnectionConfigurationViewModel>()
                 val nextCloudViewModel = hiltViewModel<NextCloudConfigurationViewModel>()
                 val ftpViewModel = hiltViewModel<SFTPConfigurationViewModel>()

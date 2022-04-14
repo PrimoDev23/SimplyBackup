@@ -68,6 +68,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.24.6-alpha"
 
     //Dagger - Hilt
     implementation "com.google.dagger:hilt-android:$dagger_hilt_version"
