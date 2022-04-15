@@ -59,5 +59,4 @@
     <string name="Search">Search</string>
     <string name="Back">Back</string>
     <string name="title_activity_search" translatable="false">SearchActivity</string>
-    <string name="leak_canary_test_class_name" translatable="false">assertk.Assert</string>
 </resources>
