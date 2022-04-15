@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -31,8 +31,8 @@ fun MainTabView() {
         mutableStateOf<Screen>(Screen.History)
     }
 
-    val historyViewModel = hiltViewModel<HistoryViewModel>()
-    val overviewViewModel = hiltViewModel<ConnectionOverviewViewModel>()
+    val historyViewModel = viewModel<HistoryViewModel>()
+    val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
 
     val context = LocalContext.current as ComponentActivity
 

@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -44,9 +44,9 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         setContent {
             SimplyBackupTheme {
                 val navController = rememberAnimatedNavController()
-                val viewModel = hiltViewModel<ConnectionConfigurationViewModel>()
-                val nextCloudViewModel = hiltViewModel<NextCloudConfigurationViewModel>()
-                val ftpViewModel = hiltViewModel<SFTPConfigurationViewModel>()
+                val viewModel = viewModel<ConnectionConfigurationViewModel>()
+                val nextCloudViewModel = viewModel<NextCloudConfigurationViewModel>()
+                val ftpViewModel = viewModel<SFTPConfigurationViewModel>()
 
                 viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
                 viewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel

@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
@@ -35,7 +35,7 @@ class BackupHistoryActivity : ComponentActivity() {
 
         setContent {
             SimplyBackupTheme {
-                val viewModel: BackupHistoryViewModel = hiltViewModel()
+                val viewModel: BackupHistoryViewModel = viewModel()
 
                 LaunchedEffect(key1 = true) {
                     viewModel.InitValues(connection)

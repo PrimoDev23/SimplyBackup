@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -329,7 +328,7 @@ private fun PathConfigurationCard(
 }
 
 @Composable
-private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel = hiltViewModel()) {
+private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
     var menuExpanded by remember {
         mutableStateOf(false)
     }
