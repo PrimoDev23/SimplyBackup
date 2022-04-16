@@ -243,7 +243,7 @@ private fun ConnectionItem(
 
                 DropdownMenu(
                     modifier = Modifier
-                        .width(240.dp),
+                        .width(224.dp),
                     expanded = menuExpanded,
                     onDismissRequest = {
                         menuExpanded = false
