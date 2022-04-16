@@ -63,7 +63,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun CreateConnection() {
+    fun CreateConnectionTest() {
         val connections = RetrieveConnections()
         val testValue = "TestEntry"
 
@@ -126,19 +126,19 @@ class MainActivityTest {
 
         val newConnection = newConnections.last()
 
-        assertEquals(newConnection.ConnectionType, _testConnectionType)
-        assertEquals(newConnection.Name, testValue)
-        assertEquals(newConnection.Host, testValue)
-        assertEquals(newConnection.Username, testValue)
-        assertEquals(newConnection.Password, testValue)
-        assertEquals(newConnection.RemotePath, testValue)
+        assertEquals(_testConnectionType, newConnection.ConnectionType)
+        assertEquals(testValue, newConnection.Name)
+        assertEquals(testValue, newConnection.Host)
+        assertEquals(testValue, newConnection.Username)
+        assertEquals(testValue, newConnection.Password)
+        assertEquals(testValue, newConnection.RemotePath)
         assert(newConnection.WifiOnly)
-        assertEquals(newConnection.ScheduleType, ScheduleType.MONTHLY)
+        assertEquals(ScheduleType.MONTHLY, newConnection.ScheduleType)
         assert(newConnection.Paths.isNotEmpty())
     }
 
     @Test
-    fun HistoryEntryOnNewConnection() {
+    fun HistoryEntryOnNewConnectionTest() {
         val id = InsertConnection()
 
         val connection = RetrieveConnections().first {
@@ -160,10 +160,8 @@ class MainActivityTest {
     }
 
     @Test
-    fun DeleteConnection() {
+    fun DeleteConnectionTest() {
         InsertConnection()
-
-        val connectionSize = RetrieveConnections().size
 
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
@@ -174,21 +172,69 @@ class MainActivityTest {
         composeRule.onNodeWithTag("DeleteMenuItem")
             .performClick()
 
-        assert(RetrieveConnections().size == connectionSize - 1)
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
+            .assertDoesNotExist()
+
+        assertEquals(0, RetrieveConnections().size)
+
+        composeRule.onNodeWithTag("MainSnackbar")
+            .assertExists()
+    }
+
+    @Test
+    fun UndoDeleteConnectionTest(){
+        InsertConnection()
+
+        composeRule.onNodeWithTag(Screen.Connections.Route)
+            .performClick()
+
+        composeRule.onAllNodesWithTag("More")[0]
+            .performClick()
+
+        composeRule.onNodeWithTag("DeleteMenuItem")
+            .performClick()
+
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
+            .assertDoesNotExist()
+
+        assertEquals(0, RetrieveConnections().size)
+
+        composeRule.onNodeWithTag("MainSnackbar")
+            .assertExists()
+
+        composeRule.onNodeWithText("Undo")
+            .performClick()
+
+        assertEquals(1, RetrieveConnections().size)
+
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
+            .assertExists()
+    }
+
+    @Test
+    fun DeleteRemovesHistoryTest(){
+        InsertConnection()
+
+        val connection = RetrieveConnections().last()
 
         composeRule.onNodeWithTag(Screen.History.Route)
             .performClick()
 
-        composeRule.onNodeWithTag("History")
-            .onChildren()
-            .assertCountEquals(1)
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
+            .assertExists()
 
-        composeRule.onNodeWithText("Test")
+        RemoveConnection(connection)
+
+        val connections = RetrieveConnections()
+
+        assertEquals(0, connections.size)
+
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
             .assertDoesNotExist()
     }
 
     @Test
-    fun EditConnection() {
+    fun EditConnectionTest() {
         val id = InsertConnection()
 
         var connection = RetrieveConnections().first {
@@ -253,13 +299,13 @@ class MainActivityTest {
             it.Id == id
         }
 
-        assertEquals(connection.Name, testValue)
-        assertEquals(connection.Host, testValue)
-        assertEquals(connection.Username, testValue)
-        assertEquals(connection.Password, testValue)
-        assertEquals(connection.RemotePath, testValue)
+        assertEquals(testValue, connection.Name)
+        assertEquals(testValue, connection.Host)
+        assertEquals(testValue, connection.Username)
+        assertEquals(testValue, connection.Password)
+        assertEquals(testValue, connection.RemotePath)
         assert(connection.WifiOnly)
-        assertEquals(connection.ScheduleType, ScheduleType.YEARLY)
+        assertEquals(ScheduleType.YEARLY, connection.ScheduleType)
         assert(connection.Paths.isNotEmpty())
 
         Thread.sleep(1000)
@@ -276,7 +322,24 @@ class MainActivityTest {
     }
 
     @Test
-    fun AddHistoryEntry() {
+    fun RunBackupForConnectionTest(){
+        InsertConnection()
+
+        composeRule.onNodeWithTag(Screen.Connections.Route)
+            .performClick()
+
+        composeRule.onAllNodesWithTag("More")[0]
+            .performClick()
+
+        composeRule.onNodeWithTag("BackupMenuItem")
+            .performClick()
+
+        composeRule.onNodeWithTag("MainSnackbar")
+            .assertExists()
+    }
+
+    @Test
+    fun AddHistoryEntryTest() {
         val id = InsertConnection()
 
         val historyEntry = HistoryEntry(
@@ -310,7 +373,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun BackupHistory() {
+    fun BackupHistoryTest() {
         val id = InsertConnection()
 
         val connection = RetrieveConnections().first {
@@ -355,7 +418,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun DeleteBackup() {
+    fun DeleteBackupTest() {
         val id = InsertConnection()
 
         val connection = RetrieveConnections().first {
@@ -409,7 +472,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun RestoreBackup() {
+    fun RestoreBackupTest() {
         val id = InsertConnection()
 
         val connection = RetrieveConnections().first {
@@ -531,6 +594,12 @@ class MainActivityTest {
         }
 
         return connections
+    }
+
+    private fun RemoveConnection(connection: Connection) {
+        runBlocking {
+            ConnectionRepository.RemoveConnection(connection)
+        }
     }
 
     private fun GetFilesRecursively(connection: Connection): MutableList<File> {
