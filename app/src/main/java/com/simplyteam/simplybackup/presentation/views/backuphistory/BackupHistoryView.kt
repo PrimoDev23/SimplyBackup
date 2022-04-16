@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.BackupDetail
-import com.simplyteam.simplybackup.data.models.RestoreStatus
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun BackupHistoryView(
@@ -226,8 +224,6 @@ private fun FileItem(
 
 @Composable
 private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
-    val scope = rememberCoroutineScope()
-
     if (viewModel.BackupToDelete != null) {
         AlertDialog(
             modifier = Modifier
@@ -269,9 +265,7 @@ private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
                     modifier = Modifier
                         .testTag("DeleteDialogYes"),
                     onClick = {
-                        scope.launch {
-                            viewModel.DeleteBackup()
-                        }
+                        viewModel.DeleteBackup()
                     }
                 ) {
                     Text(
@@ -298,7 +292,6 @@ private fun RestoreControls(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     if (viewModel.BackupToRestore != null) {
@@ -342,9 +335,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
                     modifier = Modifier
                         .testTag("RestoreDialogYes"),
                     onClick = {
-                        scope.launch {
-                            viewModel.RestoreBackup(context)
-                        }
+                        viewModel.RestoreBackup(context)
                     }
                 ) {
                     Text(

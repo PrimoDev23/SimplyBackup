@@ -48,8 +48,8 @@ class ConnectionOverviewViewModel @Inject constructor(
         context: Context,
         connection: Connection
     ) {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 _connectionRepository.UpdateConnection(
                     connection.apply {
                         TemporarilyDeleted = true
@@ -77,9 +77,9 @@ class ConnectionOverviewViewModel @Inject constructor(
                         }
                     )
                 }
+            } catch (ex: Exception) {
+                Timber.e(ex)
             }
-        } catch (ex: Exception) {
-            Timber.e(ex)
         }
     }
 
@@ -104,26 +104,28 @@ class ConnectionOverviewViewModel @Inject constructor(
         )
     }
 
-    suspend fun RunBackup(
+    fun RunBackup(
         context: Context,
         connection: Connection
     ) {
-        try {
-            val intent = CreateIntent(
-                context,
-                connection
-            )
-
-            context.sendBroadcast(intent)
-
-            SnackbarHostState.showSnackbar(
-                context.getString(
-                    R.string.BackupStarted,
-                    connection.Name
+        viewModelScope.launch {
+            try {
+                val intent = CreateIntent(
+                    context,
+                    connection
                 )
-            )
-        } catch (ex: Exception) {
-            Timber.e(ex)
+
+                context.sendBroadcast(intent)
+
+                SnackbarHostState.showSnackbar(
+                    context.getString(
+                        R.string.BackupStarted,
+                        connection.Name
+                    )
+                )
+            } catch (ex: Exception) {
+                Timber.e(ex)
+            }
         }
     }
 

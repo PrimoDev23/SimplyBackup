@@ -43,7 +43,6 @@ fun ConnectionConfigurationView(
     navController: NavHostController,
     viewModel: ConnectionConfigurationViewModel
 ) {
-    val scope = rememberCoroutineScope()
     val activity = LocalContext.current as ComponentActivity
 
     Column(
@@ -83,9 +82,7 @@ fun ConnectionConfigurationView(
                 )
                 .testTag("Save"),
             onClick = {
-                scope.launch {
-                    viewModel.SaveConnection(activity)
-                }
+                viewModel.SaveConnection(activity)
             },
             elevation = ButtonDefaults.elevation(2.dp)
         ) {

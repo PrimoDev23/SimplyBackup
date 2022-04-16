@@ -153,7 +153,6 @@ private fun ConnectionItem(
     item: Connection,
     viewModel: ConnectionOverviewViewModel
 ) {
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current as ComponentActivity
 
     var menuExpanded by remember {
@@ -290,12 +289,10 @@ private fun ConnectionItem(
                         modifier = Modifier
                             .testTag("BackupMenuItem"),
                         onClick = {
-                            scope.launch {
-                                viewModel.RunBackup(
-                                    context,
-                                    item
-                                )
-                            }
+                            viewModel.RunBackup(
+                                context,
+                                item
+                            )
                             menuExpanded = false
                         },
                         contentPadding = PaddingValues(

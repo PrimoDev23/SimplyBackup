@@ -6,12 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -38,43 +40,45 @@ class ConnectionConfigurationViewModel @Inject constructor(
     var WifiOnly by mutableStateOf(false)
     var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
 
-    suspend fun SaveConnection(context: ComponentActivity) {
-        try {
-            val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
+    fun SaveConnection(context: ComponentActivity) {
+        viewModelScope.launch {
+            try {
+                val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
 
-            connection.Id = _id
+                connection.Id = _id
 
-            connection.BackupPassword = BackupPassword
-            connection.WifiOnly = WifiOnly
-            connection.Paths = Paths
-            connection.ScheduleType = SelectedScheduleType
+                connection.BackupPassword = BackupPassword
+                connection.WifiOnly = WifiOnly
+                connection.Paths = Paths
+                connection.ScheduleType = SelectedScheduleType
 
-            if (_id == 0L) {
-                val id = connectionRepository.InsertConnection(
-                    connection
-                )
+                if (_id == 0L) {
+                    val id = connectionRepository.InsertConnection(
+                        connection
+                    )
 
-                connection.Id = id
-                schedulerService.ScheduleBackup(
-                    connection
-                )
-                context.FinishActivityWithAnimation()
-            } else {
-                val updatedRows = connectionRepository.UpdateConnection(
-                    connection
-                )
-
-                if (updatedRows > 0) {
+                    connection.Id = id
                     schedulerService.ScheduleBackup(
                         connection
                     )
                     context.FinishActivityWithAnimation()
                 } else {
-                    throw UpdateFailedException()
+                    val updatedRows = connectionRepository.UpdateConnection(
+                        connection
+                    )
+
+                    if (updatedRows > 0) {
+                        schedulerService.ScheduleBackup(
+                            connection
+                        )
+                        context.FinishActivityWithAnimation()
+                    } else {
+                        throw UpdateFailedException()
+                    }
                 }
+            } catch (ex: Exception) {
+                Timber.e(ex)
             }
-        } catch (ex: Exception) {
-            Timber.e(ex)
         }
     }
 

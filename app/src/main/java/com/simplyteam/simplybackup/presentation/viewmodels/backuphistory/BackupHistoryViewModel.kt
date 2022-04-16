@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.services.SFTPService
@@ -15,6 +16,7 @@ import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -112,34 +114,36 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToDelete = null
     }
 
-    suspend fun DeleteBackup() {
-        BackupToDelete?.let { backup ->
-            try {
-                Loading = true
-                HideDeleteAlert()
+    fun DeleteBackup() {
+        viewModelScope.launch {
+            BackupToDelete?.let { backup ->
+                try {
+                    Loading = true
+                    HideDeleteAlert()
 
-                val result = when (backup.Connection.ConnectionType) {
-                    ConnectionType.NextCloud -> {
-                        _nextCloudService.DeleteFile(
-                            backup.Connection,
-                            backup.RemotePath
-                        )
+                    val result = when (backup.Connection.ConnectionType) {
+                        ConnectionType.NextCloud -> {
+                            _nextCloudService.DeleteFile(
+                                backup.Connection,
+                                backup.RemotePath
+                            )
+                        }
+                        ConnectionType.SFTP -> {
+                            _sFTPService.DeleteFile(
+                                backup.Connection,
+                                backup.RemotePath
+                            )
+                        }
                     }
-                    ConnectionType.SFTP -> {
-                        _sFTPService.DeleteFile(
-                            backup.Connection,
-                            backup.RemotePath
-                        )
-                    }
-                }
 
-                if (result) {
-                    DeleteBackupFromList(backup)
+                    if (result) {
+                        DeleteBackupFromList(backup)
+                    }
+                } catch (ex: Exception) {
+                    Timber.e(ex)
+                } finally {
+                    Loading = false
                 }
-            } catch (ex: Exception) {
-                Timber.e(ex)
-            } finally {
-                Loading = false
             }
         }
     }
@@ -160,39 +164,44 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToRestore = null
     }
 
-    suspend fun RestoreBackup(context: Context) {
-        BackupToRestore?.let { backup ->
-            try {
-                CurrentlyRestoring =
-                    true
+    fun RestoreBackup(context: Context) {
+        viewModelScope.launch {
+            BackupToRestore?.let { backup ->
+                try {
+                    CurrentlyRestoring =
+                        true
 
-                HideRestoreAlert()
+                    HideRestoreAlert()
 
-                val file = when (backup.Connection.ConnectionType) {
-                    ConnectionType.NextCloud -> {
-                        _nextCloudService.DownloadFile(
-                            backup.Connection,
-                            backup.RemotePath
-                        )
+                    val file = when (backup.Connection.ConnectionType) {
+                        ConnectionType.NextCloud -> {
+                            _nextCloudService.DownloadFile(
+                                backup.Connection,
+                                backup.RemotePath
+                            )
+                        }
+                        ConnectionType.SFTP -> {
+                            _sFTPService.DownloadFile(
+                                backup.Connection,
+                                backup.RemotePath
+                            )
+                        }
                     }
-                    ConnectionType.SFTP -> {
-                        _sFTPService.DownloadFile(
-                            backup.Connection,
-                            backup.RemotePath
-                        )
-                    }
+
+                    _packagingService.RestorePackage(
+                        file,
+                        backup.Connection
+                    )
+                    file.delete()
+
+                    CurrentlyRestoring = false
+                    RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupSucceed))
+                } catch (ex: Exception) {
+                    Timber.e(ex)
+
+                    CurrentlyRestoring = false
+                    RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupError))
                 }
-
-                _packagingService.RestorePackage(file, backup.Connection)
-                file.delete()
-
-                CurrentlyRestoring = false
-                RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupSucceed))
-            } catch (ex: Exception) {
-                Timber.e(ex)
-
-                CurrentlyRestoring = false
-                RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupError))
             }
         }
     }
