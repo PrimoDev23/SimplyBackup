@@ -89,11 +89,12 @@ class ConnectionOverviewViewModel @Inject constructor(
     }
 
     fun ShowBackupSnackbar(
+        connection: Connection
     ) {
         viewModelScope.launch {
             _backupStartedFlow.emit(
                 Event.SimpleTextEvent(
-                    UIText.StringResource(R.string.BackupStarted)
+                    UIText.StringResource(R.string.BackupStarted, connection.Name)
                 )
             )
         }

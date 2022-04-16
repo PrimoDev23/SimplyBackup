@@ -58,7 +58,8 @@ fun ConnectionOverviewView(
     ) {
         LazyColumn(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .testTag("ConnectionList"),
             state = viewModel.ListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -315,7 +316,7 @@ private fun ConnectionItem(
 
                                 activity.sendBroadcast(intent)
 
-                                viewModel.ShowBackupSnackbar()
+                                viewModel.ShowBackupSnackbar(item)
                             }catch (ex: Exception){
                                 Timber.e(ex)
                             }finally {
