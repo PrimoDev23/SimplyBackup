@@ -69,7 +69,21 @@ fun MainTabView() {
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
-        isFloatingActionButtonDocked = true
+        isFloatingActionButtonDocked = true,
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier
+                    .testTag("MainSnackbar"),
+                hostState = overviewViewModel.SnackbarHostState,
+                snackbar = {
+                    Snackbar(
+                        snackbarData = it,
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentColor = MaterialTheme.colors.onBackground
+                    )
+                }
+            )
+        }
     ) {
         MainNavigation(
             navController = navController,

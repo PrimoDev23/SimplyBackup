@@ -18,5 +18,6 @@ data class Connection(
     var BackupPassword: String = "",
     var WifiOnly: Boolean = false,
     var Paths : List<Path> = listOf(),
-    var ScheduleType : ScheduleType = com.simplyteam.simplybackup.data.models.ScheduleType.DAILY
+    var ScheduleType : ScheduleType = com.simplyteam.simplybackup.data.models.ScheduleType.DAILY,
+    var TemporarilyDeleted: Boolean = false
 ) : Serializable

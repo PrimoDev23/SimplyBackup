@@ -12,6 +12,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -153,6 +156,10 @@ private fun ConnectionItem(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current as ComponentActivity
 
+    var menuExpanded by remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,21 +229,100 @@ private fun ConnectionItem(
                 }
             }
 
-            IconButton(
-                modifier = Modifier
-                    .testTag("DeleteConnection"),
-                onClick = {
-                    scope.launch {
-                        viewModel.DeleteConnection(item)
+            Column {
+                IconButton(
+                    modifier = Modifier
+                        .testTag("More"),
+                    onClick = {
+                        menuExpanded = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = ""
+                    )
+                }
+
+                DropdownMenu(
+                    modifier = Modifier
+                        .width(240.dp),
+                    expanded = menuExpanded,
+                    onDismissRequest = {
+                        menuExpanded = false
+                    }
+                ) {
+                    DropdownMenuItem(
+                        modifier = Modifier
+                            .testTag("DeleteMenuItem"),
+                        onClick = {
+                            viewModel.DeleteConnection(
+                                context,
+                                item
+                            )
+                            menuExpanded = false
+                        },
+                        contentPadding = PaddingValues(
+                            24.dp,
+                            8.dp
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(
+                                id = R.string.Delete
+                            )
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    20.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
+                            text = stringResource(
+                                id = R.string.Delete
+                            )
+                        )
+                    }
+
+                    DropdownMenuItem(
+                        modifier = Modifier
+                            .testTag("BackupMenuItem"),
+                        onClick = {
+                            scope.launch {
+                                viewModel.RunBackup(
+                                    context,
+                                    item
+                                )
+                            }
+                            menuExpanded = false
+                        },
+                        contentPadding = PaddingValues(
+                            24.dp,
+                            8.dp
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_baseline_backup_24),
+                            contentDescription = stringResource(
+                                id = R.string.Backup
+                            )
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    20.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
+                            text = stringResource(
+                                id = R.string.Backup
+                            )
+                        )
                     }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(
-                        id = R.string.Delete
-                    )
-                )
             }
         }
     }

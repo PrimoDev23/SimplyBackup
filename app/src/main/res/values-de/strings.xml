@@ -53,4 +53,8 @@
     <string name="BackupPassword">Backup-Passwort</string>
     <string name="Search">Suchen</string>
     <string name="Back">Zurück</string>
+    <string name="Backup">Backup</string>
+    <string name="BackupStarted">Backup für %s gestartet</string>
+    <string name="ConnectionRemoved">%s wurde erfolgreich gelöscht</string>
+    <string name="Undo">Rückgängig</string>
 </resources>

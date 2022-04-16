@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ConnectionDao {
 
-    @Query("SELECT * FROM Connections")
+    @Query("SELECT * FROM Connections WHERE TemporarilyDeleted = 0")
     fun GetAllConnectionsFlow() : Flow<List<Connection>>
 
-    @Query("SELECT * FROM Connections")
+    @Query("SELECT * FROM Connections WHERE TemporarilyDeleted = 0")
     suspend fun GetAllConnections() : List<Connection>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
