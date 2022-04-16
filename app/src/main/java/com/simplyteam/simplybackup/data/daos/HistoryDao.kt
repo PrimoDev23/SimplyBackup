@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface HistoryDao {
 
     @Query("SELECT * FROM History")
-    fun GetHistory() : Flow<List<HistoryEntry>>
+    fun GetHistoryFlow() : Flow<List<HistoryEntry>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun InsertHistoryEntry(historyEntry: HistoryEntry) : Long

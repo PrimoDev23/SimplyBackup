@@ -8,10 +8,13 @@ abstract class SearchServiceBase<T> {
 
     protected var SearchText by mutableStateOf("")
 
-    protected var AllItems by mutableStateOf(listOf<T>())
     var FilteredItems by mutableStateOf(listOf<T>())
 
     fun GetSearchText() = SearchText
+
+    fun RepeatSearch() {
+        Search(SearchText)
+    }
 
     abstract fun Search(value: String)
 

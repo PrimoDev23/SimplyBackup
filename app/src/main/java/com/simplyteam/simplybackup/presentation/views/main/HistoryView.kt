@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 
@@ -54,10 +55,10 @@ fun HistoryView(
                     viewModel = viewModel
                 )
             }
-            items(viewModel.GetConnections()) { connection ->
+            items(viewModel.GetHistoryData()) { historyData ->
                 HistoryCard(
                     viewModel = viewModel,
-                    connection = connection
+                    historyData = historyData
                 )
             }
         }
@@ -148,7 +149,7 @@ private fun SearchBox(viewModel: HistoryViewModel) {
 @Composable
 private fun HistoryCard(
     viewModel: HistoryViewModel,
-    connection: Connection
+    historyData: HistoryData
 ) {
     Card(
         modifier = Modifier
@@ -159,10 +160,10 @@ private fun HistoryCard(
             )
             .clickable {
                 viewModel.OpenHistory(
-                    connection
+                    historyData.Connection
                 )
             }
-            .testTag(connection.Name),
+            .testTag(historyData.Connection.Name),
         elevation = 0.dp,
         border = BorderStroke(
             1.dp,
@@ -173,8 +174,6 @@ private fun HistoryCard(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            val data = viewModel.BuildHistoryDataForConnection(connection)
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -188,7 +187,7 @@ private fun HistoryCard(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ConnectionIcon(
-                        connectionType = data.Type
+                        connectionType = historyData.Connection.ConnectionType
                     )
                 }
 
@@ -200,7 +199,7 @@ private fun HistoryCard(
                             8.dp,
                             0.dp
                         ),
-                    text = data.Name,
+                    text = historyData.Connection.Name,
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold
                 )
@@ -219,14 +218,14 @@ private fun HistoryCard(
                     modifier = Modifier
                         .weight(1f),
                     titleId = R.string.LastBackup,
-                    text = data.LastBackup
+                    text = historyData.LastBackup
                 )
 
                 HistoryInformation(
                     modifier = Modifier
                         .weight(1f),
                     titleId = R.string.LastBackupSize,
-                    text = data.LastBackupSize
+                    text = historyData.LastBackupSize
                 )
             }
 
@@ -241,14 +240,14 @@ private fun HistoryCard(
                     modifier = Modifier
                         .weight(1f),
                     titleId = R.string.NextBackup,
-                    text = data.NextBackup
+                    text = historyData.NextBackup
                 )
 
                 HistoryInformation(
                     modifier = Modifier
                         .weight(1f),
                     titleId = R.string.TotalBackupSize,
-                    text = data.TotalBackedUpSize
+                    text = historyData.TotalBackedUpSize
                 )
             }
         }

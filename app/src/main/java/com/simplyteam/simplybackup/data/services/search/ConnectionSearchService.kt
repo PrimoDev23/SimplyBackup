@@ -7,18 +7,10 @@ class ConnectionSearchService constructor(
     private val _connectionRepository: ConnectionRepository
 ) : SearchServiceBase<Connection>() {
 
-    suspend fun Collect() {
-        _connectionRepository.ConnectionsFlow.collect {
-            AllItems = it
-
-            Search(SearchText)
-        }
-    }
-
     override fun Search(value: String) {
         SearchText = value
 
-        FilteredItems = AllItems.filter {
+        FilteredItems = _connectionRepository.Connections.filter {
             it.Name.contains(
                 value,
                 true

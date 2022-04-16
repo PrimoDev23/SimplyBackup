@@ -1,25 +1,18 @@
 package com.simplyteam.simplybackup.data.services.search
 
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
+import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 
 class HistorySearchService constructor(
-    private val _connectionRepository: ConnectionRepository
-) : SearchServiceBase<Connection>() {
-
-    suspend fun Collect() {
-        _connectionRepository.ConnectionsFlow.collect {
-            AllItems = it
-
-            Search(SearchText)
-        }
-    }
-
+    private val _historyRepository: HistoryRepository
+) : SearchServiceBase<HistoryData>() {
     override fun Search(value: String) {
         SearchText = value
 
-        FilteredItems = AllItems.filter {
-            it.Name.contains(
+        FilteredItems = _historyRepository.HistoryData.filter {
+            it.Connection.Name.contains(
                 value,
                 true
             )

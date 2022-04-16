@@ -1,8 +1,7 @@
 package com.simplyteam.simplybackup.data.models
 
 data class HistoryData(
-    val Name: String,
-    val Type: ConnectionType,
+    val Connection: Connection,
     val LastBackup: String,
     val NextBackup: String,
     val LastBackupSize: String,

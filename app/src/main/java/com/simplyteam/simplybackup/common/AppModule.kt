@@ -59,7 +59,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun GetHistorySearchService(connectionRepository: ConnectionRepository) = HistorySearchService(connectionRepository)
+    fun GetHistorySearchService(historyRepository: HistoryRepository) = HistorySearchService(historyRepository)
 
     @Provides
     @Singleton

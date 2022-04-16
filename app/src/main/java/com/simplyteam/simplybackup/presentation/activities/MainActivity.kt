@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
@@ -19,6 +20,7 @@ import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import com.simplyteam.simplybackup.presentation.views.main.MainTabView
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,6 +30,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var HistorySearchService: HistorySearchService
+
+    @Inject
+    lateinit var ConnectionRepository: ConnectionRepository
 
     @Inject
     lateinit var HistoryRepository: HistoryRepository
@@ -83,15 +88,23 @@ class MainActivity : ComponentActivity() {
 
     private fun CollectFlows() {
         lifecycleScope.launchWhenStarted {
-            ConnectionSearchService.Collect()
+            ConnectionRepository.GetFlow().collect {
+                ConnectionRepository.Connections = it
+
+                HistoryRepository.BuildHistoryData(it)
+
+                ConnectionSearchService.RepeatSearch()
+                HistorySearchService.RepeatSearch()
+            }
         }
 
         lifecycleScope.launchWhenStarted {
-            HistorySearchService.Collect()
-        }
+            HistoryRepository.GetFlow().collect {
+                HistoryRepository.HistoryEntries = it
 
-        lifecycleScope.launchWhenStarted {
-            HistoryRepository.Init()
+                HistoryRepository.BuildHistoryData(ConnectionRepository.Connections)
+                HistorySearchService.RepeatSearch()
+            }
         }
     }
 }

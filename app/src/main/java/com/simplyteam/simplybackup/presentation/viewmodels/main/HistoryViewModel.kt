@@ -16,10 +16,7 @@ import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -36,7 +33,7 @@ class HistoryViewModel @Inject constructor(
 
     val ListState = LazyListState()
 
-    fun GetConnections() = _historySearchService.FilteredItems
+    fun GetHistoryData() = _historySearchService.FilteredItems
 
     fun GetSearchText() = _historySearchService.GetSearchText()
 
@@ -46,25 +43,6 @@ class HistoryViewModel @Inject constructor(
 
     fun ResetSearch() {
         _historySearchService.Search("")
-    }
-
-    fun BuildHistoryDataForConnection(connection: Connection) : HistoryData {
-        val entries = _historyRepository.History.value.filter {
-            it.ConnectionId == connection.Id
-        }
-
-        val calendar = _schedulerService.GetNextSchedule(connection.ScheduleType)
-
-        return HistoryData(
-            Name = connection.Name,
-            Type = connection.ConnectionType,
-            LastBackup = if(entries.isNotEmpty()) entries.last().Time else "-",
-            NextBackup = LocalDateTime.ofInstant(calendar.toInstant(), calendar.timeZone.toZoneId()).format(Constants.HumanReadableFormatter),
-            LastBackupSize = if(entries.isNotEmpty()) MathUtil.GetBiggestFileSizeString(entries.last().Size) else "0 B",
-            TotalBackedUpSize = MathUtil.GetBiggestFileSizeString(entries.sumOf {
-                it.Size
-            })
-        )
     }
 
     fun OpenHistory(connection: Connection) {
