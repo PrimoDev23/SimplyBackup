@@ -2,11 +2,9 @@ package com.simplyteam.simplybackup.presentation.views.main
 
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext

@@ -61,6 +61,6 @@
     <string name="title_activity_search" translatable="false">SearchActivity</string>
     <string name="Backup">Backup</string>
     <string name="BackupStarted">Backup for %s started</string>
-    <string name="ConnectionRemoved">Succesfully deleted %s</string>
+    <string name="ConnectionRemoved">Successfully deleted %s</string>
     <string name="Undo">Undo</string>
 </resources>

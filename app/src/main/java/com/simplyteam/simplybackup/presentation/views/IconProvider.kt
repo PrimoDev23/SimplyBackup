@@ -29,7 +29,7 @@ private fun NextcloudIcon() {
         modifier = Modifier
             .size(64.dp),
         painter = painterResource(
-            id = R.drawable.logo_nextcloud_blue
+            id = R.mipmap.logo_nextcloud_blue
         ),
         contentDescription = stringResource(
             id = R.string.NextCloud

@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
-import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -14,7 +13,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,8 +29,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
-import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 

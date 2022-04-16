@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.data.services.search
 
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
-import kotlinx.coroutines.flow.map
 
 class ConnectionSearchService constructor(
     private val _connectionRepository: ConnectionRepository

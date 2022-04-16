@@ -35,7 +35,6 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.Connection
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
-import kotlinx.coroutines.launch
 
 @Composable
 fun ConnectionConfigurationView(

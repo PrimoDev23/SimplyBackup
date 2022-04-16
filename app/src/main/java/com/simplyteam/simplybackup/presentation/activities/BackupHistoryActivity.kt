@@ -2,7 +2,6 @@ package com.simplyteam.simplybackup.presentation.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*

@@ -34,7 +34,6 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)

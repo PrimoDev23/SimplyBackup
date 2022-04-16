@@ -1,18 +1,14 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.main
 
-import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
-import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
-import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
-import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.data.utils.MathUtil
@@ -25,7 +21,6 @@ import javax.inject.Inject
 class HistoryViewModel @Inject constructor(
     private val _historyRepository: HistoryRepository,
     private val _historySearchService: HistorySearchService,
-    private val _connectionRepository: ConnectionRepository,
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
     val ListState = LazyListState()
