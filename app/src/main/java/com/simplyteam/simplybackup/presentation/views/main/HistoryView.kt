@@ -46,6 +46,12 @@ fun HistoryView(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(
+                    0.dp,
+                    0.dp,
+                    0.dp,
+                    8.dp
+                )
                 .testTag("History"),
             state = viewModel.ListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
