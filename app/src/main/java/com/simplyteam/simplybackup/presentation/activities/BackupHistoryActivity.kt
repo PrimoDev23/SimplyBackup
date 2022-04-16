@@ -35,12 +35,24 @@ class BackupHistoryActivity : ComponentActivity() {
         setContent {
             SimplyBackupTheme {
                 val viewModel: BackupHistoryViewModel = viewModel()
+                val scaffoldState = rememberScaffoldState()
+
+                val context = LocalContext.current
 
                 LaunchedEffect(key1 = true) {
                     viewModel.InitValues(connection)
                 }
 
+                LaunchedEffect(key1 = true) {
+                    viewModel.RestoreFinishedFlow.collect {
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            it.text.asString(context)
+                        )
+                    }
+                }
+
                 Scaffold(
+                    scaffoldState = scaffoldState,
                     topBar = {
                         BuildTopBar(
                             viewModel = viewModel
@@ -50,7 +62,7 @@ class BackupHistoryActivity : ComponentActivity() {
                         SnackbarHost(
                             modifier = Modifier
                                 .testTag("RestoreSnackbar"),
-                            hostState = viewModel.RestoreSnackbarState,
+                            hostState = scaffoldState.snackbarHostState,
                             snackbar = {
                                 Snackbar(
                                     snackbarData = it,
@@ -112,6 +124,9 @@ class BackupHistoryActivity : ComponentActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
+        overridePendingTransition(
+            R.anim.slide_in_right,
+            R.anim.slide_out_right
+        )
     }
 }

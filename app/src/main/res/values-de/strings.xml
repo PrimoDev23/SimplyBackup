@@ -57,4 +57,5 @@
     <string name="BackupStarted">Backup für %s gestartet</string>
     <string name="ConnectionRemoved">%s wurde erfolgreich gelöscht</string>
     <string name="Undo">Rückgängig</string>
+    <string name="ConnectionSaved">Verbindung erfolgreich gespeichert</string>
 </resources>

@@ -24,13 +24,7 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudC
 fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                8.dp,
-                0.dp,
-                8.dp,
-                8.dp
-            ),
+            .fillMaxWidth(),
         elevation = 0.dp,
         border = BorderStroke(
             1.dp,
@@ -42,7 +36,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 .fillMaxWidth()
                 .padding(
                     8.dp,
-                    8.dp,
+                    0.dp,
                     8.dp,
                     8.dp
                 )

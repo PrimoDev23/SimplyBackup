@@ -292,8 +292,6 @@ private fun RestoreControls(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
-    val context = LocalContext.current
-
     if (viewModel.BackupToRestore != null) {
         AlertDialog(
             modifier = Modifier
@@ -335,7 +333,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
                     modifier = Modifier
                         .testTag("RestoreDialogYes"),
                     onClick = {
-                        viewModel.RestoreBackup(context)
+                        viewModel.RestoreBackup()
                     }
                 ) {
                     Text(

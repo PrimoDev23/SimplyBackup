@@ -1,5 +1,7 @@
 package com.simplyteam.simplybackup.presentation.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,6 +44,8 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         setContent {
             SimplyBackupTheme {
+                val context = LocalContext.current as ComponentActivity
+
                 val navController = rememberAnimatedNavController()
                 val viewModel = viewModel<ConnectionConfigurationViewModel>()
                 val nextCloudViewModel = viewModel<NextCloudConfigurationViewModel>()
@@ -53,6 +57,12 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 LaunchedEffect(key1 = true) {
                     connection?.let {
                         viewModel.LoadData(connection)
+                    }
+                }
+
+                LaunchedEffect(key1 = true) {
+                    viewModel.FinishFlow.collect { text ->
+                        context.FinishActivityWithAnimation()
                     }
                 }
 
@@ -81,7 +91,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
 
-        val currentScreen = when(currentRoute){
+        val currentScreen = when (currentRoute) {
             Screen.ConnectionConfiguration.Route -> {
                 Screen.ConnectionConfiguration
             }
@@ -91,9 +101,9 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         }
 
         val elevation by animateDpAsState(
-            if(viewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration){
+            if (viewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration) {
                 AppBarDefaults.TopAppBarElevation
-            }else{
+            } else {
                 0.dp
             }
         )
@@ -105,7 +115,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
                 val resId = if (currentRoute == Screen.PathsConfiguration.Route) {
                     Screen.PathsConfiguration.Title
-                }else{
+                } else {
                     Screen.ConnectionConfiguration.Title
                 }
 
@@ -139,6 +149,9 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
+        overridePendingTransition(
+            R.anim.slide_in_right,
+            R.anim.slide_out_right
+        )
     }
 }

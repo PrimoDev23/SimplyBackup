@@ -7,12 +7,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -24,12 +27,16 @@ class ConnectionConfigurationViewModel @Inject constructor(
     private val connectionRepository: ConnectionRepository,
     private val schedulerService: SchedulerService
 ) : ViewModel() {
+
+    private val _finishChannel = Channel<Unit>()
+    val FinishFlow = _finishChannel.receiveAsFlow()
+
     val ScrollState = ScrollState(0)
 
     private var _id = 0L
 
     var SelectedConnectionType by
-        mutableStateOf(ConnectionType.NextCloud)
+    mutableStateOf(ConnectionType.NextCloud)
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
@@ -40,7 +47,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
     var WifiOnly by mutableStateOf(false)
     var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
 
-    fun SaveConnection(context: ComponentActivity) {
+    fun SaveConnection() {
         viewModelScope.launch {
             try {
                 val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
@@ -61,7 +68,10 @@ class ConnectionConfigurationViewModel @Inject constructor(
                     schedulerService.ScheduleBackup(
                         connection
                     )
-                    context.FinishActivityWithAnimation()
+
+                    _finishChannel.send(
+                        Unit
+                    )
                 } else {
                     val updatedRows = connectionRepository.UpdateConnection(
                         connection
@@ -71,7 +81,10 @@ class ConnectionConfigurationViewModel @Inject constructor(
                         schedulerService.ScheduleBackup(
                             connection
                         )
-                        context.FinishActivityWithAnimation()
+
+                        _finishChannel.send(
+                            Unit
+                        )
                     } else {
                         throw UpdateFailedException()
                     }

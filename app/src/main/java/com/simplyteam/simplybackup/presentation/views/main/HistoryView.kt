@@ -46,7 +46,8 @@ fun HistoryView(
             modifier = Modifier
                 .fillMaxSize()
                 .testTag("History"),
-            state = viewModel.ListState
+            state = viewModel.ListState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 SearchBox(
@@ -149,14 +150,17 @@ private fun HistoryCard(
     viewModel: HistoryViewModel,
     connection: Connection
 ) {
-    val context = LocalContext.current
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(
+                8.dp,
+                0.dp
+            )
             .clickable {
-                viewModel.OpenHistory(context as ComponentActivity, connection)
+                viewModel.OpenHistory(
+                    connection
+                )
             }
             .testTag(connection.Name),
         elevation = 0.dp,

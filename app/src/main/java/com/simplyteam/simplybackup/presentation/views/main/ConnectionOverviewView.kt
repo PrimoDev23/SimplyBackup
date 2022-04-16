@@ -1,6 +1,11 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,8 +37,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.receiver.BackupReceiver
+import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -50,7 +59,8 @@ fun ConnectionOverviewView(
         LazyColumn(
             modifier = Modifier
                 .weight(1f),
-            state = viewModel.ListState
+            state = viewModel.ListState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 SearchBox(viewModel = viewModel)
@@ -152,7 +162,7 @@ private fun ConnectionItem(
     item: Connection,
     viewModel: ConnectionOverviewViewModel
 ) {
-    val context = LocalContext.current as ComponentActivity
+    val activity = LocalContext.current as ComponentActivity
 
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -162,9 +172,9 @@ private fun ConnectionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                viewModel.StartConfiguration(
-                    context,
-                    item
+                ActivityUtil.StartConfigurationActivity(
+                    activity = activity,
+                    connection = item
                 )
             }
             .testTag(item.Id.toString())
@@ -254,7 +264,6 @@ private fun ConnectionItem(
                             .testTag("DeleteMenuItem"),
                         onClick = {
                             viewModel.DeleteConnection(
-                                context,
                                 item
                             )
                             menuExpanded = false
@@ -288,11 +297,30 @@ private fun ConnectionItem(
                         modifier = Modifier
                             .testTag("BackupMenuItem"),
                         onClick = {
-                            viewModel.RunBackup(
-                                context,
-                                item
-                            )
-                            menuExpanded = false
+                            try {
+                                val intent = Intent(
+                                    activity,
+                                    BackupReceiver::class.java
+                                )
+
+                                val bundle = Bundle()
+                                bundle.putSerializable(
+                                    "Connection",
+                                    item
+                                )
+                                intent.putExtra(
+                                    "Bundle",
+                                    bundle
+                                )
+
+                                activity.sendBroadcast(intent)
+
+                                viewModel.ShowBackupSnackbar()
+                            }catch (ex: Exception){
+                                Timber.e(ex)
+                            }finally {
+                                menuExpanded = false
+                            }
                         },
                         contentPadding = PaddingValues(
                             24.dp,

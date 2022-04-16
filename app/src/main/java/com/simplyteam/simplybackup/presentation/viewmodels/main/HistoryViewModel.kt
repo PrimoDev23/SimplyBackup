@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
@@ -14,6 +15,9 @@ import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnim
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -23,6 +27,10 @@ class HistoryViewModel @Inject constructor(
     private val _historySearchService: HistorySearchService,
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
+
+    private val _openHistoryChannel = Channel<Connection>()
+    val OpenHistoryFlow = _openHistoryChannel.receiveAsFlow()
+
     val ListState = LazyListState()
 
     fun GetConnections() = _historySearchService.FilteredItems
@@ -56,16 +64,9 @@ class HistoryViewModel @Inject constructor(
         )
     }
 
-    fun OpenHistory(context: ComponentActivity, connection: Connection) {
-        val intent = Intent(
-            context,
-            BackupHistoryActivity::class.java
-        )
-        intent.putExtra(
-            "Connection",
-            connection
-        )
-
-        context.StartActivityWithAnimation(intent)
+    fun OpenHistory(connection: Connection) {
+        viewModelScope.launch {
+            _openHistoryChannel.send(connection)
+        }
     }
 }

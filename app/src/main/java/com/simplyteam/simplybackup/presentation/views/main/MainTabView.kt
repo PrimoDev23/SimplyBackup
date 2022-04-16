@@ -1,6 +1,10 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
+import android.app.Activity
+import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,23 +22,49 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.utils.ActivityUtil
+import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
+import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainTabView() {
+    val activity = LocalContext.current as ComponentActivity
+
+    val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val currentScreen = remember {
         mutableStateOf<Screen>(Screen.History)
     }
 
+    val scope = rememberCoroutineScope()
+    val configurationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.getStringExtra("ResultText")
+                ?.let { text ->
+                    scope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(text)
+                    }
+                }
+        }
+    }
+
     val historyViewModel = viewModel<HistoryViewModel>()
     val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
 
-    val context = LocalContext.current as ComponentActivity
+    SetupEvents(
+        overviewViewModel = overviewViewModel,
+        historyViewModel = historyViewModel,
+        snackbarHostState = scaffoldState.snackbarHostState
+    )
 
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             TopBar(
                 currentScreen = currentScreen,
@@ -53,8 +83,8 @@ fun MainTabView() {
                 modifier = Modifier
                     .testTag("AddConnection"),
                 onClick = {
-                    overviewViewModel.StartConfiguration(
-                        context,
+                    ActivityUtil.StartConfigurationActivity(
+                        activity,
                         null
                     )
                 },
@@ -72,7 +102,7 @@ fun MainTabView() {
             SnackbarHost(
                 modifier = Modifier
                     .testTag("MainSnackbar"),
-                hostState = overviewViewModel.SnackbarHostState,
+                hostState = scaffoldState.snackbarHostState,
                 snackbar = {
                     Snackbar(
                         snackbarData = it,
@@ -89,6 +119,50 @@ fun MainTabView() {
             historyViewModel = historyViewModel,
             overviewViewModel = overviewViewModel
         )
+    }
+}
+
+@Composable
+fun SetupEvents(
+    overviewViewModel: ConnectionOverviewViewModel,
+    historyViewModel: HistoryViewModel,
+    snackbarHostState: SnackbarHostState
+) {
+    val activity = LocalContext.current as ComponentActivity
+
+    LaunchedEffect(key1 = true) {
+        overviewViewModel.ConnectionRemovedFlow.collect {
+            when (snackbarHostState.showSnackbar(
+                it.text.asString(activity),
+                it.action.asString(activity)
+            )) {
+                SnackbarResult.Dismissed -> overviewViewModel.FinishConnectionRemoval(it.connection)
+                SnackbarResult.ActionPerformed -> overviewViewModel.RestoreConnection(it.connection)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        overviewViewModel.BackupStartedFlow.collect {
+            snackbarHostState.showSnackbar(
+                it.text.asString(activity)
+            )
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        historyViewModel.OpenHistoryFlow.collect {
+            val intent = Intent(
+                activity,
+                BackupHistoryActivity::class.java
+            )
+            intent.putExtra(
+                "Connection",
+                it
+            )
+
+            activity.StartActivityWithAnimation(intent)
+        }
     }
 }
 

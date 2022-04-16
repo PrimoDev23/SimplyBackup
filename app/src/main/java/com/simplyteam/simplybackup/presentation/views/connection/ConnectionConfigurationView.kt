@@ -50,46 +50,50 @@ fun ConnectionConfigurationView(
             .padding(paddingValues)
             .verticalScroll(viewModel.ScrollState)
     ) {
-        ConnectionTypeRow(
-            viewModel = viewModel
-        )
-
-        TypeSpecificOptions(
-            viewModel = viewModel
-        )
-
-        ExtraInformationCard(
-            viewModel = viewModel
-        )
-
-        PathConfigurationCard(
-            navController = navController
-        )
-
-        ScheduleTypeCard(
-            viewModel = viewModel
-        )
-
-        Button(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(
                     8.dp,
-                    0.dp,
-                    8.dp,
-                    8.dp
-                )
-                .testTag("Save"),
-            onClick = {
-                viewModel.SaveConnection(activity)
-            },
-            elevation = ButtonDefaults.elevation(2.dp)
+                    0.dp
+                ),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = stringResource(
-                    id = R.string.Save
-                )
+            ConnectionTypeRow(
+                viewModel = viewModel
             )
+
+            TypeSpecificOptions(
+                viewModel = viewModel
+            )
+
+            ExtraInformationCard(
+                viewModel = viewModel
+            )
+
+            PathConfigurationCard(
+                navController = navController
+            )
+
+            ScheduleTypeCard(
+                viewModel = viewModel
+            )
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("Save"),
+                onClick = {
+                    viewModel.SaveConnection()
+                },
+                elevation = ButtonDefaults.elevation(2.dp)
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.Save
+                    )
+                )
+            }
         }
     }
 }
@@ -98,8 +102,7 @@ fun ConnectionConfigurationView(
 private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         elevation = 0.dp,
         border = BorderStroke(
             1.dp,
@@ -108,7 +111,8 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
     ) {
         LazyRow(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(ConnectionType.values()) { type ->
                 ConnectionButton(
@@ -128,9 +132,8 @@ private fun ConnectionButton(
     if (viewModel.SelectedConnectionType == type) {
         OutlinedButton(
             modifier = Modifier
-                .height(70.dp)
-                .width(98.dp)
-                .padding(4.dp)
+                .height(64.dp)
+                .width(92.dp)
                 .testTag("${type.name}Selected"),
             border = BorderStroke(
                 1.dp,
@@ -145,9 +148,8 @@ private fun ConnectionButton(
     } else {
         OutlinedButton(
             modifier = Modifier
-                .height(70.dp)
-                .width(98.dp)
-                .padding(4.dp)
+                .height(64.dp)
+                .width(92.dp)
                 .testTag(type.name),
             onClick = {
                 viewModel.SelectedConnectionType = type
@@ -186,13 +188,7 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
 
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                8.dp,
-                0.dp,
-                8.dp,
-                8.dp
-            ),
+            .fillMaxWidth(),
         elevation = 0.dp,
         border = BorderStroke(
             1.dp,
@@ -204,9 +200,7 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
                 .fillMaxWidth()
                 .padding(
                     8.dp,
-                    8.dp,
-                    8.dp,
-                    8.dp
+                    0.dp
                 )
         ) {
             OutlinedTextField(
@@ -282,12 +276,6 @@ private fun PathConfigurationCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                8.dp,
-                0.dp,
-                8.dp,
-                8.dp
-            )
             .clickable {
                 navController.navigate(Screen.PathsConfiguration.Route)
             }
@@ -332,12 +320,6 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                8.dp,
-                0.dp,
-                8.dp,
-                8.dp
-            )
             .clickable {
                 menuExpanded = true
             }

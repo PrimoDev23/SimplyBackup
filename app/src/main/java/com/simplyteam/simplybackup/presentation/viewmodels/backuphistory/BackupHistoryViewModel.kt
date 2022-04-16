@@ -16,6 +16,8 @@ import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,8 +30,9 @@ class BackupHistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ListState = LazyListState()
+    private val _restoreFinishedChannel = Channel<Event.SimpleTextEvent>()
+    val RestoreFinishedFlow = _restoreFinishedChannel.receiveAsFlow()
 
-    val RestoreSnackbarState = SnackbarHostState()
     var ShowErrorLoading by mutableStateOf(false)
 
     var BackupToDelete by mutableStateOf<BackupDetail?>(null)
@@ -164,7 +167,7 @@ class BackupHistoryViewModel @Inject constructor(
         BackupToRestore = null
     }
 
-    fun RestoreBackup(context: Context) {
+    fun RestoreBackup() {
         viewModelScope.launch {
             BackupToRestore?.let { backup ->
                 try {
@@ -195,12 +198,20 @@ class BackupHistoryViewModel @Inject constructor(
                     file.delete()
 
                     CurrentlyRestoring = false
-                    RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupSucceed))
+                    _restoreFinishedChannel.send(
+                        Event.SimpleTextEvent(
+                            UIText.StringResource(R.string.RestoringBackupSucceed)
+                        )
+                    )
                 } catch (ex: Exception) {
                     Timber.e(ex)
 
                     CurrentlyRestoring = false
-                    RestoreSnackbarState.showSnackbar(context.getString(R.string.RestoringBackupError))
+                    _restoreFinishedChannel.send(
+                        Event.SimpleTextEvent(
+                            UIText.StringResource(R.string.RestoringBackupError)
+                        )
+                    )
                 }
             }
         }

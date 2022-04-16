@@ -63,4 +63,5 @@
     <string name="BackupStarted">Backup for %s started</string>
     <string name="ConnectionRemoved">Successfully deleted %s</string>
     <string name="Undo">Undo</string>
+    <string name="ConnectionSaved">Connection successfully saved</string>
 </resources>
