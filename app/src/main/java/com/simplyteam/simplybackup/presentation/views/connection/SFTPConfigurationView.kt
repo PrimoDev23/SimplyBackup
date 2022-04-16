@@ -36,7 +36,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 .fillMaxWidth()
                 .padding(
                     8.dp,
-                    8.dp,
+                    0.dp,
                     8.dp,
                     8.dp
                 )
