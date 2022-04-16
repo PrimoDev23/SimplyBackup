@@ -122,7 +122,7 @@ class MainActivityTest {
             .performClick()
 
         val newConnections = RetrieveConnections()
-        assertEquals(newConnections.size, connections.size + 1)
+        assertEquals(connections.size + 1, newConnections.size)
 
         val newConnection = newConnections.last()
 
@@ -168,7 +168,10 @@ class MainActivityTest {
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
 
-        composeRule.onAllNodesWithTag("DeleteConnection")[0]
+        composeRule.onAllNodesWithTag("More")[0]
+            .performClick()
+
+        composeRule.onNodeWithTag("DeleteMenuItem")
             .performClick()
 
         assert(RetrieveConnections().size == connectionSize - 1)
