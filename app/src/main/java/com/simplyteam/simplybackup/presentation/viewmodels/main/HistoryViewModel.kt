@@ -16,6 +16,9 @@ import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -28,8 +31,8 @@ class HistoryViewModel @Inject constructor(
     private val _schedulerService: SchedulerService
 ) : ViewModel() {
 
-    private val _openHistoryChannel = Channel<Connection>()
-    val OpenHistoryFlow = _openHistoryChannel.receiveAsFlow()
+    private val _openHistoryFlow = MutableSharedFlow<Connection>()
+    val OpenHistoryFlow = _openHistoryFlow.asSharedFlow()
 
     val ListState = LazyListState()
 
@@ -66,7 +69,7 @@ class HistoryViewModel @Inject constructor(
 
     fun OpenHistory(connection: Connection) {
         viewModelScope.launch {
-            _openHistoryChannel.send(connection)
+            _openHistoryFlow.emit(connection)
         }
     }
 }

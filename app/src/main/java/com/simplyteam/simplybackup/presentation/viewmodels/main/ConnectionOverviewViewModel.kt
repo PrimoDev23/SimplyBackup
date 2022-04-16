@@ -11,8 +11,8 @@ import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -25,11 +25,11 @@ class ConnectionOverviewViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ListState = LazyListState()
-    private val _connectionRemovedChannel = Channel<Event.ConnectionRemovedEvent>()
-    val ConnectionRemovedFlow = _connectionRemovedChannel.receiveAsFlow()
+    private val _connectionRemovedFlow = MutableSharedFlow<Event.ConnectionRemovedEvent>()
+    val ConnectionRemovedFlow = _connectionRemovedFlow.asSharedFlow()
 
-    private val _backupStartedChannel = Channel<Event.SimpleTextEvent>()
-    val BackupStartedFlow = _backupStartedChannel.receiveAsFlow()
+    private val _backupStartedFlow = MutableSharedFlow<Event.SimpleTextEvent>()
+    val BackupStartedFlow = _backupStartedFlow.asSharedFlow()
 
     fun GetConnections() = _connectionSearchService.FilteredItems
 
@@ -54,7 +54,7 @@ class ConnectionOverviewViewModel @Inject constructor(
                     }
                 )
 
-                _connectionRemovedChannel.send(
+                _connectionRemovedFlow.emit(
                     Event.ConnectionRemovedEvent(
                         text = UIText.StringResource(
                             R.string.ConnectionRemoved,
@@ -91,7 +91,7 @@ class ConnectionOverviewViewModel @Inject constructor(
     fun ShowBackupSnackbar(
     ) {
         viewModelScope.launch {
-            _backupStartedChannel.send(
+            _backupStartedFlow.emit(
                 Event.SimpleTextEvent(
                     UIText.StringResource(R.string.BackupStarted)
                 )

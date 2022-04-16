@@ -17,6 +17,8 @@ import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -30,8 +32,8 @@ class BackupHistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ListState = LazyListState()
-    private val _restoreFinishedChannel = Channel<Event.SimpleTextEvent>()
-    val RestoreFinishedFlow = _restoreFinishedChannel.receiveAsFlow()
+    private val _restoreFinishedFlow = MutableSharedFlow<Event.SimpleTextEvent>()
+    val RestoreFinishedFlow = _restoreFinishedFlow.asSharedFlow()
 
     var ShowErrorLoading by mutableStateOf(false)
 
@@ -198,7 +200,7 @@ class BackupHistoryViewModel @Inject constructor(
                     file.delete()
 
                     CurrentlyRestoring = false
-                    _restoreFinishedChannel.send(
+                    _restoreFinishedFlow.emit(
                         Event.SimpleTextEvent(
                             UIText.StringResource(R.string.RestoringBackupSucceed)
                         )
@@ -207,7 +209,7 @@ class BackupHistoryViewModel @Inject constructor(
                     Timber.e(ex)
 
                     CurrentlyRestoring = false
-                    _restoreFinishedChannel.send(
+                    _restoreFinishedFlow.emit(
                         Event.SimpleTextEvent(
                             UIText.StringResource(R.string.RestoringBackupError)
                         )
