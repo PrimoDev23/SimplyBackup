@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -41,7 +42,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     8.dp
                 )
         ) {
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Name"),
@@ -69,19 +70,15 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.NameErrorShown
-            )
-
-            TextFieldErrorText(
-                modifier = Modifier
+                errorModifier = Modifier
                     .testTag("NameError"),
-                shown = viewModel.NameErrorShown,
-                text = stringResource(
+                isError = viewModel.NameErrorShown,
+                errorText = stringResource(
                     id = R.string.EnterName
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Host"),
@@ -109,19 +106,15 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.HostErrorShown
-            )
-
-            TextFieldErrorText(
-                modifier = Modifier
+                errorModifier = Modifier
                     .testTag("HostError"),
-                shown = viewModel.HostErrorShown,
-                text = stringResource(
+                isError = viewModel.HostErrorShown,
+                errorText = stringResource(
                     id = R.string.EnterHost
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Username"),
@@ -151,19 +144,15 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.UsernameErrorShown
-            )
-
-            TextFieldErrorText(
-                modifier = Modifier
+                errorModifier = Modifier
                     .testTag("UsernameError"),
-                shown = viewModel.UsernameErrorShown,
-                text = stringResource(
+                isError = viewModel.UsernameErrorShown,
+                errorText = stringResource(
                     id = R.string.EnterUsername
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Password"),
@@ -194,19 +183,15 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.PasswordErrorShown
-            )
-
-            TextFieldErrorText(
-                modifier = Modifier
+                errorModifier = Modifier
                     .testTag("PasswordError"),
-                shown = viewModel.PasswordErrorShown,
-                text = stringResource(
+                isError = viewModel.PasswordErrorShown,
+                errorText = stringResource(
                     id = R.string.EnterPassword
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("RemotePath"),
@@ -236,39 +221,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                     )
                 },
                 singleLine = true,
-                isError = viewModel.RemotePathErrorShown
-            )
-
-            TextFieldErrorText(
-                modifier = Modifier
+                errorModifier = Modifier
                     .testTag("RemotePathError"),
-                text = stringResource(
+                isError = viewModel.RemotePathErrorShown,
+                errorText = stringResource(
                     id = R.string.EnterRemotePath
-                ),
-                shown = viewModel.RemotePathErrorShown
+                )
             )
         }
-    }
-}
-
-@Composable
-private fun TextFieldErrorText(
-    modifier: Modifier,
-    shown: Boolean,
-    text: String
-) {
-    if (shown) {
-        Text(
-            modifier = modifier
-                .padding(
-                    16.dp,
-                    4.dp,
-                    0.dp,
-                    0.dp
-                ),
-            text = text,
-            color = MaterialTheme.colors.error,
-            style = MaterialTheme.typography.caption
-        )
     }
 }

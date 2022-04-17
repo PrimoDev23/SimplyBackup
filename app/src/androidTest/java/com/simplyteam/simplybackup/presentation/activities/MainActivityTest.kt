@@ -121,6 +121,8 @@ class MainActivityTest {
             .performScrollTo()
             .performClick()
 
+        Thread.sleep(1000)
+
         val newConnections = RetrieveConnections()
         assertEquals(connections.size + 1, newConnections.size)
 
@@ -229,6 +231,8 @@ class MainActivityTest {
 
         assertEquals(0, connections.size)
 
+        Thread.sleep(1000)
+
         composeRule.onNodeWithText("AndroidInstrumentationTest")
             .assertDoesNotExist()
     }
@@ -325,6 +329,8 @@ class MainActivityTest {
     fun RunBackupForConnectionTest(){
         InsertConnection()
 
+        val connection = RetrieveConnections().last()
+
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
 
@@ -336,6 +342,10 @@ class MainActivityTest {
 
         composeRule.onNodeWithTag("MainSnackbar")
             .assertExists()
+
+        Thread.sleep(5000)
+
+        CleanupServer(connection)
     }
 
     @Test

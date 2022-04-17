@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -64,19 +65,32 @@ fun ConnectionConfigurationView(
             )
 
             TypeSpecificOptions(
-                viewModel = viewModel
+                selectedType = viewModel.SelectedConnectionType,
+                viewModelMap = viewModel.ViewModelMap
             )
 
             ExtraInformationCard(
-                viewModel = viewModel
+                backupPassword = viewModel.BackupPassword,
+                onBackupPasswordChange = {
+                    viewModel.BackupPassword = it
+                },
+                wifiOnly = viewModel.WifiOnly,
+                onWifiOnlyChange = {
+                    viewModel.WifiOnly = it
+                }
             )
 
             PathConfigurationCard(
-                navController = navController
+                onClick = {
+                    navController.navigate(Screen.PathsConfiguration.Route)
+                }
             )
 
             ScheduleTypeCard(
-                viewModel = viewModel
+                selectedScheduleType = viewModel.SelectedScheduleType,
+                onSelectionChange = {
+                    viewModel.SelectedScheduleType = it
+                }
             )
 
             Button(
@@ -116,8 +130,11 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
         ) {
             items(ConnectionType.values()) { type ->
                 ConnectionButton(
-                    viewModel = viewModel,
-                    type = type
+                    type = type,
+                    isSelected = viewModel.SelectedConnectionType == type,
+                    typeSelected = {
+                        viewModel.SelectedConnectionType = type
+                    }
                 )
             }
         }
@@ -126,10 +143,11 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
 
 @Composable
 private fun ConnectionButton(
-    viewModel: ConnectionConfigurationViewModel,
-    type: ConnectionType
+    type: ConnectionType,
+    isSelected: Boolean,
+    typeSelected: () -> Unit
 ) {
-    if (viewModel.SelectedConnectionType == type) {
+    if (isSelected) {
         OutlinedButton(
             modifier = Modifier
                 .height(64.dp)
@@ -152,7 +170,7 @@ private fun ConnectionButton(
                 .width(92.dp)
                 .testTag(type.name),
             onClick = {
-                viewModel.SelectedConnectionType = type
+                typeSelected()
             }) {
             ConnectionIcon(
                 connectionType = type
@@ -164,17 +182,18 @@ private fun ConnectionButton(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TypeSpecificOptions(
-    viewModel: ConnectionConfigurationViewModel
+    selectedType: ConnectionType,
+    viewModelMap: Map<ConnectionType, ViewModel>
 ) {
-    when (viewModel.SelectedConnectionType) {
+    when (selectedType) {
         ConnectionType.NextCloud -> {
             NextCloudInformationFields(
-                viewModel = viewModel.ViewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
+                viewModel = viewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
             )
         }
         ConnectionType.SFTP -> {
             SFTPInformationFields(
-                viewModel = viewModel.ViewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
+                viewModel = viewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
             )
         }
     }
@@ -182,7 +201,12 @@ private fun TypeSpecificOptions(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
+private fun ExtraInformationCard(
+    backupPassword: String,
+    onBackupPasswordChange: (String) -> Unit,
+    wifiOnly: Boolean,
+    onWifiOnlyChange: (Boolean) -> Unit
+) {
     val keyBoardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -214,10 +238,8 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.BackupPassword,
-                onValueChange = {
-                    viewModel.BackupPassword = it
-                },
+                value = backupPassword,
+                onValueChange = onBackupPasswordChange,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -250,10 +272,8 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
                 Checkbox(
                     modifier = Modifier
                         .testTag("WifiOnly"),
-                    checked = viewModel.WifiOnly,
-                    onCheckedChange = {
-                        viewModel.WifiOnly = it
-                    },
+                    checked = wifiOnly,
+                    onCheckedChange = onWifiOnlyChange,
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colors.primary
                     )
@@ -271,14 +291,12 @@ private fun ExtraInformationCard(viewModel: ConnectionConfigurationViewModel) {
 
 @Composable
 private fun PathConfigurationCard(
-    navController: NavHostController
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                navController.navigate(Screen.PathsConfiguration.Route)
-            }
+            .clickable(onClick = onClick)
             .testTag("ConfigurePaths"),
         elevation = 0.dp,
         border = BorderStroke(
@@ -312,7 +330,10 @@ private fun PathConfigurationCard(
 }
 
 @Composable
-private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
+private fun ScheduleTypeCard(
+    selectedScheduleType: ScheduleType,
+    onSelectionChange: (ScheduleType) -> Unit
+) {
     var menuExpanded by remember {
         mutableStateOf(false)
     }
@@ -360,7 +381,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                         ),
                     style = MaterialTheme.typography.body2,
                     text = stringResource(
-                        id = when (viewModel.SelectedScheduleType) {
+                        id = when (selectedScheduleType) {
                             ScheduleType.DAILY -> R.string.Daily
                             ScheduleType.WEEKLY -> R.string.Weekly
                             ScheduleType.MONTHLY -> R.string.Monthly
@@ -382,7 +403,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                     modifier = Modifier
                         .testTag("DailyMenuItem"),
                     onClick = {
-                        viewModel.SelectedScheduleType = ScheduleType.DAILY
+                        onSelectionChange(ScheduleType.DAILY)
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(
@@ -408,7 +429,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                     modifier = Modifier
                         .testTag("WeeklyMenuItem"),
                     onClick = {
-                        viewModel.SelectedScheduleType = ScheduleType.WEEKLY
+                        onSelectionChange(ScheduleType.WEEKLY)
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(
@@ -434,7 +455,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                     modifier = Modifier
                         .testTag("MonthlyMenuItem"),
                     onClick = {
-                        viewModel.SelectedScheduleType = ScheduleType.MONTHLY
+                        onSelectionChange(ScheduleType.MONTHLY)
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(
@@ -460,7 +481,7 @@ private fun ScheduleTypeCard(viewModel: ConnectionConfigurationViewModel) {
                     modifier = Modifier
                         .testTag("YearlyMenuItem"),
                     onClick = {
-                        viewModel.SelectedScheduleType = ScheduleType.YEARLY
+                        onSelectionChange(ScheduleType.YEARLY)
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(

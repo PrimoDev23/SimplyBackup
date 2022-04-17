@@ -41,6 +41,7 @@ import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
+import com.simplyteam.simplybackup.presentation.views.SearchBox
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -51,6 +52,8 @@ fun ConnectionOverviewView(
     paddingValues: PaddingValues,
     viewModel: ConnectionOverviewViewModel
 ) {
+    val activity = LocalContext.current as ComponentActivity
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,93 +67,54 @@ fun ConnectionOverviewView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                SearchBox(viewModel = viewModel)
+                SearchBox(
+                    searchText = viewModel.GetSearchText(),
+                    search = {
+                        viewModel.Search(it)
+                    },
+                    resetSearch = {
+                        viewModel.ResetSearch()
+                    }
+                )
             }
             items(viewModel.GetConnections()) { item ->
                 ConnectionItem(
                     item = item,
-                    viewModel = viewModel
-                )
-            }
-        }
-    }
-}
+                    openConfiguration = {
+                        ActivityUtil.StartConfigurationActivity(
+                            activity = activity,
+                            connection = item
+                        )
+                    },
+                    delete = {
+                        viewModel.DeleteConnection(
+                            item
+                        )
+                    },
+                    backup = {
+                        try {
+                            val intent = Intent(
+                                activity,
+                                BackupReceiver::class.java
+                            )
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun SearchBox(viewModel: ConnectionOverviewViewModel) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
+                            val bundle = Bundle()
+                            bundle.putSerializable(
+                                "Connection",
+                                item
+                            )
+                            intent.putExtra(
+                                "Bundle",
+                                bundle
+                            )
 
-    Card(
-        modifier = Modifier
-            .padding(
-                16.dp,
-                0.dp
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(
-                        12.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp
-                    ),
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(
-                    id = R.string.Search
-                )
-            )
+                            activity.sendBroadcast(intent)
 
-            BasicTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(
-                        8.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp
-                    ),
-                value = viewModel.GetSearchText(),
-                onValueChange = {
-                    viewModel.Search(it)
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        focusManager.clearFocus(true)
-                        keyboardController?.hide()
+                            viewModel.ShowBackupSnackbar(item)
+                        } catch (ex: Exception) {
+                            Timber.e(ex)
+                        }
                     }
-                ),
-                singleLine = true,
-                cursorBrush = Brush.horizontalGradient(
-                    listOf(
-                        MaterialTheme.colors.onBackground,
-                        MaterialTheme.colors.onBackground,
-                    )
-                ),
-                textStyle = MaterialTheme.typography.subtitle1.copy(MaterialTheme.colors.onBackground)
-            )
-
-            IconButton(
-                onClick = {
-                    viewModel.ResetSearch()
-
-                    focusManager.clearFocus(true)
-                    keyboardController?.hide()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(
-                        id = R.string.Delete
-                    )
                 )
             }
         }
@@ -161,10 +125,10 @@ private fun SearchBox(viewModel: ConnectionOverviewViewModel) {
 @Composable
 private fun ConnectionItem(
     item: Connection,
-    viewModel: ConnectionOverviewViewModel
+    openConfiguration: () -> Unit,
+    delete: () -> Unit,
+    backup: () -> Unit
 ) {
-    val activity = LocalContext.current as ComponentActivity
-
     var menuExpanded by remember {
         mutableStateOf(false)
     }
@@ -172,12 +136,9 @@ private fun ConnectionItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                ActivityUtil.StartConfigurationActivity(
-                    activity = activity,
-                    connection = item
-                )
-            }
+            .clickable(
+                onClick = openConfiguration
+            )
             .testTag(item.Id.toString())
     ) {
         Row(
@@ -264,9 +225,8 @@ private fun ConnectionItem(
                         modifier = Modifier
                             .testTag("DeleteMenuItem"),
                         onClick = {
-                            viewModel.DeleteConnection(
-                                item
-                            )
+                            delete()
+
                             menuExpanded = false
                         },
                         contentPadding = PaddingValues(
@@ -298,30 +258,8 @@ private fun ConnectionItem(
                         modifier = Modifier
                             .testTag("BackupMenuItem"),
                         onClick = {
-                            try {
-                                val intent = Intent(
-                                    activity,
-                                    BackupReceiver::class.java
-                                )
-
-                                val bundle = Bundle()
-                                bundle.putSerializable(
-                                    "Connection",
-                                    item
-                                )
-                                intent.putExtra(
-                                    "Bundle",
-                                    bundle
-                                )
-
-                                activity.sendBroadcast(intent)
-
-                                viewModel.ShowBackupSnackbar(item)
-                            }catch (ex: Exception){
-                                Timber.e(ex)
-                            }finally {
-                                menuExpanded = false
-                            }
+                            backup()
+                            menuExpanded = false
                         },
                         contentPadding = PaddingValues(
                             24.dp,

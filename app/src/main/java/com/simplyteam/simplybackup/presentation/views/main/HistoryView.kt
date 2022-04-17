@@ -32,6 +32,7 @@ import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
+import com.simplyteam.simplybackup.presentation.views.SearchBox
 
 @Composable
 fun HistoryView(
@@ -58,94 +59,23 @@ fun HistoryView(
         ) {
             item {
                 SearchBox(
-                    viewModel = viewModel
+                    searchText = viewModel.GetSearchText(),
+                    search = {
+                        viewModel.Search(it)
+                    },
+                    resetSearch = {
+                        viewModel.ResetSearch()
+                    }
                 )
             }
             items(viewModel.GetHistoryData()) { historyData ->
                 HistoryCard(
-                    viewModel = viewModel,
-                    historyData = historyData
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun SearchBox(viewModel: HistoryViewModel) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    Card(
-        modifier = Modifier
-            .padding(
-                16.dp,
-                0.dp
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(
-                        12.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp
-                    ),
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(
-                    id = R.string.Search
-                )
-            )
-
-            BasicTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(
-                        8.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp
-                    ),
-                value = viewModel.GetSearchText(),
-                onValueChange = {
-                    viewModel.Search(it)
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        focusManager.clearFocus(true)
-                        keyboardController?.hide()
+                    historyData = historyData,
+                    openHistory = {
+                        viewModel.OpenHistory(
+                            historyData.Connection
+                        )
                     }
-                ),
-                singleLine = true,
-                cursorBrush = Brush.horizontalGradient(
-                    listOf(
-                        MaterialTheme.colors.onBackground,
-                        MaterialTheme.colors.onBackground,
-                    )
-                ),
-                textStyle = MaterialTheme.typography.subtitle1.copy(MaterialTheme.colors.onBackground)
-            )
-
-            IconButton(
-                onClick = {
-                    viewModel.ResetSearch()
-
-                    focusManager.clearFocus(true)
-                    keyboardController?.hide()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(
-                        id = R.string.Delete
-                    )
                 )
             }
         }
@@ -154,8 +84,8 @@ private fun SearchBox(viewModel: HistoryViewModel) {
 
 @Composable
 private fun HistoryCard(
-    viewModel: HistoryViewModel,
-    historyData: HistoryData
+    historyData: HistoryData,
+    openHistory: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -164,11 +94,9 @@ private fun HistoryCard(
                 8.dp,
                 0.dp
             )
-            .clickable {
-                viewModel.OpenHistory(
-                    historyData.Connection
-                )
-            }
+            .clickable(
+                onClick = openHistory
+            )
             .testTag(historyData.Connection.Name),
         elevation = 0.dp,
         border = BorderStroke(

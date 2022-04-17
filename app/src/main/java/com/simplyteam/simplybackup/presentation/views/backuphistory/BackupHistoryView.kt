@@ -56,17 +56,38 @@ fun BackupHistoryView(
                     items(viewModel.BackupDetails) { detail ->
                         FileItem(
                             detail = detail,
-                            viewModel = viewModel
+                            deleteItem = {
+                                viewModel.ShowDeleteAlert(detail)
+                            },
+                            restoreItem = {
+                                viewModel.ShowRestoreAlert(detail)
+                            }
                         )
                     }
                 }
 
                 DeleteAlert(
-                    viewModel = viewModel
+                    isShown = viewModel.BackupToDelete != null,
+                    dismissDialog = {
+                        viewModel.HideDeleteAlert()
+                    },
+                    confirmDialog = {
+                        viewModel.DeleteBackup()
+                    }
                 )
 
-                RestoreControls(
-                    viewModel = viewModel
+                RestoreAlert(
+                    isShown = viewModel.BackupToRestore != null,
+                    dismissDialog = {
+                        viewModel.HideRestoreAlert()
+                    },
+                    confirmDialog = {
+                        viewModel.RestoreBackup()
+                    }
+                )
+
+                RestoringDialog(
+                    isShown = viewModel.CurrentlyRestoring
                 )
             }
         }
@@ -76,7 +97,8 @@ fun BackupHistoryView(
 @Composable
 private fun FileItem(
     detail: BackupDetail,
-    viewModel: BackupHistoryViewModel
+    deleteItem: () -> Unit,
+    restoreItem: () -> Unit
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -156,7 +178,8 @@ private fun FileItem(
                     modifier = Modifier
                         .testTag("DeleteMenuItem"),
                     onClick = {
-                        viewModel.ShowDeleteAlert(detail)
+                        deleteItem()
+
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(
@@ -188,7 +211,8 @@ private fun FileItem(
                     modifier = Modifier
                         .testTag("RestoreMenuItem"),
                     onClick = {
-                        viewModel.ShowRestoreAlert(detail)
+                        restoreItem()
+
                         menuExpanded = false
                     },
                     contentPadding = PaddingValues(
@@ -223,14 +247,16 @@ private fun FileItem(
 }
 
 @Composable
-private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
-    if (viewModel.BackupToDelete != null) {
+private fun DeleteAlert(
+    isShown: Boolean,
+    dismissDialog: () -> Unit,
+    confirmDialog: () -> Unit
+) {
+    if (isShown) {
         AlertDialog(
             modifier = Modifier
                 .testTag("DeleteDialog"),
-            onDismissRequest = {
-                viewModel.HideDeleteAlert()
-            },
+            onDismissRequest = dismissDialog,
             title = {
                 Text(
                     text = stringResource(
@@ -249,9 +275,7 @@ private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
                 TextButton(
                     modifier = Modifier
                         .testTag("DeleteDialogCancel"),
-                    onClick = {
-                        viewModel.HideDeleteAlert()
-                    }
+                    onClick = dismissDialog
                 ) {
                     Text(
                         text = stringResource(
@@ -264,9 +288,7 @@ private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
                 TextButton(
                     modifier = Modifier
                         .testTag("DeleteDialogYes"),
-                    onClick = {
-                        viewModel.DeleteBackup()
-                    }
+                    onClick = confirmDialog
                 ) {
                     Text(
                         text = stringResource(
@@ -281,24 +303,19 @@ private fun DeleteAlert(viewModel: BackupHistoryViewModel) {
 
 @Composable
 private fun RestoreControls(viewModel: BackupHistoryViewModel) {
-    RestoreAlert(
-        viewModel = viewModel
-    )
-
-    RestoringDialog(
-        viewModel = viewModel
-    )
 }
 
 @Composable
-private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
-    if (viewModel.BackupToRestore != null) {
+private fun RestoreAlert(
+    isShown: Boolean,
+    dismissDialog: () -> Unit,
+    confirmDialog: () -> Unit
+) {
+    if (isShown) {
         AlertDialog(
             modifier = Modifier
                 .testTag("RestoreDialog"),
-            onDismissRequest = {
-                viewModel.HideRestoreAlert()
-            },
+            onDismissRequest = dismissDialog,
             title = {
                 Text(
                     text = stringResource(
@@ -317,9 +334,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
                 TextButton(
                     modifier = Modifier
                         .testTag("RestoreDialogCancel"),
-                    onClick = {
-                        viewModel.HideRestoreAlert()
-                    }
+                    onClick = dismissDialog
                 ) {
                     Text(
                         text = stringResource(
@@ -332,9 +347,7 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
                 TextButton(
                     modifier = Modifier
                         .testTag("RestoreDialogYes"),
-                    onClick = {
-                        viewModel.RestoreBackup()
-                    }
+                    onClick = confirmDialog
                 ) {
                     Text(
                         text = stringResource(
@@ -348,8 +361,10 @@ private fun RestoreAlert(viewModel: BackupHistoryViewModel) {
 }
 
 @Composable
-private fun RestoringDialog(viewModel: BackupHistoryViewModel) {
-    if (viewModel.CurrentlyRestoring) {
+private fun RestoringDialog(
+    isShown: Boolean
+) {
+    if (isShown) {
         Dialog(
             onDismissRequest = {}
         ) {
