@@ -7,6 +7,8 @@ import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
+import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
+import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import dagger.Module

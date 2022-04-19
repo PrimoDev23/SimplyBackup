@@ -1,4 +1,4 @@
-package com.simplyteam.simplybackup.data.services
+package com.simplyteam.simplybackup.data.services.cloudservices
 
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.RemoteFile

@@ -14,6 +14,8 @@ import com.simplyteam.simplybackup.data.models.HistoryEntry
 import com.simplyteam.simplybackup.data.models.exceptions.WifiNotEnabledException
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
+import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
+import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

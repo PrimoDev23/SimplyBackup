@@ -1,8 +1,6 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.backuphistory
 
-import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,16 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.*
-import com.simplyteam.simplybackup.data.services.SFTPService
-import com.simplyteam.simplybackup.data.services.NextCloudService
+import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject

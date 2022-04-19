@@ -10,9 +10,9 @@ import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
-import com.simplyteam.simplybackup.data.services.NextCloudService
+import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
-import com.simplyteam.simplybackup.data.services.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
