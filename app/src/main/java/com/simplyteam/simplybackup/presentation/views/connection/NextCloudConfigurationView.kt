@@ -225,25 +225,3 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
         }
     }
 }
-
-@Composable
-private fun TextFieldErrorText(
-    modifier: Modifier,
-    shown: Boolean,
-    text: String
-) {
-    if (shown) {
-        Text(
-            modifier = modifier
-                .padding(
-                    12.dp,
-                    4.dp,
-                    0.dp,
-                    0.dp
-                ),
-            text = text,
-            color = MaterialTheme.colors.error,
-            style = MaterialTheme.typography.caption
-        )
-    }
-}

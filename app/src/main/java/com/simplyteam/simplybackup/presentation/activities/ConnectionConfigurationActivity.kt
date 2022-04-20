@@ -78,7 +78,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(key1 = true) {
-                    viewModel.FinishFlow.collect { _ ->
+                    viewModel.FinishFlow.collect {
                         context.FinishActivityWithAnimation()
                     }
                 }

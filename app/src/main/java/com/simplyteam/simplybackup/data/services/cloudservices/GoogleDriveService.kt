@@ -167,7 +167,7 @@ class GoogleDriveService(
                     .setQ("mimeType='application/zip' and name contains '${connection.Name}'")
                     .setSpaces("drive")
                     .setFields("files(id, name, createdTime, size, parents)")
-                    .execute();
+                    .execute()
 
                 for (file in result.files) {
                     fileList.add(
@@ -184,29 +184,6 @@ class GoogleDriveService(
             }
         }
         throw LoginException()
-    }
-
-    private fun BuildDirectoryPath(
-        drive: Drive,
-        parentId: String
-    ): String {
-        var path = ""
-
-        val file = drive.files()
-            .get(parentId)
-            .setFields("id, name, parents")
-            .execute()
-
-        if (file.parents?.size == 1) {
-            path = BuildDirectoryPath(
-                drive,
-                file.parents[0]
-            )
-        }
-
-        path += "/${file.name}"
-
-        return path
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")

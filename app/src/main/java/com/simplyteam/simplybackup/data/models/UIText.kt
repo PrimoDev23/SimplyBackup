@@ -12,17 +12,6 @@ sealed class UIText {
         vararg val formatArgs: Any
     ) : UIText()
 
-    @Composable
-    fun asString(): String {
-        return when (this) {
-            is DynamicString -> value
-            is StringResource -> stringResource(
-                id = resId,
-                formatArgs = *formatArgs
-            )
-        }
-    }
-
     fun asString(context: Context): String {
         return when (this) {
             is DynamicString -> value

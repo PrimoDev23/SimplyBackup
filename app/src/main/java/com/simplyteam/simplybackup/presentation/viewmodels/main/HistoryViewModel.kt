@@ -23,9 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val _historyRepository: HistoryRepository,
-    private val _historySearchService: HistorySearchService,
-    private val _schedulerService: SchedulerService
+    private val _historySearchService: HistorySearchService
 ) : ViewModel() {
 
     private val _openHistoryFlow = MutableSharedFlow<Connection>()
