@@ -302,10 +302,6 @@ private fun DeleteAlert(
 }
 
 @Composable
-private fun RestoreControls(viewModel: BackupHistoryViewModel) {
-}
-
-@Composable
 private fun RestoreAlert(
     isShown: Boolean,
     dismissDialog: () -> Unit,

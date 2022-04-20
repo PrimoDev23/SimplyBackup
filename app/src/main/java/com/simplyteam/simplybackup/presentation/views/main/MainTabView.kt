@@ -40,20 +40,6 @@ fun MainTabView() {
         mutableStateOf<Screen>(Screen.History)
     }
 
-    val scope = rememberCoroutineScope()
-    val configurationLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            it.data?.getStringExtra("ResultText")
-                ?.let { text ->
-                    scope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(text)
-                    }
-                }
-        }
-    }
-
     val historyViewModel = viewModel<HistoryViewModel>()
     val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
 

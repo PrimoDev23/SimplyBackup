@@ -3,6 +3,7 @@ package com.simplyteam.simplybackup.presentation.views.connection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -117,7 +118,7 @@ fun PathsConfigurationView(
                 )
                 .testTag("Paths")
         ) {
-            itemsIndexed(viewModel.Paths) { index, path ->
+            items(viewModel.Paths) { path ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -6,6 +6,7 @@ import android.content.Intent
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,8 +20,9 @@ class BootReceiver : BroadcastReceiver() {
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onReceive(p0: Context?, p1: Intent?) {
-        p0?.let { context ->
+        p0?.let { _ ->
             p1?.let { intent ->
                 if(intent.action == Intent.ACTION_BOOT_COMPLETED) {
                     GlobalScope.launch {

@@ -18,6 +18,7 @@ import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveServic
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -48,6 +49,7 @@ class BackupReceiver : BroadcastReceiver() {
     @Inject
     lateinit var HistoryRepository: HistoryRepository
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onReceive(
         p0: Context?,
         p1: Intent?

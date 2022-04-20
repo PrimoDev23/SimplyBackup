@@ -44,8 +44,6 @@ fun ConnectionConfigurationView(
     navController: NavHostController,
     viewModel: ConnectionConfigurationViewModel
 ) {
-    val activity = LocalContext.current as ComponentActivity
-
     Column(
         modifier = Modifier
             .fillMaxSize()
