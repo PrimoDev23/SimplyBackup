@@ -11,12 +11,15 @@ import com.simplyteam.simplybackup.data.models.*
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,6 +27,7 @@ import javax.inject.Inject
 class BackupHistoryViewModel @Inject constructor(
     private val _nextCloudService: NextCloudService,
     private val _sFTPService: SFTPService,
+    private val _googleDriveService: GoogleDriveService,
     private val _packagingService: PackagingService
 ) : ViewModel() {
 
@@ -46,17 +50,24 @@ class BackupHistoryViewModel @Inject constructor(
         try {
             Loading = true
 
-            val files = when (connection.ConnectionType) {
-                ConnectionType.NextCloud -> {
-                    _nextCloudService.GetFilesForConnection(
-                        connection
-                    )
+            val files = withContext(Dispatchers.IO) {
+                when (connection.ConnectionType) {
+                    ConnectionType.NextCloud -> {
+                        _nextCloudService.GetFilesForConnection(
+                            connection
+                        )
 
-                }
-                ConnectionType.SFTP -> {
-                    _sFTPService.GetFilesForConnection(
-                        connection
-                    )
+                    }
+                    ConnectionType.SFTP -> {
+                        _sFTPService.GetFilesForConnection(
+                            connection
+                        )
+                    }
+                    ConnectionType.GoogleDrive -> {
+                        _googleDriveService.GetFilesForConnection(
+                            connection
+                        )
+                    }
                 }
             }
 
@@ -96,6 +107,7 @@ class BackupHistoryViewModel @Inject constructor(
 
             details.add(
                 BackupDetail(
+                    RemoteId = file.RemoteId,
                     Connection = connection,
                     RemotePath = file.RemotePath,
                     Size = size,
@@ -122,18 +134,26 @@ class BackupHistoryViewModel @Inject constructor(
                     Loading = true
                     HideDeleteAlert()
 
-                    val result = when (backup.Connection.ConnectionType) {
-                        ConnectionType.NextCloud -> {
-                            _nextCloudService.DeleteFile(
-                                backup.Connection,
-                                backup.RemotePath
-                            )
-                        }
-                        ConnectionType.SFTP -> {
-                            _sFTPService.DeleteFile(
-                                backup.Connection,
-                                backup.RemotePath
-                            )
+                    val result = withContext(Dispatchers.IO) {
+                        when (backup.Connection.ConnectionType) {
+                            ConnectionType.NextCloud -> {
+                                _nextCloudService.DeleteFile(
+                                    backup.Connection,
+                                    backup.RemotePath
+                                )
+                            }
+                            ConnectionType.SFTP -> {
+                                _sFTPService.DeleteFile(
+                                    backup.Connection,
+                                    backup.RemotePath
+                                )
+                            }
+                            ConnectionType.GoogleDrive -> {
+                                _googleDriveService.DeleteFile(
+                                    backup.Connection,
+                                    backup.RemoteId
+                                )
+                            }
                         }
                     }
 
@@ -174,18 +194,26 @@ class BackupHistoryViewModel @Inject constructor(
 
                     HideRestoreAlert()
 
-                    val file = when (backup.Connection.ConnectionType) {
-                        ConnectionType.NextCloud -> {
-                            _nextCloudService.DownloadFile(
-                                backup.Connection,
-                                backup.RemotePath
-                            )
-                        }
-                        ConnectionType.SFTP -> {
-                            _sFTPService.DownloadFile(
-                                backup.Connection,
-                                backup.RemotePath
-                            )
+                    val file = withContext(Dispatchers.IO) {
+                        when (backup.Connection.ConnectionType) {
+                            ConnectionType.NextCloud -> {
+                                _nextCloudService.DownloadFile(
+                                    backup.Connection,
+                                    backup.RemotePath
+                                )
+                            }
+                            ConnectionType.SFTP -> {
+                                _sFTPService.DownloadFile(
+                                    backup.Connection,
+                                    backup.RemotePath
+                                )
+                            }
+                            ConnectionType.GoogleDrive -> {
+                                _googleDriveService.DownloadFile(
+                                    backup.Connection,
+                                    backup.RemoteId
+                                )
+                            }
                         }
                     }
 

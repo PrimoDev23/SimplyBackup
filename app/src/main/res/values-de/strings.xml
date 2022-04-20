@@ -58,4 +58,8 @@
     <string name="ConnectionRemoved">%s wurde erfolgreich gelöscht</string>
     <string name="Undo">Rückgängig</string>
     <string name="ConnectionSaved">Verbindung erfolgreich gespeichert</string>
+    <string name="OK">OK</string>
+    <string name="AddNewAccount">Neues Konto hinzufügen</string>
+    <string name="SelectedAccount">Gewähltes Konto</string>
+    <string name="FolderLink">Link zum Ordner</string>
 </resources>

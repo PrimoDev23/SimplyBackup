@@ -1,10 +1,10 @@
 package com.simplyteam.simplybackup.presentation.activities
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*
@@ -30,6 +30,7 @@ import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAni
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,13 +51,29 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 val viewModel = viewModel<ConnectionConfigurationViewModel>()
                 val nextCloudViewModel = viewModel<NextCloudConfigurationViewModel>()
                 val ftpViewModel = viewModel<SFTPConfigurationViewModel>()
+                val googleDriveViewModel = viewModel<GoogleDriveConfigurationViewModel>()
+
+                val googleDriveLoginLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+                ){
+                    it.data?.let { data ->
+                        googleDriveViewModel.SetAccountFromIntent(data)
+                    }
+                }
 
                 viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
                 viewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
+                viewModel.ViewModelMap[ConnectionType.GoogleDrive] = googleDriveViewModel
 
                 LaunchedEffect(key1 = true) {
                     connection?.let {
                         viewModel.LoadData(connection)
+                    }
+                }
+
+                LaunchedEffect(key1 = true){
+                    googleDriveViewModel.NewAccountFlow.collect {
+                        googleDriveLoginLauncher.launch(it.Intent)
                     }
                 }
 

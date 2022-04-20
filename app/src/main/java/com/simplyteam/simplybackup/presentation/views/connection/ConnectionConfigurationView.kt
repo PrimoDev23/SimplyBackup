@@ -33,6 +33,7 @@ import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
@@ -194,6 +195,11 @@ private fun TypeSpecificOptions(
         ConnectionType.SFTP -> {
             SFTPInformationFields(
                 viewModel = viewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
+            )
+        }
+        ConnectionType.GoogleDrive -> {
+            GoogleDriveConfigurationView(
+                viewModel = viewModelMap[ConnectionType.GoogleDrive] as GoogleDriveConfigurationViewModel
             )
         }
     }

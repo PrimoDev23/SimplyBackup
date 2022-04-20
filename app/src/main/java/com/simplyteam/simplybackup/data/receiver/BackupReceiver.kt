@@ -14,6 +14,7 @@ import com.simplyteam.simplybackup.data.models.HistoryEntry
 import com.simplyteam.simplybackup.data.models.exceptions.WifiNotEnabledException
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
+import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,16 +28,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BackupReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var packagingService: PackagingService
+    lateinit var PackagingService: PackagingService
 
     @Inject
-    lateinit var nextCloudService: NextCloudService
+    lateinit var NextCloudService: NextCloudService
 
     @Inject
     lateinit var SFTPService: SFTPService
 
     @Inject
-    lateinit var schedulerService: SchedulerService
+    lateinit var GoogleDriveService: GoogleDriveService
+
+    @Inject
+    lateinit var SchedulerService: SchedulerService
 
     @Inject
     lateinit var NotificationService: NotificationService
@@ -57,7 +61,7 @@ class BackupReceiver : BroadcastReceiver() {
 
                     conn?.let { connection ->
                         if (!connection.WifiOnly || IsWifiConnected(context)) {
-                            packagingService.CreatePackage(
+                            PackagingService.CreatePackage(
                                 context.filesDir.absolutePath,
                                 connection
                             )
@@ -68,13 +72,19 @@ class BackupReceiver : BroadcastReceiver() {
                                         )
                                         val uploadResult = when (connection.ConnectionType) {
                                             ConnectionType.NextCloud -> {
-                                                nextCloudService.UploadFile(
+                                                NextCloudService.UploadFile(
                                                     connection,
                                                     file
                                                 )
                                             }
                                             ConnectionType.SFTP -> {
                                                 SFTPService.UploadFile(
+                                                    connection,
+                                                    file
+                                                )
+                                            }
+                                            ConnectionType.GoogleDrive -> {
+                                                GoogleDriveService.UploadFile(
                                                     connection,
                                                     file
                                                 )
@@ -132,7 +142,7 @@ class BackupReceiver : BroadcastReceiver() {
                         }
 
                         //Reschedule even if the backup fails
-                        schedulerService.ScheduleBackup(
+                        SchedulerService.ScheduleBackup(
                             connection
                         )
                     }

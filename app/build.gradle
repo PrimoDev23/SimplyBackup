@@ -35,6 +35,9 @@ android {
             buildConfigField "String", "SFTP_USERNAME", properties.getProperty('SFTP_USERNAME')
             buildConfigField "String", "SFTP_PASSWORD", properties.getProperty('SFTP_PASSWORD')
             buildConfigField "String", "SFTP_REMOTEPATH", properties.getProperty('SFTP_REMOTEPATH')
+
+            buildConfigField "String", "GOOGLE_DRIVE_USER", properties.getProperty('GOOGLE_DRIVE_USER')
+            buildConfigField "String", "GOOGLE_DRIVE_EDITUSER", properties.getProperty('GOOGLE_DRIVE_EDITUSER')
         }
         release {
             minifyEnabled false
@@ -106,6 +109,19 @@ dependencies {
 
     //SFTP
     implementation "com.jcraft:jsch:0.1.55"
+
+    //Google Sign In
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    //Drive
+    implementation('com.google.api-client:google-api-client-android:1.33.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
+    }
+    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
+    }
 
     //Testing
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

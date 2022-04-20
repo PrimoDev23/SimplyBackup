@@ -20,6 +20,7 @@ fun ConnectionIcon(connectionType: ConnectionType) {
     when (connectionType) {
         ConnectionType.NextCloud -> NextcloudIcon()
         ConnectionType.SFTP -> SftpIcon()
+        ConnectionType.GoogleDrive -> GoogleDriveIcon()
     }
 }
 
@@ -31,9 +32,7 @@ private fun NextcloudIcon() {
         painter = painterResource(
             id = R.mipmap.logo_nextcloud_blue
         ),
-        contentDescription = stringResource(
-            id = R.string.NextCloud
-        )
+        contentDescription = ConnectionType.NextCloud.toString()
     )
 }
 
@@ -46,9 +45,7 @@ private fun SftpIcon() {
             painter = painterResource(
                 id = R.drawable.ic_baseline_folder_24
             ),
-            contentDescription = stringResource(
-                id = R.string.SFTP
-            ),
+            contentDescription = ConnectionType.SFTP.toString(),
             tint = MaterialTheme.colors.onBackground
         )
 
@@ -59,4 +56,16 @@ private fun SftpIcon() {
             color = MaterialTheme.colors.onBackground
         )
     }
+}
+
+@Composable
+private fun GoogleDriveIcon() {
+    Image(
+        modifier = Modifier
+            .size(40.dp),
+        painter = painterResource(
+            id = R.drawable.google_drive_logo
+        ),
+        contentDescription = ConnectionType.GoogleDrive.toString()
+    )
 }

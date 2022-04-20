@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.NotificationService
@@ -36,6 +37,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var HistoryRepository: HistoryRepository
+
+    @Inject
+    lateinit var AccountRepository: AccountRepository
 
     @Inject
     lateinit var PackagingService: PackagingService
@@ -105,6 +109,10 @@ class MainActivity : ComponentActivity() {
                 HistoryRepository.BuildHistoryData(ConnectionRepository.Connections)
                 HistorySearchService.RepeatSearch()
             }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            AccountRepository.Collect()
         }
     }
 }

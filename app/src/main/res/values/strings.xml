@@ -64,4 +64,9 @@
     <string name="ConnectionRemoved">Successfully deleted %s</string>
     <string name="Undo">Undo</string>
     <string name="ConnectionSaved">Connection successfully saved</string>
+    <string name="GoogleDrive" translatable="false">Google Drive</string>
+    <string name="OK">OK</string>
+    <string name="AddNewAccount">Add new account</string>
+    <string name="SelectedAccount">Selected account</string>
+    <string name="FolderLink">Link to folder</string>
 </resources>

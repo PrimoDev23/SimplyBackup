@@ -119,6 +119,7 @@ class NextCloudService (
                             if (file.remotePath.contains("-${connection.Name}-") && file.remotePath.endsWith(".zip")) {
                                 files.add(
                                     RemoteFile(
+                                        file.localId,
                                         file.remotePath,
                                         file.uploadTimestamp,
                                         file.size
