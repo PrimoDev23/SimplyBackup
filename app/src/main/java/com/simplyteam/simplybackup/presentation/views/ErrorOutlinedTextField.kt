@@ -33,7 +33,7 @@ fun ErrorOutlinedTextField(
     errorModifier: Modifier,
     isError: Boolean,
     errorText: String
-){
+) {
     OutlinedTextField(
         modifier = modifier,
         label = label,
@@ -44,7 +44,20 @@ fun ErrorOutlinedTextField(
         visualTransformation = visualTransformation,
         leadingIcon = leadingIcon,
         singleLine = singleLine,
-        isError = isError
+        isError = isError,
+        trailingIcon = {
+            if (isError) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.ic_baseline_error_24
+                    ),
+                    contentDescription = stringResource(
+                        id = R.string.Error
+                    ),
+                    tint = MaterialTheme.colors.error
+                )
+            }
+        }
     )
 
     if (isError) {
