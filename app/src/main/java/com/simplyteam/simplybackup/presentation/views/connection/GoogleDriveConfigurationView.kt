@@ -44,7 +44,8 @@ fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
         onClick = {
             viewModel.ShowSelectionDialog()
         },
-        account = viewModel.SelectedAccount
+        account = viewModel.SelectedAccount,
+        isError = viewModel.SelectedAccountError
     )
 
     AccountSelectionDialog(
@@ -161,7 +162,8 @@ fun InformationCard(
 @Composable
 private fun LoginCard(
     onClick: () -> Unit,
-    account: String
+    account: String,
+    isError: Boolean
 ) {
     Card(
         modifier = Modifier
@@ -169,41 +171,64 @@ private fun LoginCard(
             .clickable(onClick = onClick)
             .testTag("LoginCard"),
         elevation = 0.dp,
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colors.onBackground.copy(0.12f)
-        )
+        border = if (isError) {
+            BorderStroke(
+                1.dp,
+                MaterialTheme.colors.error.copy(1f)
+            )
+        } else {
+            BorderStroke(
+                1.dp,
+                MaterialTheme.colors.onBackground.copy(0.12f)
+            )
+        }
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(
-                        8.dp,
-                        8.dp,
-                        8.dp,
-                        2.dp
-                    ),
-                style = MaterialTheme.typography.subtitle1,
-                text = stringResource(
-                    id = R.string.SelectedAccount
-                ),
-            )
-
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Column {
                 Text(
                     modifier = Modifier
                         .padding(
                             8.dp,
-                            0.dp,
                             8.dp,
-                            8.dp
+                            8.dp,
+                            2.dp
                         ),
-                    style = MaterialTheme.typography.body2,
-                    text = account
+                    style = MaterialTheme.typography.subtitle1,
+                    text = stringResource(
+                        id = R.string.SelectedAccount
+                    ),
+                )
+
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                8.dp,
+                                0.dp,
+                                8.dp,
+                                8.dp
+                            ),
+                        style = MaterialTheme.typography.body2,
+                        text = account
+                    )
+                }
+            }
+
+            if (isError) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.ic_baseline_error_24
+                    ),
+                    contentDescription = stringResource(
+                        id = R.string.Error
+                    ),
+                    tint = MaterialTheme.colors.error
                 )
             }
         }

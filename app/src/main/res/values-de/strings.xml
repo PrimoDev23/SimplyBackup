@@ -62,4 +62,5 @@
     <string name="AddNewAccount">Neues Konto hinzufügen</string>
     <string name="SelectedAccount">Gewähltes Konto</string>
     <string name="FolderLink">Link zum Ordner</string>
+    <string name="Error">Error</string>
 </resources>

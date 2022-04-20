@@ -69,4 +69,5 @@
     <string name="AddNewAccount">Add new account</string>
     <string name="SelectedAccount">Selected account</string>
     <string name="FolderLink">Link to folder</string>
+    <string name="Error">Error</string>
 </resources>
