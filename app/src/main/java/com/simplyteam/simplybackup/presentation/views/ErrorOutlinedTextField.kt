@@ -41,6 +41,7 @@ fun ErrorOutlinedTextField(
         onValueChange = onValueChange,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
+        visualTransformation = visualTransformation,
         leadingIcon = leadingIcon,
         singleLine = singleLine,
         isError = isError
