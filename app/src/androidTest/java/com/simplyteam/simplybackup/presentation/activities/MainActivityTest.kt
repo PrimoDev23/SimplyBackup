@@ -8,10 +8,12 @@ import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
 import com.simplyteam.simplybackup.data.models.*
+import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -37,7 +39,7 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private val _testConnectionType = ConnectionType.NextCloud
+    private val _testConnectionType = ConnectionType.GoogleDrive
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -46,7 +48,7 @@ class MainActivityTest {
     lateinit var HistoryRepository: HistoryRepository
 
     @Inject
-    lateinit var SimplyBackupDatabase: SimplyBackupDatabase
+    lateinit var AccountRepository: AccountRepository
 
     @Inject
     lateinit var PackagingService: PackagingService
@@ -57,9 +59,30 @@ class MainActivityTest {
     @Inject
     lateinit var SFTPService: SFTPService
 
+    @Inject
+    lateinit var GoogleDriveService: GoogleDriveService
+
     @Before
     fun Setup() {
         hiltRule.inject()
+
+        if(_testConnectionType == ConnectionType.GoogleDrive){
+            runBlocking {
+                AccountRepository.Insert(
+                    Account(
+                        ConnectionType.GoogleDrive,
+                        BuildConfig.GOOGLE_DRIVE_USER
+                    )
+                )
+
+                AccountRepository.Insert(
+                    Account(
+                        ConnectionType.GoogleDrive,
+                        BuildConfig.GOOGLE_DRIVE_EDITUSER
+                    )
+                )
+            }
+        }
     }
 
     @Test
@@ -81,17 +104,34 @@ class MainActivityTest {
         composeRule.onNodeWithTag("Name")
             .performTextInput(testValue)
 
-        composeRule.onNodeWithTag("Host")
-            .performTextInput(testValue)
+        when(_testConnectionType) {
+            ConnectionType.GoogleDrive -> {
+                composeRule.onNodeWithTag("LoginCard")
+                    .performClick()
 
-        composeRule.onNodeWithTag("Username")
-            .performTextInput(testValue)
+                composeRule.onNodeWithTag("AccountSelectionCard")
+                    .assertExists()
 
-        composeRule.onNodeWithTag("Password")
-            .performTextInput(testValue)
+                composeRule.onNodeWithTag("${BuildConfig.GOOGLE_DRIVE_USER}Radio")
+                    .performClick()
 
-        composeRule.onNodeWithTag("RemotePath")
-            .performTextInput(testValue)
+                composeRule.onNodeWithTag("OK")
+                    .performClick()
+            }
+            else -> {
+                composeRule.onNodeWithTag("Username")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("Host")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("Password")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("RemotePath")
+                    .performTextReplacement(testValue)
+            }
+        }
 
         composeRule.onNodeWithTag("ConfigurePaths")
             .performClick()
@@ -124,18 +164,54 @@ class MainActivityTest {
         Thread.sleep(1000)
 
         val newConnections = RetrieveConnections()
-        assertEquals(connections.size + 1, newConnections.size)
+        assertEquals(
+            connections.size + 1,
+            newConnections.size
+        )
 
         val newConnection = newConnections.last()
 
-        assertEquals(_testConnectionType, newConnection.ConnectionType)
-        assertEquals(testValue, newConnection.Name)
-        assertEquals(testValue, newConnection.Host)
-        assertEquals(testValue, newConnection.Username)
-        assertEquals(testValue, newConnection.Password)
-        assertEquals(testValue, newConnection.RemotePath)
+        assertEquals(
+            _testConnectionType,
+            newConnection.ConnectionType
+        )
+        assertEquals(
+            testValue,
+            newConnection.Name
+        )
+
+        when(_testConnectionType) {
+            ConnectionType.GoogleDrive -> {
+                assertEquals(
+                    BuildConfig.GOOGLE_DRIVE_USER,
+                    newConnection.Username
+                )
+            }
+            else -> {
+                assertEquals(
+                    testValue,
+                    newConnection.Host
+                )
+                assertEquals(
+                    testValue,
+                    newConnection.Username
+                )
+                assertEquals(
+                    testValue,
+                    newConnection.Password
+                )
+                assertEquals(
+                    testValue,
+                    newConnection.RemotePath
+                )
+            }
+        }
+
         assert(newConnection.WifiOnly)
-        assertEquals(ScheduleType.MONTHLY, newConnection.ScheduleType)
+        assertEquals(
+            ScheduleType.MONTHLY,
+            newConnection.ScheduleType
+        )
         assert(newConnection.Paths.isNotEmpty())
     }
 
@@ -177,14 +253,17 @@ class MainActivityTest {
         composeRule.onNodeWithText("AndroidInstrumentationTest")
             .assertDoesNotExist()
 
-        assertEquals(0, RetrieveConnections().size)
+        assertEquals(
+            0,
+            RetrieveConnections().size
+        )
 
         composeRule.onNodeWithTag("MainSnackbar")
             .assertExists()
     }
 
     @Test
-    fun UndoDeleteConnectionTest(){
+    fun UndoDeleteConnectionTest() {
         InsertConnection()
 
         composeRule.onNodeWithTag(Screen.Connections.Route)
@@ -199,7 +278,10 @@ class MainActivityTest {
         composeRule.onNodeWithText("AndroidInstrumentationTest")
             .assertDoesNotExist()
 
-        assertEquals(0, RetrieveConnections().size)
+        assertEquals(
+            0,
+            RetrieveConnections().size
+        )
 
         composeRule.onNodeWithTag("MainSnackbar")
             .assertExists()
@@ -207,14 +289,17 @@ class MainActivityTest {
         composeRule.onNodeWithText("Undo")
             .performClick()
 
-        assertEquals(1, RetrieveConnections().size)
+        assertEquals(
+            1,
+            RetrieveConnections().size
+        )
 
         composeRule.onNodeWithText("AndroidInstrumentationTest")
             .assertExists()
     }
 
     @Test
-    fun DeleteRemovesHistoryTest(){
+    fun DeleteRemovesHistoryTest() {
         InsertConnection()
 
         val connection = RetrieveConnections().last()
@@ -229,7 +314,10 @@ class MainActivityTest {
 
         val connections = RetrieveConnections()
 
-        assertEquals(0, connections.size)
+        assertEquals(
+            0,
+            connections.size
+        )
 
         Thread.sleep(1000)
 
@@ -259,17 +347,34 @@ class MainActivityTest {
         composeRule.onNodeWithTag("Name")
             .performTextReplacement(testValue)
 
-        composeRule.onNodeWithTag("Host")
-            .performTextReplacement(testValue)
+        when(_testConnectionType) {
+            ConnectionType.GoogleDrive -> {
+                composeRule.onNodeWithTag("LoginCard")
+                    .performClick()
 
-        composeRule.onNodeWithTag("Username")
-            .performTextReplacement(testValue)
+                composeRule.onNodeWithTag("AccountSelectionCard")
+                    .assertExists()
 
-        composeRule.onNodeWithTag("Password")
-            .performTextReplacement(testValue)
+                composeRule.onNodeWithTag("${BuildConfig.GOOGLE_DRIVE_EDITUSER}Radio")
+                    .performClick()
 
-        composeRule.onNodeWithTag("RemotePath")
-            .performTextReplacement(testValue)
+                composeRule.onNodeWithTag("OK")
+                    .performClick()
+            }
+            else -> {
+                composeRule.onNodeWithTag("Username")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("Host")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("Password")
+                    .performTextReplacement(testValue)
+
+                composeRule.onNodeWithTag("RemotePath")
+                    .performTextReplacement(testValue)
+            }
+        }
 
         composeRule.onNodeWithTag("ConfigurePaths")
             .performClick()
@@ -303,13 +408,43 @@ class MainActivityTest {
             it.Id == id
         }
 
-        assertEquals(testValue, connection.Name)
-        assertEquals(testValue, connection.Host)
-        assertEquals(testValue, connection.Username)
-        assertEquals(testValue, connection.Password)
-        assertEquals(testValue, connection.RemotePath)
+        assertEquals(
+            testValue,
+            connection.Name
+        )
+
+        when(_testConnectionType){
+            ConnectionType.GoogleDrive -> {
+                assertEquals(
+                    BuildConfig.GOOGLE_DRIVE_EDITUSER,
+                    connection.Username
+                )
+            }
+            else -> {
+                assertEquals(
+                    testValue,
+                    connection.Host
+                )
+                assertEquals(
+                    testValue,
+                    connection.Username
+                )
+                assertEquals(
+                    testValue,
+                    connection.Password
+                )
+                assertEquals(
+                    testValue,
+                    connection.RemotePath
+                )
+            }
+        }
+
         assert(connection.WifiOnly)
-        assertEquals(ScheduleType.YEARLY, connection.ScheduleType)
+        assertEquals(
+            ScheduleType.YEARLY,
+            connection.ScheduleType
+        )
         assert(connection.Paths.isNotEmpty())
 
         Thread.sleep(1000)
@@ -326,7 +461,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun RunBackupForConnectionTest(){
+    fun RunBackupForConnectionTest() {
         InsertConnection()
 
         val connection = RetrieveConnections().last()
@@ -394,7 +529,7 @@ class MainActivityTest {
             .performClick()
 
         composeRule.onNodeWithTag("ProgressIndicator")
-            .assertIsDisplayed()
+            .assertExists()
 
         Thread.sleep(10000)
 
@@ -590,6 +725,21 @@ class MainActivityTest {
                         )
                     )
                 }
+                ConnectionType.GoogleDrive -> {
+                    id = ConnectionRepository.InsertConnection(
+                        Connection(
+                            ConnectionType = ConnectionType.GoogleDrive,
+                            Name = "AndroidInstrumentationTest",
+                            Username = BuildConfig.GOOGLE_DRIVE_USER,
+                            Paths = listOf(
+                                Path(
+                                    "/sdcard/TestFolder",
+                                    PathType.DIRECTORY
+                                )
+                            )
+                        )
+                    )
+                }
             }
 
         }
@@ -652,9 +802,8 @@ class MainActivityTest {
             connection
         )
             .onSuccess {
-                val result: Result<Boolean>
-                runBlocking {
-                    result = when (_testConnectionType) {
+                val result = runBlocking {
+                    when (_testConnectionType) {
                         ConnectionType.NextCloud -> {
                             NextCloudService.UploadFile(
                                 connection,
@@ -663,6 +812,12 @@ class MainActivityTest {
                         }
                         ConnectionType.SFTP -> {
                             SFTPService.UploadFile(
+                                connection,
+                                it
+                            )
+                        }
+                        ConnectionType.GoogleDrive -> {
+                            GoogleDriveService.UploadFile(
                                 connection,
                                 it
                             )
@@ -691,12 +846,17 @@ class MainActivityTest {
                         connection
                     )
                 }
+                ConnectionType.GoogleDrive -> {
+                    GoogleDriveService.GetFilesForConnection(
+                        connection
+                    )
+                }
             }
         }
 
         for (file in files) {
             runBlocking {
-                when(_testConnectionType){
+                when (_testConnectionType) {
                     ConnectionType.NextCloud -> {
                         NextCloudService.DeleteFile(
                             connection,
@@ -707,6 +867,12 @@ class MainActivityTest {
                         SFTPService.DeleteFile(
                             connection,
                             file.RemotePath
+                        )
+                    }
+                    ConnectionType.GoogleDrive -> {
+                        GoogleDriveService.DeleteFile(
+                            connection,
+                            file.RemoteId
                         )
                     }
                 }

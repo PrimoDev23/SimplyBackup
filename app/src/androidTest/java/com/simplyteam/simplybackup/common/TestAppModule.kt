@@ -4,9 +4,11 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.simplyteam.simplybackup.data.databases.SimplyBackupDatabase
+import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
+import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
@@ -43,14 +45,6 @@ class TestAppModule {
 
     @Provides
     @Singleton
-    fun GetConnectionSearchService(connectionRepository: ConnectionRepository) = ConnectionSearchService(connectionRepository)
-
-    @Provides
-    @Singleton
-    fun GetHistorySearchService(historyRepository: HistoryRepository) = HistorySearchService(historyRepository)
-
-    @Provides
-    @Singleton
     fun GetConnectionRepository(simplyBackupDatabase: SimplyBackupDatabase) = ConnectionRepository(
         simplyBackupDatabase.connectionDao
     )
@@ -61,9 +55,25 @@ class TestAppModule {
         simplyBackupDatabase.historyDao
     )
 
+    @Provides
+    @Singleton
+    fun GetAccountRepository(simplyBackupDatabase: SimplyBackupDatabase) = AccountRepository(
+        simplyBackupDatabase.accountDao
+    )
+
     //endregion Repos
 
     //region Services
+
+    @Provides
+    @Singleton
+    fun GetConnectionSearchService(connectionRepository: ConnectionRepository) =
+        ConnectionSearchService(connectionRepository)
+
+    @Provides
+    @Singleton
+    fun GetHistorySearchService(historyRepository: HistoryRepository) =
+        HistorySearchService(historyRepository)
 
     @Provides
     @Singleton
@@ -72,6 +82,11 @@ class TestAppModule {
     @Provides
     @Singleton
     fun GetFtpService(@ApplicationContext appContext: Context) = SFTPService(appContext)
+
+    @Provides
+    @Singleton
+    fun GetGoogleDriveService(@ApplicationContext appContext: Context) =
+        GoogleDriveService(appContext)
 
     @Provides
     @Singleton
