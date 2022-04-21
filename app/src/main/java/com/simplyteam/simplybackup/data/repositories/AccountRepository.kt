@@ -14,11 +14,7 @@ class AccountRepository constructor (
 
     var Accounts by mutableStateOf(listOf<Account>())
 
-    suspend fun Collect() {
-        _accountDao.GetFlow().collect {
-            Accounts = it
-        }
-    }
+    fun GetFlow() = _accountDao.GetFlow()
 
     suspend fun Insert(account: Account) = _accountDao.InsertAccount(account)
 

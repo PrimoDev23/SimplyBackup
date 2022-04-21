@@ -18,6 +18,7 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Account
 import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
+import com.simplyteam.simplybackup.presentation.views.SearchBox
 
 @Composable
 fun AccountsView(
@@ -32,10 +33,21 @@ fun AccountsView(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(0.dp),
             state = viewModel.ListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item {
+                SearchBox(
+                    searchText = viewModel.GetSearchText(),
+                    search = {
+                        viewModel.Search(it)
+                    },
+                    resetSearch = {
+                        viewModel.ResetSearch()
+                    }
+                )
+            }
             items(viewModel.GetAccounts()) { account ->
                 AccountItem(
                     account = account,
@@ -59,20 +71,34 @@ fun AccountItem(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(
+                8.dp,
+                4.dp
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ConnectionIcon(
-                connectionType = account.Type
-            )
+            Column(
+                modifier = Modifier
+                    .width(65.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                ConnectionIcon(
+                    connectionType = account.Type
+                )
+            }
 
             Text(
                 modifier = Modifier
-                    .padding(16.dp, 0.dp),
+                    .padding(
+                        16.dp,
+                        0.dp
+                    ),
                 text = account.Username
             )
         }

@@ -16,6 +16,7 @@ import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
+import com.simplyteam.simplybackup.data.services.search.AccountSearchService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import com.simplyteam.simplybackup.presentation.views.main.MainTabView
@@ -31,6 +32,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var HistorySearchService: HistorySearchService
+
+    @Inject
+    lateinit var AccountSearchService: AccountSearchService
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -112,7 +116,11 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launchWhenStarted {
-            AccountRepository.Collect()
+            AccountRepository.GetFlow().collect {
+                AccountRepository.Accounts = it
+
+                AccountSearchService.RepeatSearch()
+            }
         }
     }
 }

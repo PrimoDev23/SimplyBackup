@@ -11,6 +11,7 @@ import com.simplyteam.simplybackup.data.services.*
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.search.AccountSearchService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import dagger.Module
@@ -70,6 +71,10 @@ class AppModule {
     @Provides
     @Singleton
     fun GetHistorySearchService(historyRepository: HistoryRepository) = HistorySearchService(historyRepository)
+
+    @Provides
+    @Singleton
+    fun GetAccountSearchService(accountRepository: AccountRepository) = AccountSearchService(accountRepository)
 
     @Provides
     @Singleton

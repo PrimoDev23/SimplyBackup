@@ -61,7 +61,7 @@ fun ConnectionOverviewView(
     ) {
         LazyColumn(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .testTag("ConnectionList"),
             state = viewModel.ListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -133,158 +133,153 @@ private fun ConnectionItem(
         mutableStateOf(false)
     }
 
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(
+                8.dp,
+                4.dp
+            )
             .clickable(
                 onClick = openConfiguration
             )
-            .testTag(item.Id.toString())
+            .testTag(item.Id.toString()),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(65.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            ConnectionIcon(
+                connectionType = item.ConnectionType
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
                 .padding(
                     8.dp,
-                    4.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .width(65.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                ConnectionIcon(
-                    connectionType = item.ConnectionType
+                    0.dp
                 )
-            }
-
-            Column(
+                .weight(1f)
+        ) {
+            Text(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .padding(
                         8.dp,
+                        8.dp,
+                        8.dp,
                         0.dp
-                    )
-                    .weight(1f)
-            ) {
+                    ),
+                text = item.Name,
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold
+            )
+
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
                     modifier = Modifier
                         .padding(
                             8.dp,
+                            0.dp,
                             8.dp,
-                            8.dp,
-                            0.dp
+                            8.dp
                         ),
-                    text = item.Name,
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold
+                    text = item.Username,
+                    style = MaterialTheme.typography.body2,
+                    fontStyle = FontStyle.Italic
                 )
+            }
+        }
 
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Column {
+            IconButton(
+                modifier = Modifier
+                    .testTag("More"),
+                onClick = {
+                    menuExpanded = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = ""
+                )
+            }
+
+            DropdownMenu(
+                modifier = Modifier
+                    .width(224.dp),
+                expanded = menuExpanded,
+                onDismissRequest = {
+                    menuExpanded = false
+                }
+            ) {
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .testTag("DeleteMenuItem"),
+                    onClick = {
+                        delete()
+
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        24.dp,
+                        8.dp
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(
+                            id = R.string.Delete
+                        )
+                    )
                     Text(
                         modifier = Modifier
                             .padding(
-                                8.dp,
+                                20.dp,
                                 0.dp,
-                                8.dp,
-                                8.dp
+                                0.dp,
+                                0.dp
                             ),
-                        text = item.Username,
-                        style = MaterialTheme.typography.body2,
-                        fontStyle = FontStyle.Italic
+                        text = stringResource(
+                            id = R.string.Delete
+                        )
                     )
                 }
-            }
 
-            Column {
-                IconButton(
+                DropdownMenuItem(
                     modifier = Modifier
-                        .testTag("More"),
+                        .testTag("BackupMenuItem"),
                     onClick = {
-                        menuExpanded = true
-                    }
+                        backup()
+                        menuExpanded = false
+                    },
+                    contentPadding = PaddingValues(
+                        24.dp,
+                        8.dp
+                    )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = ""
+                        painter = painterResource(id = R.drawable.ic_baseline_backup_24),
+                        contentDescription = stringResource(
+                            id = R.string.Backup
+                        )
                     )
-                }
-
-                DropdownMenu(
-                    modifier = Modifier
-                        .width(224.dp),
-                    expanded = menuExpanded,
-                    onDismissRequest = {
-                        menuExpanded = false
-                    }
-                ) {
-                    DropdownMenuItem(
+                    Text(
                         modifier = Modifier
-                            .testTag("DeleteMenuItem"),
-                        onClick = {
-                            delete()
-
-                            menuExpanded = false
-                        },
-                        contentPadding = PaddingValues(
-                            24.dp,
-                            8.dp
+                            .padding(
+                                20.dp,
+                                0.dp,
+                                0.dp,
+                                0.dp
+                            ),
+                        text = stringResource(
+                            id = R.string.Backup
                         )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(
-                                id = R.string.Delete
-                            )
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(
-                                    20.dp,
-                                    0.dp,
-                                    0.dp,
-                                    0.dp
-                                ),
-                            text = stringResource(
-                                id = R.string.Delete
-                            )
-                        )
-                    }
-
-                    DropdownMenuItem(
-                        modifier = Modifier
-                            .testTag("BackupMenuItem"),
-                        onClick = {
-                            backup()
-                            menuExpanded = false
-                        },
-                        contentPadding = PaddingValues(
-                            24.dp,
-                            8.dp
-                        )
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_backup_24),
-                            contentDescription = stringResource(
-                                id = R.string.Backup
-                            )
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(
-                                    20.dp,
-                                    0.dp,
-                                    0.dp,
-                                    0.dp
-                                ),
-                            text = stringResource(
-                                id = R.string.Backup
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
