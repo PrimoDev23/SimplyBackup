@@ -28,8 +28,6 @@ class AccountsViewModel @Inject constructor(
     private val _connectionExistsFlow = MutableSharedFlow<Event.SimpleTextEvent>()
     val ConnectionExistsFlow = _connectionExistsFlow.asSharedFlow()
 
-    val Accounts = _accountRepository.Accounts
-
     fun GetSearchText() = _accountSearchService.GetSearchText()
 
     fun Search(value: String) {
@@ -40,7 +38,7 @@ class AccountsViewModel @Inject constructor(
         _accountSearchService.Search("")
     }
 
-    fun GetAccounts() = _accountRepository.Accounts
+    fun GetAccounts() = _accountSearchService.FilteredItems
 
     fun DeleteAccount(account: Account) {
         viewModelScope.launch {
