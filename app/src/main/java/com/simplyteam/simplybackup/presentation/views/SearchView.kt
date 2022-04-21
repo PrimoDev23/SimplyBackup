@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -66,7 +67,8 @@ fun SearchBox(
                         0.dp,
                         0.dp,
                         0.dp
-                    ),
+                    )
+                    .testTag("SearchField"),
                 value = searchText,
                 onValueChange = search,
                 keyboardOptions = KeyboardOptions(
@@ -89,6 +91,8 @@ fun SearchBox(
             )
 
             IconButton(
+                modifier = Modifier
+                    .testTag("ClearSearch"),
                 onClick = {
                     resetSearch()
 
