@@ -39,68 +39,18 @@ class TestAppModule {
             .build()
     }
 
+    @Provides
+    @Singleton
+    fun GetConnectionDao(simplyBackupDatabase: SimplyBackupDatabase) = simplyBackupDatabase.connectionDao
+
+    @Provides
+    @Singleton
+    fun GetHistoryDao(simplyBackupDatabase: SimplyBackupDatabase) = simplyBackupDatabase.historyDao
+
+    @Provides
+    @Singleton
+    fun GetAccountDao(simplyBackupDatabase: SimplyBackupDatabase) = simplyBackupDatabase.accountDao
+
     //endregion DB
-
-    //region Repos
-
-    @Provides
-    @Singleton
-    fun GetConnectionRepository(simplyBackupDatabase: SimplyBackupDatabase) = ConnectionRepository(
-        simplyBackupDatabase.connectionDao
-    )
-
-    @Provides
-    @Singleton
-    fun GetHistoryRepository(simplyBackupDatabase: SimplyBackupDatabase) = HistoryRepository(
-        simplyBackupDatabase.historyDao
-    )
-
-    @Provides
-    @Singleton
-    fun GetAccountRepository(simplyBackupDatabase: SimplyBackupDatabase) = AccountRepository(
-        simplyBackupDatabase.accountDao
-    )
-
-    //endregion Repos
-
-    //region Services
-
-    @Provides
-    @Singleton
-    fun GetConnectionSearchService(connectionRepository: ConnectionRepository) =
-        ConnectionSearchService(connectionRepository)
-
-    @Provides
-    @Singleton
-    fun GetHistorySearchService(historyRepository: HistoryRepository) =
-        HistorySearchService(historyRepository)
-
-    @Provides
-    @Singleton
-    fun GetNextCloudService(@ApplicationContext appContext: Context) = NextCloudService(appContext)
-
-    @Provides
-    @Singleton
-    fun GetFtpService(@ApplicationContext appContext: Context) = SFTPService(appContext)
-
-    @Provides
-    @Singleton
-    fun GetGoogleDriveService(@ApplicationContext appContext: Context) =
-        GoogleDriveService(appContext)
-
-    @Provides
-    @Singleton
-    fun GetSchedulerService(@ApplicationContext appContext: Context) = SchedulerService(appContext)
-
-    @Provides
-    @Singleton
-    fun GetPackagingService() = PackagingService()
-
-    @Provides
-    @Singleton
-    fun GetNotificationService(@ApplicationContext appContext: Context) =
-        NotificationService(appContext)
-
-    //endregion Services
 
 }
