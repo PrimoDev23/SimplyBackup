@@ -98,18 +98,16 @@ class BackupReceiver : BroadcastReceiver() {
                                         )
 
                                         uploadResult
-                                            .onSuccess { result ->
-                                                if (result) {
-                                                    AddHistoryEntry(
-                                                        connection,
-                                                        file,
-                                                        true
-                                                    )
+                                            .onSuccess { _ ->
+                                                AddHistoryEntry(
+                                                    connection,
+                                                    file,
+                                                    true
+                                                )
 
-                                                    NotificationService.ShowSuccessNotification(
-                                                        connection
-                                                    )
-                                                }
+                                                NotificationService.ShowSuccessNotification(
+                                                    connection
+                                                )
                                             }
                                             .onFailure {
                                                 Timber.e(it)

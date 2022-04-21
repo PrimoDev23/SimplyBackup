@@ -141,7 +141,7 @@ class GoogleDriveService(
                 }
             }
 
-            return Result.success(false)
+            throw LoginException()
         } catch (ex: Exception) {
             return Result.failure(ex)
         }
