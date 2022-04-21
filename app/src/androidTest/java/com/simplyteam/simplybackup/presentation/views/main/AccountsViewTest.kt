@@ -104,7 +104,7 @@ class AccountsViewTest {
     }
 
     @Test
-    fun SearchTest() {
+    fun AccountSearchTest() {
         val viewModel = AccountsViewModel(
             ConnectionRepository,
             AccountRepository,
