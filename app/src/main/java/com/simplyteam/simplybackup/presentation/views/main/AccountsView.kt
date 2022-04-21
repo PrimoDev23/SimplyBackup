@@ -105,6 +105,8 @@ fun AccountItem(
 
         Column {
             IconButton(
+                modifier = Modifier
+                    .testTag("More"),
                 onClick = {
                     menuExpanded = true
                 }
