@@ -20,10 +20,10 @@ sealed class Screen(
         Title = R.string.Connections,
         Icon = R.drawable.ic_baseline_cloud_24
     )
-    object Settings : Screen(
-        Route = "settings",
-        Title = R.string.Settings,
-        Icon = R.drawable.ic_baseline_settings_24
+    object Accounts : Screen(
+        Route = "accounts",
+        Title = R.string.Accounts,
+        Icon = R.drawable.ic_baseline_person_24
     )
 
     //endregion

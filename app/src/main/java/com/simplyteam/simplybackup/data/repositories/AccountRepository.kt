@@ -3,6 +3,7 @@ package com.simplyteam.simplybackup.data.repositories
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.room.Delete
 import com.simplyteam.simplybackup.data.daos.AccountDao
 import com.simplyteam.simplybackup.data.models.Account
 import kotlinx.coroutines.flow.collect
@@ -21,4 +22,5 @@ class AccountRepository constructor (
 
     suspend fun Insert(account: Account) = _accountDao.InsertAccount(account)
 
+    suspend fun Delete(account: Account) = _accountDao.DeleteAccount(account)
 }

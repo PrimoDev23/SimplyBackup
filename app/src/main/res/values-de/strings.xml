@@ -63,4 +63,7 @@
     <string name="SelectedAccount">Gewähltes Konto</string>
     <string name="FolderLink">Link zum Ordner</string>
     <string name="Error">Error</string>
+    <string name="Accounts">Konten</string>
+    <string name="More">Mehr</string>
+    <string name="ConnectionStillExists">Es gibt mindestens eine Verbindung die dieses Konto nutzt</string>
 </resources>

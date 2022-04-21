@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -26,6 +27,7 @@ import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
+import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import kotlinx.coroutines.launch
@@ -36,16 +38,18 @@ fun MainTabView() {
 
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
-    val currentScreen = remember {
+    var currentScreen by remember {
         mutableStateOf<Screen>(Screen.History)
     }
 
     val historyViewModel = viewModel<HistoryViewModel>()
     val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
+    val accountsViewModel = viewModel<AccountsViewModel>()
 
     SetupEvents(
         overviewViewModel = overviewViewModel,
         historyViewModel = historyViewModel,
+        accountsViewModel = accountsViewModel,
         snackbarHostState = scaffoldState.snackbarHostState
     )
 
@@ -53,37 +57,53 @@ fun MainTabView() {
         scaffoldState = scaffoldState,
         topBar = {
             TopBar(
-                currentScreen = currentScreen,
-                historyViewModel = historyViewModel,
-                overviewViewModel = overviewViewModel
+                lazyListState = when (currentScreen) {
+                    Screen.History -> {
+                        historyViewModel.ListState
+                    }
+                    Screen.Connections -> {
+                        overviewViewModel.ListState
+                    }
+                    Screen.Accounts -> {
+                        accountsViewModel.ListState
+                    }
+                    else -> {
+                        throw Exception("Undefined LazyListState")
+                    }
+                },
+                title = stringResource(
+                    id = currentScreen.Title
+                )
             )
         },
         bottomBar = {
             BottomBar(
                 navController = navController,
-                currentScreen = currentScreen
+                onNavigate = {
+                    currentScreen = it
+                }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier
-                    .testTag("AddConnection"),
-                onClick = {
-                    ActivityUtil.StartConfigurationActivity(
-                        activity,
-                        null
+            if (currentScreen == Screen.Connections) {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .testTag("AddConnection"),
+                    onClick = {
+                        ActivityUtil.StartConfigurationActivity(
+                            activity,
+                            null
+                        )
+                    },
+                    backgroundColor = MaterialTheme.colors.primaryVariant
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.ConfigureConnection)
                     )
-                },
-                backgroundColor = MaterialTheme.colors.primaryVariant
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.ConfigureConnection)
-                )
+                }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center,
-        isFloatingActionButtonDocked = true,
         snackbarHost = {
             SnackbarHost(
                 modifier = Modifier
@@ -103,7 +123,8 @@ fun MainTabView() {
             navController = navController,
             paddingValues = it,
             historyViewModel = historyViewModel,
-            overviewViewModel = overviewViewModel
+            overviewViewModel = overviewViewModel,
+            accountsViewModel = accountsViewModel
         )
     }
 }
@@ -112,6 +133,7 @@ fun MainTabView() {
 fun SetupEvents(
     overviewViewModel: ConnectionOverviewViewModel,
     historyViewModel: HistoryViewModel,
+    accountsViewModel: AccountsViewModel,
     snackbarHostState: SnackbarHostState
 ) {
     val activity = LocalContext.current as ComponentActivity
@@ -150,30 +172,25 @@ fun SetupEvents(
             activity.StartActivityWithAnimation(intent)
         }
     }
+
+    LaunchedEffect(key1 = true) {
+        accountsViewModel.ConnectionExistsFlow.collect {
+            snackbarHostState.showSnackbar(
+                it.text.asString(activity)
+            )
+        }
+    }
 }
 
 @Composable
 private fun TopBar(
-    currentScreen: MutableState<Screen>,
-    historyViewModel: HistoryViewModel,
-    overviewViewModel: ConnectionOverviewViewModel
+    title: String,
+    lazyListState: LazyListState
 ) {
-    val currentLazyListState = when (currentScreen.value) {
-        Screen.History -> {
-            historyViewModel.ListState
-        }
-        Screen.Connections -> {
-            overviewViewModel.ListState
-        }
-        else -> {
-            throw Exception("Undefined LazyListState")
-        }
-    }
-
     val elevation by animateDpAsState(
-        if (currentLazyListState.firstVisibleItemIndex == 0) {
+        if (lazyListState.firstVisibleItemIndex == 0) {
             minOf(
-                currentLazyListState.firstVisibleItemScrollOffset.toFloat().dp,
+                lazyListState.firstVisibleItemScrollOffset.toFloat().dp,
                 AppBarDefaults.TopAppBarElevation
             )
         } else {
@@ -184,9 +201,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(
-                    id = currentScreen.value.Title
-                )
+                text = title
             )
         },
         elevation = elevation,
@@ -197,12 +212,12 @@ private fun TopBar(
 @Composable
 private fun BottomBar(
     navController: NavController,
-    currentScreen: MutableState<Screen>
+    onNavigate: (Screen) -> Unit
 ) {
     val items = listOf(
         Screen.History,
         Screen.Connections,
-        //Screen.Settings
+        Screen.Accounts
     )
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -237,8 +252,10 @@ private fun BottomBar(
                         launchSingleTop = true
                         restoreState = true
                     }
-                    currentScreen.value = item
-                })
+
+                    onNavigate(item)
+                }
+            )
         }
     }
 }

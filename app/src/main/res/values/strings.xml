@@ -70,4 +70,7 @@
     <string name="SelectedAccount">Selected account</string>
     <string name="FolderLink">Link to folder</string>
     <string name="Error">Error</string>
+    <string name="Accounts">Accounts</string>
+    <string name="More">More</string>
+    <string name="ConnectionStillExists">There is still at least one connection that uses this account</string>
 </resources>
