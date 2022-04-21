@@ -6,18 +6,20 @@ import com.jcraft.jsch.JSch
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.RemoteFile
 import com.simplyteam.simplybackup.data.utils.FileUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class SFTPService(
-    private val _context: Context
+class SFTPService @Inject constructor(
+    @ApplicationContext private val _context: Context
 ) : ICloudService {
 
     @Suppress("BlockingMethodInNonBlockingContext")

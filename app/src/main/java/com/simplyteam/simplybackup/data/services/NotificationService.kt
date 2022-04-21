@@ -13,9 +13,11 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class NotificationService(
-    private val _context: Context
+class NotificationService @Inject constructor(
+    @ApplicationContext private val _context: Context
 ) {
 
     fun CreateNotificationChannel() {

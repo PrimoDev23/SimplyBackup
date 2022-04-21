@@ -5,8 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.simplyteam.simplybackup.data.daos.ConnectionDao
 import com.simplyteam.simplybackup.data.models.Connection
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ConnectionRepository(
+@Singleton
+class ConnectionRepository @Inject constructor(
     private val _connectionDao: ConnectionDao
 ) {
     var Connections by mutableStateOf(listOf<Connection>())

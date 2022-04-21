@@ -10,12 +10,14 @@ import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.utils.SchedulerUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.time.LocalDate
 import java.util.*
+import javax.inject.Inject
 
-class SchedulerService(
-    private val _context: Context
+class SchedulerService @Inject constructor(
+    @ApplicationContext private val _context: Context
 ) {
 
     fun ScheduleBackup(connection: Connection){

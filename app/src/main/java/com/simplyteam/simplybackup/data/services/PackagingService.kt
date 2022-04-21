@@ -13,10 +13,13 @@ import java.io.*
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
+import javax.inject.Inject
 import kotlin.io.path.Path
 
 
-class PackagingService {
+class PackagingService @Inject constructor(
+
+) {
 
     private fun BuildZipParameters(encrypted: Boolean): ZipParameters {
         val zipParameters = ZipParameters()

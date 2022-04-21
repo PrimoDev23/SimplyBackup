@@ -4,8 +4,11 @@ import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class HistorySearchService constructor(
+@Singleton
+class HistorySearchService @Inject constructor(
     private val _historyRepository: HistoryRepository
 ) : SearchServiceBase<HistoryData>() {
     override fun Search(value: String) {

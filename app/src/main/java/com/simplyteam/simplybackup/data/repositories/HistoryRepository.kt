@@ -12,8 +12,11 @@ import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.data.utils.SchedulerUtil
 import java.time.LocalDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class HistoryRepository(
+@Singleton
+class HistoryRepository @Inject constructor(
     private val _historyDao: HistoryDao
 ) {
     var HistoryEntries = listOf<HistoryEntry>()

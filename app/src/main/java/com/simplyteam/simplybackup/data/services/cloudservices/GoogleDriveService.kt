@@ -18,17 +18,20 @@ import com.google.api.services.drive.Drive
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.RemoteFile
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.OutputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 import javax.security.auth.login.LoginException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class GoogleDriveService(
-    private val _context: Context
+class GoogleDriveService @Inject constructor(
+    @ApplicationContext private val _context: Context
 ) : ICloudService {
 
     private suspend fun GetClientForUsername(mail: String): GoogleSignInAccount {

@@ -7,8 +7,11 @@ import androidx.room.Delete
 import com.simplyteam.simplybackup.data.daos.AccountDao
 import com.simplyteam.simplybackup.data.models.Account
 import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AccountRepository constructor (
+@Singleton
+class AccountRepository @Inject constructor (
     private val _accountDao: AccountDao
 ) {
 

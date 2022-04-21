@@ -10,15 +10,17 @@ import com.owncloud.android.lib.resources.files.*
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.RemoteFile
 import com.simplyteam.simplybackup.data.utils.FileUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class NextCloudService (
-    private val _context: Context
+class NextCloudService @Inject constructor(
+    @ApplicationContext private val _context: Context
 ): ICloudService {
 
     private fun CreateClient(
