@@ -27,42 +27,47 @@ import com.simplyteam.simplybackup.presentation.views.RadioButton
 
 @Composable
 fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
-
-    InformationCard(
-        name = viewModel.Name,
-        onNameChange = {
-            viewModel.Name = it
-        },
-        nameError = viewModel.NameError,
-        remotePath = viewModel.RemotePath,
-        onRemotePathChange = {
-            viewModel.RemotePath = it
-        }
-    )
-
-    LoginCard(
-        onClick = {
-            viewModel.ShowSelectionDialog()
-        },
-        account = viewModel.SelectedAccount,
-        isError = viewModel.SelectedAccountError
-    )
-
-    AccountSelectionDialog(
-        shown = viewModel.SelectionDialogShown,
-        onDismiss = {
-            viewModel.HideSelectionDialog()
-        },
-        accounts = viewModel.GetAccounts(),
-        onConfirm = {
-            viewModel.HideSelectionDialog()
-            if (it == "NewAccount") {
-                viewModel.AddNewAccount()
-            } else {
-                viewModel.SelectedAccount = it
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        InformationCard(
+            name = viewModel.Name,
+            onNameChange = {
+                viewModel.Name = it
+            },
+            nameError = viewModel.NameError,
+            remotePath = viewModel.RemotePath,
+            onRemotePathChange = {
+                viewModel.RemotePath = it
             }
-        }
-    )
+        )
+
+        LoginCard(
+            onClick = {
+                viewModel.ShowSelectionDialog()
+            },
+            account = viewModel.SelectedAccount,
+            isError = viewModel.SelectedAccountError
+        )
+
+        AccountSelectionDialog(
+            shown = viewModel.SelectionDialogShown,
+            onDismiss = {
+                viewModel.HideSelectionDialog()
+            },
+            accounts = viewModel.GetAccounts(),
+            onConfirm = {
+                viewModel.HideSelectionDialog()
+                if (it == "NewAccount") {
+                    viewModel.AddNewAccount()
+                } else {
+                    viewModel.SelectedAccount = it
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -169,7 +174,13 @@ private fun LoginCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .testTag("LoginCard"),
+            .testTag(
+                if (isError) {
+                    "LoginCardError"
+                } else {
+                    "LoginCard"
+                }
+            ),
         elevation = 0.dp,
         border = if (isError) {
             BorderStroke(
@@ -213,7 +224,8 @@ private fun LoginCard(
                                 0.dp,
                                 8.dp,
                                 8.dp
-                            ),
+                            )
+                            .testTag("Account"),
                         style = MaterialTheme.typography.body2,
                         text = account
                     )
