@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.Path
 import com.simplyteam.simplybackup.data.models.PathType
+import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import java.io.File
@@ -44,6 +45,11 @@ class PathsConfigurationViewModel @Inject constructor(
 
     fun AddPath(stringPath: String) {
         try {
+            if(CurrentPath.isEmpty()){
+                CurrentPathError = true
+                throw FieldNotFilledException()
+            }
+
             val path = CreatePathObjectFromStringPath(stringPath)
 
             val list = Paths.toMutableList()
