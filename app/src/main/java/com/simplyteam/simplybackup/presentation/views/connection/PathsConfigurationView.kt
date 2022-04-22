@@ -127,40 +127,51 @@ fun PathsConfigurationView(
                 .testTag("Paths")
         ) {
             items(viewModel.Paths) { path ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            8.dp,
-                            0.dp,
-                            0.dp,
-                            0.dp
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(8.dp),
-                        text = path.Path
-                    )
-
-                    IconButton(
-                        modifier = Modifier
-                            .testTag("DeletePath"),
-                        onClick = {
-                            viewModel.RemovePath(path)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(
-                                id = R.string.Delete
-                            )
-                        )
+                PathItem(
+                    path = path.Path,
+                    removePath = {
+                        viewModel.RemovePath(path)
                     }
-                }
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun PathItem(
+    path: String,
+    removePath: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                8.dp,
+                0.dp,
+                0.dp,
+                0.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(8.dp),
+            text = path
+        )
+
+        IconButton(
+            modifier = Modifier
+                .testTag("DeletePath"),
+            onClick = removePath
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(
+                    id = R.string.Delete
+                )
+            )
         }
     }
 }
