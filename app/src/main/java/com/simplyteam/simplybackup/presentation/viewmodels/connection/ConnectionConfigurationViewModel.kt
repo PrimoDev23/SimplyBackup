@@ -37,8 +37,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
     private var _id = 0L
 
-    var SelectedConnectionType by
-    mutableStateOf(ConnectionType.NextCloud)
+    var SelectedConnectionType by mutableStateOf(ConnectionType.NextCloud)
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
