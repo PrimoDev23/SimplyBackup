@@ -58,116 +58,6 @@ class ConnectionOverviewViewTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-    }
-
-    @Test
-    fun ConnectionSearchTest() {
-        val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
-            ConnectionRepository
-        )
-
-        val viewModel = ConnectionOverviewViewModel(
-            ConnectionRepository,
-            ConnectionSearchService,
-            SchedulerService
-        )
-
-        composeRule.setContent {
-            LaunchedEffect(true) {
-                ConnectionRepository.GetFlow()
-                    .collect {
-                        ConnectionRepository.Connections = it
-
-                        ConnectionSearchService.RepeatSearch()
-                    }
-            }
-
-            SimplyBackupTheme {
-                ConnectionOverviewView(
-                    paddingValues = PaddingValues(0.dp),
-                    viewModel = viewModel
-                )
-            }
-        }
-
-        composeRule.onNodeWithTag("SearchField")
-            .performTextInput("Android")
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertExists()
-
-        composeRule.onNodeWithTag("SearchField")
-            .performTextReplacement("1234")
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertDoesNotExist()
-
-        composeRule.onNodeWithTag("SearchField")
-            .performTextClearance()
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertExists()
-
-        composeRule.onNodeWithTag("SearchField")
-            .performTextReplacement("1234")
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertDoesNotExist()
-
-        composeRule.onNodeWithTag("ClearSearch")
-            .performClick()
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertExists()
-    }
-
-    @Test
-    fun AddConnectionTest() {
-        val viewModel = ConnectionOverviewViewModel(
-            ConnectionRepository,
-            ConnectionSearchService,
-            SchedulerService
-        )
-
-        composeRule.setContent {
-            LaunchedEffect(true) {
-                ConnectionRepository.GetFlow()
-                    .collect {
-                        ConnectionRepository.Connections = it
-
-                        ConnectionSearchService.RepeatSearch()
-                    }
-            }
-
-            SimplyBackupTheme {
-                ConnectionOverviewView(
-                    paddingValues = PaddingValues(0.dp),
-                    viewModel = viewModel
-                )
-            }
-        }
-
-        composeRule.onNodeWithText("AndroidInstrumentationTest")
-            .assertDoesNotExist()
-
-        val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
-            ConnectionRepository
-        )
-
-        Thread.sleep(2000)
-
-        composeRule.onNodeWithText(connection.Name)
-            .assertExists()
-    }
-
-    @Test
-    fun DeleteConnectionTest() {
-        val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
-            ConnectionRepository
-        )
 
         val viewModel = ConnectionOverviewViewModel(
             ConnectionRepository,
@@ -228,6 +118,66 @@ class ConnectionOverviewViewTest {
                 )
             }
         }
+    }
+
+    @Test
+    fun ConnectionSearchTest() {
+        val connection = ConnectionUtil.InsertConnection(
+            ConnectionType.NextCloud,
+            ConnectionRepository
+        )
+
+        composeRule.onNodeWithTag("SearchField")
+            .performTextInput("Android")
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertExists()
+
+        composeRule.onNodeWithTag("SearchField")
+            .performTextReplacement("1234")
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("SearchField")
+            .performTextClearance()
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertExists()
+
+        composeRule.onNodeWithTag("SearchField")
+            .performTextReplacement("1234")
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("ClearSearch")
+            .performClick()
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertExists()
+    }
+
+    @Test
+    fun AddConnectionTest() {
+        composeRule.onNodeWithText("AndroidInstrumentationTest")
+            .assertDoesNotExist()
+
+        val connection = ConnectionUtil.InsertConnection(
+            ConnectionType.NextCloud,
+            ConnectionRepository
+        )
+
+        composeRule.onNodeWithText(connection.Name)
+            .assertExists()
+    }
+
+    @Test
+    fun DeleteConnectionTest() {
+        val connection = ConnectionUtil.InsertConnection(
+            ConnectionType.NextCloud,
+            ConnectionRepository
+        )
 
         composeRule.onNodeWithText(connection.Name)
             .assertExists()
@@ -260,58 +210,6 @@ class ConnectionOverviewViewTest {
             ConnectionType.NextCloud,
             ConnectionRepository
         )
-
-        val viewModel = ConnectionOverviewViewModel(
-            ConnectionRepository,
-            ConnectionSearchService,
-            SchedulerService
-        )
-
-        composeRule.setContent {
-            val scaffoldState = rememberScaffoldState()
-
-            val context = LocalContext.current
-
-            LaunchedEffect(true) {
-                ConnectionRepository.GetFlow()
-                    .collect {
-                        ConnectionRepository.Connections = it
-
-                        ConnectionSearchService.RepeatSearch()
-                    }
-            }
-
-            LaunchedEffect(true) {
-                viewModel.BackupStartedFlow.collect {
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        it.text.asString(context)
-                    )
-                }
-            }
-
-            Scaffold(
-                scaffoldState = scaffoldState,
-                snackbarHost = {
-                    SnackbarHost(
-                        modifier = Modifier
-                            .testTag("Snackbar"),
-                        hostState = scaffoldState.snackbarHostState,
-                        snackbar = {
-                            Snackbar(
-                                snackbarData = it,
-                                backgroundColor = MaterialTheme.colors.background,
-                                contentColor = MaterialTheme.colors.onBackground
-                            )
-                        }
-                    )
-                }
-            ) {
-                ConnectionOverviewView(
-                    paddingValues = it,
-                    viewModel = viewModel
-                )
-            }
-        }
 
         composeRule.onNodeWithTag("More")
             .performClick()

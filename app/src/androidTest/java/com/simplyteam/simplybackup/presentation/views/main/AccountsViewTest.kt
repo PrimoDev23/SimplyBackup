@@ -50,10 +50,7 @@ class AccountsViewTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-    }
 
-    @Test
-    fun DeleteAccountTest() {
         val viewModel = AccountsViewModel(
             ConnectionRepository,
             AccountRepository,
@@ -77,7 +74,10 @@ class AccountsViewTest {
                 )
             }
         }
+    }
 
+    @Test
+    fun DeleteAccountTest() {
         InsertAccount()
 
         composeRule.onNodeWithText("Test1234")
@@ -105,30 +105,6 @@ class AccountsViewTest {
 
     @Test
     fun AccountSearchTest() {
-        val viewModel = AccountsViewModel(
-            ConnectionRepository,
-            AccountRepository,
-            AccountSearchService
-        )
-
-        composeRule.setContent {
-            LaunchedEffect(key1 = true) {
-                AccountRepository.GetFlow()
-                    .collect {
-                        AccountRepository.Accounts = it
-
-                        AccountSearchService.RepeatSearch()
-                    }
-            }
-
-            SimplyBackupTheme {
-                AccountsView(
-                    paddingValues = PaddingValues(0.dp),
-                    viewModel = viewModel
-                )
-            }
-        }
-
         InsertAccount()
 
         composeRule.onNodeWithText("Test1234")
@@ -171,5 +147,7 @@ class AccountsViewTest {
                 )
             )
         }
+
+        Thread.sleep(1000)
     }
 }

@@ -91,8 +91,6 @@ class HistoryViewTest {
             ConnectionRepository
         )
 
-        Thread.sleep(1000)
-
         composeRule.onNodeWithText(connection.Name)
             .assertExists()
     }
@@ -103,8 +101,6 @@ class HistoryViewTest {
             ConnectionType.NextCloud,
             ConnectionRepository
         )
-
-        Thread.sleep(1000)
 
         composeRule.onNodeWithText(connection.Name)
             .assertExists()
@@ -125,8 +121,6 @@ class HistoryViewTest {
             ConnectionType.NextCloud,
             ConnectionRepository
         )
-
-        Thread.sleep(1000)
 
         composeRule.onNodeWithText(connection.Name)
             .assertExists()
