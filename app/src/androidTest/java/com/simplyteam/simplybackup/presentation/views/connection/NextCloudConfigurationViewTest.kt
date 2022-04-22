@@ -56,6 +56,9 @@ class NextCloudConfigurationViewTest {
         composeRule.onNodeWithTag("NameError")
             .assertExists()
 
+        composeRule.onNodeWithTag("HostError")
+            .assertExists()
+
         composeRule.onNodeWithTag("UsernameError")
             .assertExists()
 
@@ -63,6 +66,9 @@ class NextCloudConfigurationViewTest {
             .assertExists()
 
         composeRule.onNodeWithTag("Name")
+            .performTextInput("Test")
+
+        composeRule.onNodeWithTag("Host")
             .performTextInput("Test")
 
         composeRule.onNodeWithTag("Username")
