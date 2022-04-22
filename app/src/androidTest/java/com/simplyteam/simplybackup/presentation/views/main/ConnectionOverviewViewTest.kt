@@ -222,15 +222,10 @@ class ConnectionOverviewViewTest {
                     )
                 }
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(it)
-                ) {
-                    ConnectionOverviewView(
-                        paddingValues = PaddingValues(0.dp),
-                        viewModel = viewModel
-                    )
-                }
+                ConnectionOverviewView(
+                    paddingValues = it,
+                    viewModel = viewModel
+                )
             }
         }
 
@@ -311,15 +306,10 @@ class ConnectionOverviewViewTest {
                     )
                 }
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(it)
-                ) {
-                    ConnectionOverviewView(
-                        paddingValues = PaddingValues(0.dp),
-                        viewModel = viewModel
-                    )
-                }
+                ConnectionOverviewView(
+                    paddingValues = it,
+                    viewModel = viewModel
+                )
             }
         }
 
@@ -338,7 +328,10 @@ class ConnectionOverviewViewTest {
             NextCloudService.GetFilesForConnection(connection)
         }
 
-        assertEquals(1, files.size)
+        assertEquals(
+            1,
+            files.size
+        )
 
         runBlocking {
             NextCloudService.DeleteFile(
