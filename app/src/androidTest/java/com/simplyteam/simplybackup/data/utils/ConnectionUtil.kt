@@ -65,6 +65,8 @@ object ConnectionUtil {
             connectionRepository.InsertConnection(connection)
         }
 
+        Thread.sleep(1000)
+
         return connection.apply {
             Id = id
         }
