@@ -41,10 +41,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
-    var CurrentPath by mutableStateOf("")
-    var CurrentPathError by mutableStateOf(false)
-
-    var Paths by mutableStateOf(listOf<Path>())
+    var Paths = listOf<Path>()
 
     var BackupPassword by mutableStateOf("")
     var WifiOnly by mutableStateOf(false)
@@ -96,49 +93,6 @@ class ConnectionConfigurationViewModel @Inject constructor(
                 Timber.e(ex)
             }
         }
-    }
-
-    private fun CreatePathObjectFromStringPath(path: String): Path {
-        val file = File(path)
-
-        if (!file.exists()) {
-            throw FileNotFoundException(path)
-        }
-
-        return if (file.isDirectory) {
-            Path(
-                Path = file.absolutePath,
-                Type = PathType.DIRECTORY
-            )
-        } else {
-            Path(
-                Path = file.absolutePath,
-                Type = PathType.FILE
-            )
-        }
-    }
-
-    fun AddPath(stringPath: String) {
-        try {
-            val path = CreatePathObjectFromStringPath(stringPath)
-
-            val list = Paths.toMutableList()
-
-            list.add(path)
-
-            Paths = list
-            CurrentPath = ""
-        } catch (ex: Exception) {
-            Timber.e(ex)
-        }
-    }
-
-    fun RemovePath(path: Path) {
-        val list = Paths.toMutableList()
-
-        list.remove(path)
-
-        Paths = list
     }
 
     fun LoadData(connection: Connection) {

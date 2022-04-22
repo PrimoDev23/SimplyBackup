@@ -10,6 +10,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.PathsConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.connection.ConnectionConfigurationView
 import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurationView
 
@@ -18,7 +19,8 @@ import com.simplyteam.simplybackup.presentation.views.connection.PathsConfigurat
 fun ConnectionConfigurationNavigation(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    viewModel: ConnectionConfigurationViewModel
+    connectionConfigurationViewModel: ConnectionConfigurationViewModel,
+    pathsConfigurationViewModel: PathsConfigurationViewModel
 ) {
     AnimatedNavHost(
         navController = navController,
@@ -42,7 +44,7 @@ fun ConnectionConfigurationNavigation(
             ConnectionConfigurationView(
                 paddingValues = paddingValues,
                 navController = navController,
-                viewModel = viewModel
+                viewModel = connectionConfigurationViewModel
             )
         }
 
@@ -62,8 +64,8 @@ fun ConnectionConfigurationNavigation(
             }
         ) {
             PathsConfigurationView(
-                paddingValues,
-                viewModel
+                paddingValues = paddingValues,
+                viewModel = pathsConfigurationViewModel
             )
         }
     }

@@ -24,13 +24,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.PathsConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PathsConfigurationView(
     paddingValues: PaddingValues,
-    viewModel: ConnectionConfigurationViewModel
+    viewModel: PathsConfigurationViewModel
 ) {
     Column(
         modifier = Modifier

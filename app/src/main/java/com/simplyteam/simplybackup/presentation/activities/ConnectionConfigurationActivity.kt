@@ -29,10 +29,7 @@ import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,7 +45,10 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 val context = LocalContext.current as ComponentActivity
 
                 val navController = rememberAnimatedNavController()
-                val viewModel = viewModel<ConnectionConfigurationViewModel>()
+
+                val connectionConfigurationViewModel = viewModel<ConnectionConfigurationViewModel>()
+                val pathsConfigurationViewModel = viewModel<PathsConfigurationViewModel>()
+
                 val nextCloudViewModel = viewModel<NextCloudConfigurationViewModel>()
                 val ftpViewModel = viewModel<SFTPConfigurationViewModel>()
                 val googleDriveViewModel = viewModel<GoogleDriveConfigurationViewModel>()
@@ -61,13 +61,13 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     }
                 }
 
-                viewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
-                viewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
-                viewModel.ViewModelMap[ConnectionType.GoogleDrive] = googleDriveViewModel
+                connectionConfigurationViewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
+                connectionConfigurationViewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
+                connectionConfigurationViewModel.ViewModelMap[ConnectionType.GoogleDrive] = googleDriveViewModel
 
                 LaunchedEffect(key1 = true) {
                     connection?.let {
-                        viewModel.LoadData(connection)
+                        connectionConfigurationViewModel.LoadData(connection)
                     }
                 }
 
@@ -78,7 +78,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(key1 = true) {
-                    viewModel.FinishFlow.collect {
+                    connectionConfigurationViewModel.FinishFlow.collect {
                         context.FinishActivityWithAnimation()
                     }
                 }
@@ -87,13 +87,15 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     topBar = {
                         BuildTopBar(
                             navController = navController,
-                            viewModel = viewModel
+                            connectionConfigurationViewModel = connectionConfigurationViewModel,
+                            pathsConfigurationViewModel = pathsConfigurationViewModel
                         )
                     }) {
                     ConnectionConfigurationNavigation(
                         navController = navController,
                         paddingValues = it,
-                        viewModel = viewModel
+                        connectionConfigurationViewModel = connectionConfigurationViewModel,
+                        pathsConfigurationViewModel = pathsConfigurationViewModel
                     )
                 }
             }
@@ -103,12 +105,12 @@ class ConnectionConfigurationActivity : ComponentActivity() {
     @Composable
     private fun BuildTopBar(
         navController: NavHostController,
-        viewModel: ConnectionConfigurationViewModel
+        connectionConfigurationViewModel: ConnectionConfigurationViewModel,
+        pathsConfigurationViewModel: PathsConfigurationViewModel
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry.value?.destination?.route
 
-        val currentScreen = when (currentRoute) {
+        val currentScreen = when (navBackStackEntry.value?.destination?.route) {
             Screen.ConnectionConfiguration.Route -> {
                 Screen.ConnectionConfiguration
             }
@@ -118,7 +120,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         }
 
         val elevation by animateDpAsState(
-            if (viewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration) {
+            if (connectionConfigurationViewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration) {
                 AppBarDefaults.TopAppBarElevation
             } else {
                 0.dp
@@ -128,17 +130,9 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         TopAppBar(
             title = {
-
-
-                val resId = if (currentRoute == Screen.PathsConfiguration.Route) {
-                    Screen.PathsConfiguration.Title
-                } else {
-                    Screen.ConnectionConfiguration.Title
-                }
-
                 Text(
                     text = stringResource(
-                        id = resId
+                        id = currentScreen.Title
                     )
                 )
             },
@@ -150,6 +144,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                         if (currentScreen == Screen.ConnectionConfiguration) {
                             activity.FinishActivityWithAnimation()
                         } else if (currentScreen == Screen.PathsConfiguration) {
+                            connectionConfigurationViewModel.Paths = pathsConfigurationViewModel.Paths
                             navController.popBackStack()
                         }
                     }) {
