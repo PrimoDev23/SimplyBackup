@@ -61,11 +61,13 @@ object ConnectionUtil {
             }
         }
 
-        runBlocking {
+        val id = runBlocking {
             connectionRepository.InsertConnection(connection)
         }
 
-        return connection
+        return connection.apply {
+            Id = id
+        }
     }
 
 }
