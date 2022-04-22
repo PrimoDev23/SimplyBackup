@@ -61,6 +61,12 @@ class PathsConfigurationViewTest {
 
         composeRule.onNodeWithTag("CurrentPathError")
             .assertExists()
+
+        composeRule.onNodeWithTag("CurrentPath")
+            .performTextInput("/sdcard/Pictures")
+
+        composeRule.onNodeWithTag("CurrentPathError")
+            .assertDoesNotExist()
     }
 
     @Test

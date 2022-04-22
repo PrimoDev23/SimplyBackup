@@ -82,6 +82,18 @@ class NextCloudConfigurationViewTest {
         }catch (ex: Exception){
             assert(false)
         }
+
+        composeRule.onNodeWithTag("NameError")
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("HostError")
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("UsernameError")
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("PasswordError")
+            .assertDoesNotExist()
     }
 
     @Test
