@@ -15,6 +15,7 @@ import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.utils.ConnectionUtil
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -217,11 +218,7 @@ class MainActivityTest {
 
     @Test
     fun HistoryEntryOnNewConnectionTest() {
-        val id = InsertConnection()
-
-        val connection = RetrieveConnections().first {
-            it.Id == id
-        }
+        val connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         composeRule.onNodeWithTag(Screen.History.Route)
             .performClick()
@@ -239,7 +236,7 @@ class MainActivityTest {
 
     @Test
     fun DeleteConnectionTest() {
-        InsertConnection()
+        ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
@@ -264,7 +261,7 @@ class MainActivityTest {
 
     @Test
     fun UndoDeleteConnectionTest() {
-        InsertConnection()
+        ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
@@ -300,7 +297,7 @@ class MainActivityTest {
 
     @Test
     fun DeleteRemovesHistoryTest() {
-        InsertConnection()
+        ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         val connection = RetrieveConnections().last()
 
@@ -327,18 +324,14 @@ class MainActivityTest {
 
     @Test
     fun EditConnectionTest() {
-        val id = InsertConnection()
-
-        var connection = RetrieveConnections().first {
-            it.Id == id
-        }
+        var connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         val testValue = "ReplaceValue"
 
         composeRule.onNodeWithTag(Screen.Connections.Route)
             .performClick()
 
-        composeRule.onNodeWithTag(id.toString())
+        composeRule.onNodeWithTag(connection.Id.toString())
             .performClick()
 
         composeRule.onNodeWithTag("${connection.ConnectionType.name}Selected")
@@ -405,7 +398,7 @@ class MainActivityTest {
             .performClick()
 
         connection = RetrieveConnections().first {
-            it.Id == id
+            it.Id == connection.Id
         }
 
         assertEquals(
@@ -462,7 +455,7 @@ class MainActivityTest {
 
     @Test
     fun RunBackupForConnectionTest() {
-        InsertConnection()
+        ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         val connection = RetrieveConnections().last()
 
@@ -485,11 +478,11 @@ class MainActivityTest {
 
     @Test
     fun AddHistoryEntryTest() {
-        val id = InsertConnection()
+        val connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         val historyEntry = HistoryEntry(
             Id = 0,
-            ConnectionId = id,
+            ConnectionId = connection.Id,
             Time = LocalDateTime.now()
                 .format(Constants.HumanReadableFormatter),
             Succeed = true,
@@ -519,11 +512,7 @@ class MainActivityTest {
 
     @Test
     fun BackupHistoryTest() {
-        val id = InsertConnection()
-
-        val connection = RetrieveConnections().first {
-            it.Id == id
-        }
+        val connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         composeRule.onNodeWithTag(connection.Name)
             .performClick()
@@ -564,11 +553,7 @@ class MainActivityTest {
 
     @Test
     fun DeleteBackupTest() {
-        val id = InsertConnection()
-
-        val connection = RetrieveConnections().first {
-            it.Id == id
-        }
+        val connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         UploadTestPackage(connection)
             .onSuccess {
@@ -618,11 +603,7 @@ class MainActivityTest {
 
     @Test
     fun RestoreBackupTest() {
-        val id = InsertConnection()
-
-        val connection = RetrieveConnections().first {
-            it.Id == id
-        }
+        val connection = ConnectionUtil.InsertConnection(_testConnectionType, ConnectionRepository)
 
         UploadTestPackage(connection)
             .onSuccess {
@@ -684,66 +665,6 @@ class MainActivityTest {
             .onFailure {
                 throw it
             }
-    }
-
-    private fun InsertConnection(): Long {
-        var id: Long
-        runBlocking {
-            when (_testConnectionType) {
-                ConnectionType.NextCloud -> {
-                    id = ConnectionRepository.InsertConnection(
-                        Connection(
-                            ConnectionType = ConnectionType.NextCloud,
-                            Name = "AndroidInstrumentationTest",
-                            Host = BuildConfig.NEXTCLOUD_HOST,
-                            Username = BuildConfig.NEXTCLOUD_USERNAME,
-                            Password = BuildConfig.NEXTCLOUD_PASSWORD,
-                            Paths = listOf(
-                                Path(
-                                    "/sdcard/TestFolder",
-                                    PathType.DIRECTORY
-                                )
-                            )
-                        )
-                    )
-                }
-                ConnectionType.SFTP -> {
-                    id = ConnectionRepository.InsertConnection(
-                        Connection(
-                            ConnectionType = ConnectionType.SFTP,
-                            Name = "AndroidInstrumentationTest",
-                            Host = BuildConfig.SFTP_HOST,
-                            Username = BuildConfig.SFTP_USERNAME,
-                            Password = BuildConfig.SFTP_PASSWORD,
-                            RemotePath = BuildConfig.SFTP_REMOTEPATH,
-                            Paths = listOf(
-                                Path(
-                                    "/sdcard/TestFolder",
-                                    PathType.DIRECTORY
-                                )
-                            )
-                        )
-                    )
-                }
-                ConnectionType.GoogleDrive -> {
-                    id = ConnectionRepository.InsertConnection(
-                        Connection(
-                            ConnectionType = ConnectionType.GoogleDrive,
-                            Name = "AndroidInstrumentationTest",
-                            Username = BuildConfig.GOOGLE_DRIVE_USER,
-                            Paths = listOf(
-                                Path(
-                                    "/sdcard/TestFolder",
-                                    PathType.DIRECTORY
-                                )
-                            )
-                        )
-                    )
-                }
-            }
-
-        }
-        return id
     }
 
     private fun RetrieveConnections(): List<Connection> {
