@@ -43,6 +43,8 @@ class ConnectionConfigurationViewModel @Inject constructor(
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
     var CurrentPath by mutableStateOf("")
+    var CurrentPathError by mutableStateOf(false)
+
     var Paths by mutableStateOf(listOf<Path>())
 
     var BackupPassword by mutableStateOf("")

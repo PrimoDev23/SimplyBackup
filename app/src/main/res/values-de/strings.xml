@@ -66,4 +66,5 @@
     <string name="Accounts">Konten</string>
     <string name="More">Mehr</string>
     <string name="ConnectionStillExists">Es gibt mindestens eine Verbindung die dieses Konto nutzt</string>
+    <string name="EnterPath">Bitte tragen Sie einen Pfad ein</string>
 </resources>

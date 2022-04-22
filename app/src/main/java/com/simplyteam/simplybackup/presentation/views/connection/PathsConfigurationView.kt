@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -52,7 +53,7 @@ fun PathsConfigurationView(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                OutlinedTextField(
+                ErrorOutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("CurrentPath"),
@@ -86,6 +87,12 @@ fun PathsConfigurationView(
                         onDone = {
                             viewModel.AddPath(viewModel.CurrentPath)
                         }
+                    ),
+                    errorModifier = Modifier
+                        .testTag("CurrentPathError"),
+                    isError = viewModel.CurrentPathError,
+                    errorText = stringResource(
+                        id = R.string.EnterPath
                     )
                 )
 
