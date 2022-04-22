@@ -11,6 +11,7 @@ import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.HistoryEntry
+import com.simplyteam.simplybackup.data.models.exceptions.NoInternetException
 import com.simplyteam.simplybackup.data.models.exceptions.WifiNotEnabledException
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
 import com.simplyteam.simplybackup.data.services.*
@@ -62,83 +63,97 @@ class BackupReceiver : BroadcastReceiver() {
                     val conn = bundle.get("Connection") as Connection?
 
                     conn?.let { connection ->
-                        if (!connection.WifiOnly || IsWifiConnected(context)) {
-                            PackagingService.CreatePackage(
-                                context.filesDir.absolutePath,
-                                connection
-                            )
-                                .onSuccess { file ->
-                                    GlobalScope.launch {
-                                        NotificationService.ShowBackingUpNotification(
-                                            connection
-                                        )
-                                        val uploadResult = when (connection.ConnectionType) {
-                                            ConnectionType.NextCloud -> {
-                                                NextCloudService.UploadFile(
-                                                    connection,
-                                                    file
-                                                )
+                        val internetConnected = IsInternetConnected(context)
+                        val wifi = !connection.WifiOnly || IsWifiConnected(context)
+                        when {
+                            internetConnected && wifi -> {
+                                PackagingService.CreatePackage(
+                                    context.filesDir.absolutePath,
+                                    connection
+                                )
+                                    .onSuccess { file ->
+                                        GlobalScope.launch {
+                                            NotificationService.ShowBackingUpNotification(
+                                                connection
+                                            )
+                                            val uploadResult = when (connection.ConnectionType) {
+                                                ConnectionType.NextCloud -> {
+                                                    NextCloudService.UploadFile(
+                                                        connection,
+                                                        file
+                                                    )
+                                                }
+                                                ConnectionType.SFTP -> {
+                                                    SFTPService.UploadFile(
+                                                        connection,
+                                                        file
+                                                    )
+                                                }
+                                                ConnectionType.GoogleDrive -> {
+                                                    GoogleDriveService.UploadFile(
+                                                        connection,
+                                                        file
+                                                    )
+                                                }
                                             }
-                                            ConnectionType.SFTP -> {
-                                                SFTPService.UploadFile(
-                                                    connection,
-                                                    file
-                                                )
-                                            }
-                                            ConnectionType.GoogleDrive -> {
-                                                GoogleDriveService.UploadFile(
-                                                    connection,
-                                                    file
-                                                )
-                                            }
+
+                                            NotificationService.HideBackingUpNotification(
+                                                connection
+                                            )
+
+                                            uploadResult
+                                                .onSuccess { _ ->
+                                                    AddHistoryEntry(
+                                                        connection,
+                                                        file,
+                                                        true
+                                                    )
+
+                                                    NotificationService.ShowSuccessNotification(
+                                                        connection
+                                                    )
+                                                }
+                                                .onFailure {
+                                                    Timber.e(it)
+
+                                                    NotificationService.ShowErrorNotification(
+                                                        context.getString(R.string.ErrorException)
+                                                            .format(connection.Name),
+                                                        connection
+                                                    )
+                                                }
+
+                                            file.delete()
                                         }
+                                    }
+                                    .onFailure {
+                                        Timber.e(it)
 
-                                        NotificationService.HideBackingUpNotification(
+                                        NotificationService.ShowErrorNotification(
+                                            context.getString(R.string.ErrorPackaging)
+                                                .format(connection.Name),
                                             connection
                                         )
-
-                                        uploadResult
-                                            .onSuccess { _ ->
-                                                AddHistoryEntry(
-                                                    connection,
-                                                    file,
-                                                    true
-                                                )
-
-                                                NotificationService.ShowSuccessNotification(
-                                                    connection
-                                                )
-                                            }
-                                            .onFailure {
-                                                Timber.e(it)
-
-                                                NotificationService.ShowErrorNotification(
-                                                    context.getString(R.string.ErrorException)
-                                                        .format(connection.Name),
-                                                    connection
-                                                )
-                                            }
-
-                                        file.delete()
                                     }
-                                }
-                                .onFailure {
-                                    Timber.e(it)
+                            }
+                            !internetConnected -> {
+                                Timber.e(NoInternetException())
 
-                                    NotificationService.ShowErrorNotification(
-                                        context.getString(R.string.ErrorPackaging)
-                                            .format(connection.Name),
-                                        connection
-                                    )
-                                }
-                        } else {
-                            Timber.e(WifiNotEnabledException())
+                                NotificationService.ShowErrorNotification(
+                                    context.getString(R.string.ErrorInternet)
+                                        .format(connection.Name),
+                                    connection
+                                )
+                            }
+                            !wifi -> {
+                                Timber.e(WifiNotEnabledException())
 
-                            NotificationService.ShowErrorNotification(
-                                context.getString(R.string.ErrorWifi)
-                                    .format(connection.Name),
-                                connection
-                            )
+                                NotificationService.ShowErrorNotification(
+                                    context.getString(R.string.ErrorWifi)
+                                        .format(connection.Name),
+                                    connection
+                                )
+                            }
                         }
 
                         //Reschedule even if the backup fails
@@ -159,6 +174,19 @@ class BackupReceiver : BroadcastReceiver() {
             connectivityManager.getNetworkCapabilities(network)
                 ?.let { networkCapabilities ->
                     return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                }
+        }
+        return false
+    }
+
+    private fun IsInternetConnected(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.activeNetwork?.let { network ->
+            connectivityManager.getNetworkCapabilities(network)
+                ?.let { networkCapabilities ->
+                    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 }
         }
         return false
