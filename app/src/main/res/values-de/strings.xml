@@ -48,7 +48,7 @@
     <string name="EnterHost">Bitte tragen Sie einen Host ein</string>
     <string name="EnterUsername">Bitte tragen Sie einen Nutzernamen ein</string>
     <string name="EnterPassword">Bitte tragen Sie ein Passwort ein</string>
-    <string name="EnterRemotePath">Bitte geben Sie einen Remotepfad ein</string>
+    <string name="EnterRemotePath">Bitte tragen Sie einen Remotepfad ein</string>
     <string name="Host">Host</string>
     <string name="BackupPassword">Backup-Passwort</string>
     <string name="Search">Suchen</string>
