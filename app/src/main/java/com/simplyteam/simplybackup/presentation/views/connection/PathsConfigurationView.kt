@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.data.models.events.connection.PathsConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.PathsConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
@@ -58,9 +59,13 @@ fun PathsConfigurationView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("CurrentPath"),
-                    value = viewModel.CurrentPath,
+                    value = viewModel.State.CurrentPath,
                     onValueChange = {
-                        viewModel.CurrentPath = it
+                        viewModel.OnEvent(
+                            PathsConfigurationEvent.OnCurrentPathChange(
+                                it
+                            )
+                        )
                     },
                     label = {
                         Text(
@@ -86,12 +91,12 @@ fun PathsConfigurationView(
                     singleLine = true,
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            viewModel.AddPath(viewModel.CurrentPath)
+                            viewModel.OnEvent(PathsConfigurationEvent.OnAddPathClicked)
                         }
                     ),
                     errorModifier = Modifier
                         .testTag("CurrentPathError"),
-                    isError = viewModel.CurrentPathError,
+                    isError = viewModel.State.CurrentPathError,
                     errorText = stringResource(
                         id = R.string.EnterPath
                     )
@@ -106,7 +111,7 @@ fun PathsConfigurationView(
                         MaterialTheme.colors.primary
                     ),
                     onClick = {
-                        viewModel.AddPath(viewModel.CurrentPath)
+                        viewModel.OnEvent(PathsConfigurationEvent.OnAddPathClicked)
                     }) {
                     Text(
                         text = stringResource(
@@ -126,11 +131,15 @@ fun PathsConfigurationView(
                 )
                 .testTag("Paths")
         ) {
-            items(viewModel.Paths) { path ->
+            items(viewModel.State.Paths) { path ->
                 PathItem(
                     path = path.Path,
                     removePath = {
-                        viewModel.RemovePath(path)
+                        viewModel.OnEvent(
+                            PathsConfigurationEvent.OnDeletePathClicked(
+                                path
+                            )
+                        )
                     }
                 )
             }

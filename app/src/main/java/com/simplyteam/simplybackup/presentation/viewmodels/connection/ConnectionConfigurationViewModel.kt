@@ -1,27 +1,22 @@
 package com.simplyteam.simplybackup.presentation.viewmodels.connection
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.*
+import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
 import com.simplyteam.simplybackup.data.models.exceptions.UpdateFailedException
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
-import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
+import com.simplyteam.simplybackup.presentation.uistates.connection.ConnectionConfigurationState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
-import java.io.FileNotFoundException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,28 +31,54 @@ class ConnectionConfigurationViewModel @Inject constructor(
     val ScrollState = ScrollState(0)
 
     private var _id = 0L
-
-    var SelectedConnectionType by mutableStateOf(ConnectionType.NextCloud)
+    var Paths = listOf<Path>()
 
     val ViewModelMap: MutableMap<ConnectionType, ConfigurationViewModelBase> = mutableMapOf()
 
-    var Paths = listOf<Path>()
+    var State by mutableStateOf(ConnectionConfigurationState())
 
-    var BackupPassword by mutableStateOf("")
-    var WifiOnly by mutableStateOf(false)
-    var SelectedScheduleType by mutableStateOf(ScheduleType.DAILY)
+    fun OnEvent(event: ConnectionConfigurationEvent) {
+        when (event) {
+            is ConnectionConfigurationEvent.OnBackupPasswordChange -> {
+                State = State.copy(
+                    BackupPassword = event.Value
+                )
+            }
+            is ConnectionConfigurationEvent.OnSelectedConnectionTypeChange -> {
+                State = State.copy(
+                    SelectedConnectionType = event.Value
+                )
+            }
+            is ConnectionConfigurationEvent.OnSelectedScheduleTypeChange -> {
+                State = State.copy(
+                    SelectedScheduleType = event.Value
+                )
+            }
+            is ConnectionConfigurationEvent.OnWifiOnlyChange -> {
+                State = State.copy(
+                    WifiOnly = event.Value
+                )
+            }
+            is ConnectionConfigurationEvent.OnLoadData -> {
+                LoadData(event.Connection)
+            }
+            ConnectionConfigurationEvent.OnSaveConnection -> {
+                SaveConnection()
+            }
+        }
+    }
 
-    fun SaveConnection() {
+    private fun SaveConnection() {
         viewModelScope.launch {
             try {
-                val connection = (ViewModelMap[SelectedConnectionType])!!.GetBaseConnection()
+                val connection = (ViewModelMap[State.SelectedConnectionType])!!.GetBaseConnection()
 
                 connection.Id = _id
 
-                connection.BackupPassword = BackupPassword
-                connection.WifiOnly = WifiOnly
+                connection.BackupPassword = State.BackupPassword
+                connection.WifiOnly = State.WifiOnly
                 connection.Paths = Paths
-                connection.ScheduleType = SelectedScheduleType
+                connection.ScheduleType = State.SelectedScheduleType
 
                 if (_id == 0L) {
                     val id = connectionRepository.InsertConnection(
@@ -95,14 +116,16 @@ class ConnectionConfigurationViewModel @Inject constructor(
         }
     }
 
-    fun LoadData(connection: Connection) {
+    private fun LoadData(connection: Connection) {
         _id = connection.Id
-
-        SelectedConnectionType = connection.ConnectionType
-        BackupPassword = connection.BackupPassword
-        WifiOnly = connection.WifiOnly
         Paths = connection.Paths
-        SelectedScheduleType = connection.ScheduleType
+
+        State = State.copy(
+            SelectedConnectionType = connection.ConnectionType,
+            BackupPassword = connection.BackupPassword,
+            WifiOnly = connection.WifiOnly,
+            SelectedScheduleType = connection.ScheduleType
+        )
 
         ViewModelMap[connection.ConnectionType]!!.LoadData(connection)
     }

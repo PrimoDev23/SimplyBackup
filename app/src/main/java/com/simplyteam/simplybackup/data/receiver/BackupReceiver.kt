@@ -102,7 +102,7 @@ class BackupReceiver : BroadcastReceiver() {
                                             )
 
                                             uploadResult
-                                                .onSuccess { _ ->
+                                                .onSuccess {
                                                     AddHistoryEntry(
                                                         connection,
                                                         file,

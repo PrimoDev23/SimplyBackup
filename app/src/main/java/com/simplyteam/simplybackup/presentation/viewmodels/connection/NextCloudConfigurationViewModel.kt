@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
+import com.simplyteam.simplybackup.data.models.events.connection.NextCloudConfigurationEvent
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
+import com.simplyteam.simplybackup.presentation.uistates.connection.NextCloudConfigurationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -14,49 +16,71 @@ class NextCloudConfigurationViewModel @Inject constructor(
 
 ) : ConfigurationViewModelBase() {
 
-    var Name by mutableStateOf("")
-    var NameErrorShown by mutableStateOf(false)
+    var State by mutableStateOf(NextCloudConfigurationState())
 
-    var Host by mutableStateOf("")
-    var HostErrorShown by mutableStateOf(false)
-
-    var Username by mutableStateOf("")
-    var UsernameErrorShown by mutableStateOf(false)
-
-    var Password by mutableStateOf("")
-    var PasswordErrorShown by mutableStateOf(false)
-
-    var RemotePath by mutableStateOf("")
+    fun OnEvent(event: NextCloudConfigurationEvent){
+        when(event){
+            is NextCloudConfigurationEvent.OnHostChange -> {
+                State = State.copy(
+                    Host = event.Value
+                )
+            }
+            is NextCloudConfigurationEvent.OnNameChange -> {
+                State = State.copy(
+                    Name = event.Value
+                )
+            }
+            is NextCloudConfigurationEvent.OnPasswordChange -> {
+                State = State.copy(
+                    Password = event.Value
+                )
+            }
+            is NextCloudConfigurationEvent.OnRemotePathChange -> {
+                State = State.copy(
+                    RemotePath = event.Value
+                )
+            }
+            is NextCloudConfigurationEvent.OnUsernameChange -> {
+                State = State.copy(
+                    Username = event.Value
+                )
+            }
+        }
+    }
 
     override fun GetBaseConnection(): Connection {
-        if(!ValuesValid()){
+        if (!ValuesValid()) {
             throw FieldNotFilledException()
         }
 
         return Connection(
             ConnectionType = ConnectionType.NextCloud,
-            Name = Name,
-            Host = Host,
-            Username = Username,
-            Password = Password,
-            RemotePath = RemotePath
+            Name = State.Name,
+            Host = State.Host,
+            Username = State.Username,
+            Password = State.Password,
+            RemotePath = State.RemotePath
         )
     }
 
     private fun ValuesValid(): Boolean {
-        NameErrorShown = Name.isEmpty()
-        HostErrorShown = Host.isEmpty()
-        UsernameErrorShown = Username.isEmpty()
-        PasswordErrorShown = Password.isEmpty()
+        State = State.copy(
+            NameError = State.Name.isEmpty(),
+            HostError = State.Host.isEmpty(),
+            UsernameError = State.Username.isEmpty(),
+            PasswordError = State.Password.isEmpty(),
+        )
 
-        return !(NameErrorShown || HostErrorShown || UsernameErrorShown || PasswordErrorShown)
+        return !(State.NameError || State.HostError || State.UsernameError || State.PasswordError)
     }
 
     override fun LoadData(connection: Connection) {
-        Name = connection.Name
-        Host = connection.Host
-        Username = connection.Username
-        Password = connection.Password
-        RemotePath = connection.RemotePath
+        State = State.copy(
+            Name = connection.Name,
+            Host = connection.Host,
+            Username = connection.Username,
+            Password = connection.Password,
+            RemotePath = connection.RemotePath
+        )
     }
 }

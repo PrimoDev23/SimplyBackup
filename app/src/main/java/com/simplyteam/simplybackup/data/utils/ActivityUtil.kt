@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.data.utils
 
-import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.simplyteam.simplybackup.R

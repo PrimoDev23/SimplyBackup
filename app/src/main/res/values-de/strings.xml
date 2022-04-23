@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">SimplyBackup</string>
     <string name="Connections">Verbindungen</string>
-    <string name="Settings">Einstellungen</string>
     <string name="ConfigureConnection">Verbindung konfigurieren</string>
     <string name="Username">Nutzername</string>
     <string name="Password">Passwort</string>
@@ -52,12 +51,10 @@
     <string name="Host">Host</string>
     <string name="BackupPassword">Backup-Passwort</string>
     <string name="Search">Suchen</string>
-    <string name="Back">Zurück</string>
     <string name="Backup">Backup</string>
     <string name="BackupStarted">Backup für %s gestartet</string>
     <string name="ConnectionRemoved">%s wurde erfolgreich gelöscht</string>
     <string name="Undo">Rückgängig</string>
-    <string name="ConnectionSaved">Verbindung erfolgreich gespeichert</string>
     <string name="OK">OK</string>
     <string name="AddNewAccount">Neues Konto hinzufügen</string>
     <string name="SelectedAccount">Gewähltes Konto</string>

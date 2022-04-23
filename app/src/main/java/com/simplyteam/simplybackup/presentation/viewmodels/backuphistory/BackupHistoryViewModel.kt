@@ -8,12 +8,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.*
+import com.simplyteam.simplybackup.data.models.events.UIEvent
+import com.simplyteam.simplybackup.data.models.events.backuphistory.BackupHistoryEvent
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
+import com.simplyteam.simplybackup.presentation.uistates.backuphistory.BackupHistoryState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,23 +35,41 @@ class BackupHistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ListState = LazyListState()
-    private val _restoreFinishedFlow = MutableSharedFlow<Event.SimpleTextEvent>()
+    private val _restoreFinishedFlow = MutableSharedFlow<UIEvent.ShowSnackbar>()
     val RestoreFinishedFlow = _restoreFinishedFlow.asSharedFlow()
 
-    var ShowErrorLoading by mutableStateOf(false)
+    var State by mutableStateOf(BackupHistoryState())
 
-    var BackupToDelete by mutableStateOf<BackupDetail?>(null)
-    var BackupToRestore by mutableStateOf<BackupDetail?>(null)
-    var CurrentlyRestoring by mutableStateOf(false)
-
-    var Loading by mutableStateOf(false)
-    var BackupDetails by mutableStateOf(listOf<BackupDetail>())
+    fun OnEvent(event: BackupHistoryEvent){
+        when(event){
+            is BackupHistoryEvent.OnDeleteBackup -> {
+                ShowDeleteAlert(event.Backup)
+            }
+            BackupHistoryEvent.OnDeleteConfirmed -> {
+                DeleteBackup()
+            }
+            BackupHistoryEvent.OnDeleteDialogDismiss -> {
+                HideDeleteAlert()
+            }
+            is BackupHistoryEvent.OnRestoreBackup -> {
+                ShowRestoreAlert(event.Backup)
+            }
+            BackupHistoryEvent.OnRestoreConfirmed -> {
+                RestoreBackup()
+            }
+            BackupHistoryEvent.OnRestoreDialogDismiss -> {
+                HideRestoreAlert()
+            }
+        }
+    }
 
     suspend fun InitValues(
         connection: Connection
     ) {
         try {
-            Loading = true
+            State = State.copy(
+                Loading = true
+            )
 
             val files = withContext(Dispatchers.IO) {
                 when (connection.ConnectionType) {
@@ -78,13 +99,19 @@ class BackupHistoryViewModel @Inject constructor(
                 }
             )
 
-            ShowErrorLoading = false
+            State = State.copy(
+                LoadingError = false
+            )
         } catch (ex: Exception) {
             Timber.e(ex)
 
-            ShowErrorLoading = true
+            State = State.copy(
+                LoadingError = true
+            )
         } finally {
-            Loading = false
+            State = State.copy(
+                Loading = false
+            )
         }
     }
 
@@ -116,22 +143,31 @@ class BackupHistoryViewModel @Inject constructor(
             )
         }
 
-        BackupDetails = details
+        State = State.copy(
+            Backups = details
+        )
     }
 
-    fun ShowDeleteAlert(item: BackupDetail) {
-        BackupToDelete = item
+    private fun ShowDeleteAlert(item: BackupDetail) {
+        State = State.copy(
+            BackupToDelete = item
+        )
     }
 
-    fun HideDeleteAlert() {
-        BackupToDelete = null
+    private fun HideDeleteAlert() {
+        State = State.copy(
+            BackupToDelete = null
+        )
     }
 
-    fun DeleteBackup() {
+    private fun DeleteBackup() {
         viewModelScope.launch {
-            BackupToDelete?.let { backup ->
+            State.BackupToDelete?.let { backup ->
                 try {
-                    Loading = true
+                    State = State.copy(
+                        Loading = true
+                    )
+
                     HideDeleteAlert()
 
                     val result = withContext(Dispatchers.IO) {
@@ -163,34 +199,43 @@ class BackupHistoryViewModel @Inject constructor(
                 } catch (ex: Exception) {
                     Timber.e(ex)
                 } finally {
-                    Loading = false
+                    State = State.copy(
+                        Loading = false
+                    )
                 }
             }
         }
     }
 
     private fun DeleteBackupFromList(item: BackupDetail) {
-        val list = BackupDetails.toMutableList()
+        val list = State.Backups.toMutableList()
 
         list.remove(item)
 
-        BackupDetails = list
+        State = State.copy(
+            Backups = list
+        )
     }
 
-    fun ShowRestoreAlert(detail: BackupDetail) {
-        BackupToRestore = detail
+    private fun ShowRestoreAlert(detail: BackupDetail) {
+        State = State.copy(
+            BackupToRestore = detail
+        )
     }
 
-    fun HideRestoreAlert() {
-        BackupToRestore = null
+    private fun HideRestoreAlert() {
+        State = State.copy(
+            BackupToRestore = null
+        )
     }
 
-    fun RestoreBackup() {
+    private fun RestoreBackup() {
         viewModelScope.launch {
-            BackupToRestore?.let { backup ->
+            State.BackupToRestore?.let { backup ->
                 try {
-                    CurrentlyRestoring =
-                        true
+                    State = State.copy(
+                        CurrentlyRestoring = true
+                    )
 
                     HideRestoreAlert()
 
@@ -223,18 +268,24 @@ class BackupHistoryViewModel @Inject constructor(
                     )
                     file.delete()
 
-                    CurrentlyRestoring = false
+                    State = State.copy(
+                        CurrentlyRestoring = false
+                    )
+
                     _restoreFinishedFlow.emit(
-                        Event.SimpleTextEvent(
+                        UIEvent.ShowSnackbar(
                             UIText.StringResource(R.string.RestoringBackupSucceed)
                         )
                     )
                 } catch (ex: Exception) {
                     Timber.e(ex)
 
-                    CurrentlyRestoring = false
+                    State = State.copy(
+                        CurrentlyRestoring = false
+                    )
+
                     _restoreFinishedFlow.emit(
-                        Event.SimpleTextEvent(
+                        UIEvent.ShowSnackbar(
                             UIText.StringResource(R.string.RestoringBackupError)
                         )
                     )

@@ -3,23 +3,19 @@ package com.simplyteam.simplybackup.presentation.views.main
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.*
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.data.models.Account
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.search.AccountSearchService
-import com.simplyteam.simplybackup.presentation.activities.MainActivity
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
-import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountOverviewViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 
@@ -51,7 +47,7 @@ class AccountsViewTest {
     fun setUp() {
         hiltRule.inject()
 
-        val viewModel = AccountsViewModel(
+        val viewModel = AccountOverviewViewModel(
             ConnectionRepository,
             AccountRepository,
             AccountSearchService
@@ -68,7 +64,7 @@ class AccountsViewTest {
             }
 
             SimplyBackupTheme {
-                AccountsView(
+                AccountOverview(
                     paddingValues = PaddingValues(0.dp),
                     viewModel = viewModel
                 )

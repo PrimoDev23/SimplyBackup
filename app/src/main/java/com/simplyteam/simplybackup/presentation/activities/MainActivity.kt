@@ -19,10 +19,9 @@ import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.search.AccountSearchService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
-import com.simplyteam.simplybackup.presentation.views.main.MainTabView
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
+import com.simplyteam.simplybackup.presentation.views.main.MainTabView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @AndroidEntryPoint

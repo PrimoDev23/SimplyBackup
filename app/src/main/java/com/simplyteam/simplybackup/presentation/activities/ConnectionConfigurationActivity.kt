@@ -26,6 +26,7 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
@@ -67,13 +68,13 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
                 LaunchedEffect(key1 = true) {
                     connection?.let {
-                        connectionConfigurationViewModel.LoadData(connection)
+                        connectionConfigurationViewModel.OnEvent(ConnectionConfigurationEvent.OnLoadData(connection))
                     }
                 }
 
                 LaunchedEffect(key1 = true){
                     googleDriveViewModel.NewAccountFlow.collect {
-                        googleDriveLoginLauncher.launch(it.Intent)
+                        googleDriveLoginLauncher.launch(it)
                     }
                 }
 
@@ -144,7 +145,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                         if (currentScreen == Screen.ConnectionConfiguration) {
                             activity.FinishActivityWithAnimation()
                         } else if (currentScreen == Screen.PathsConfiguration) {
-                            connectionConfigurationViewModel.Paths = pathsConfigurationViewModel.Paths
+                            connectionConfigurationViewModel.Paths = pathsConfigurationViewModel.State.Paths
                             navController.popBackStack()
                         }
                     }) {

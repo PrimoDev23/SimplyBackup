@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.data.models.events.connection.SFTPConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 
@@ -53,9 +54,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Name,
+                value = viewModel.State.Name,
                 onValueChange = {
-                    viewModel.Name = it
+                    viewModel.OnEvent(
+                        SFTPConfigurationEvent.OnNameChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -72,7 +77,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("NameError"),
-                isError = viewModel.NameErrorShown,
+                isError = viewModel.State.NameError,
                 errorText = stringResource(
                     id = R.string.EnterName
                 )
@@ -89,9 +94,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Host,
+                value = viewModel.State.Host,
                 onValueChange = {
-                    viewModel.Host = it
+                    viewModel.OnEvent(
+                        SFTPConfigurationEvent.OnHostChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
@@ -108,7 +117,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("HostError"),
-                isError = viewModel.HostErrorShown,
+                isError = viewModel.State.HostError,
                 errorText = stringResource(
                     id = R.string.EnterHost
                 )
@@ -125,9 +134,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Username,
+                value = viewModel.State.Username,
                 onValueChange = {
-                    viewModel.Username = it
+                    viewModel.OnEvent(
+                        SFTPConfigurationEvent.OnUsernameChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -146,7 +159,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("UsernameError"),
-                isError = viewModel.UsernameErrorShown,
+                isError = viewModel.State.UsernameError,
                 errorText = stringResource(
                     id = R.string.EnterUsername
                 )
@@ -163,9 +176,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Password,
+                value = viewModel.State.Password,
                 onValueChange = {
-                    viewModel.Password = it
+                    viewModel.OnEvent(
+                        SFTPConfigurationEvent.OnPasswordChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -185,7 +202,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("PasswordError"),
-                isError = viewModel.PasswordErrorShown,
+                isError = viewModel.State.PasswordError,
                 errorText = stringResource(
                     id = R.string.EnterPassword
                 )
@@ -202,9 +219,13 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.RemotePath,
+                value = viewModel.State.RemotePath,
                 onValueChange = {
-                    viewModel.RemotePath = it
+                    viewModel.OnEvent(
+                        SFTPConfigurationEvent.OnRemotePathChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -223,7 +244,7 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("RemotePathError"),
-                isError = viewModel.RemotePathErrorShown,
+                isError = viewModel.State.RemotePathError,
                 errorText = stringResource(
                     id = R.string.EnterRemotePath
                 )

@@ -1,8 +1,7 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.material.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -10,21 +9,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.unit.dp
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
-import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
+import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.utils.ConnectionUtil
-import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 
@@ -82,16 +79,40 @@ class ConnectionOverviewViewTest {
             LaunchedEffect(true) {
                 viewModel.ConnectionRemovedFlow.collect {
                     when (scaffoldState.snackbarHostState.showSnackbar(
-                        it.text.asString(context),
-                        it.action.asString(context)
+                        it.Message.asString(context),
+                        it.Action?.asString(context)
                     )) {
-                        SnackbarResult.ActionPerformed -> {
-                            viewModel.RestoreConnection(it.connection)
-                        }
-                        SnackbarResult.Dismissed -> {
-                            viewModel.FinishConnectionRemoval(it.connection)
-                        }
+                        SnackbarResult.ActionPerformed -> it.ActionClicked?.invoke()
+                        SnackbarResult.Dismissed -> it.Dismissed?.invoke()
                     }
+                }
+            }
+
+            LaunchedEffect(key1 = true) {
+                viewModel.RunBackupFlow.collect {
+                    val intent = Intent(
+                        context,
+                        BackupReceiver::class.java
+                    )
+
+                    val bundle = Bundle()
+                    bundle.putSerializable(
+                        "Connection",
+                        it.Connection
+                    )
+                    intent.putExtra(
+                        "Bundle",
+                        bundle
+                    )
+
+                    context.sendBroadcast(intent)
+
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        context.getString(
+                            R.string.BackupStarted,
+                            it.Connection.Name
+                        )
+                    )
                 }
             }
 

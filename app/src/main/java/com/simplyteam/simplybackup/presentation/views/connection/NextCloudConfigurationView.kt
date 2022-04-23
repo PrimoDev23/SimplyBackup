@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
+import com.simplyteam.simplybackup.data.models.events.connection.NextCloudConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 
@@ -46,9 +47,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Name"),
-                value = viewModel.Name,
+                value = viewModel.State.Name,
                 onValueChange = {
-                    viewModel.Name = it
+                    viewModel.OnEvent(
+                        NextCloudConfigurationEvent.OnNameChange(
+                            it
+                        )
+                    )
                 },
                 label = {
                     Text(
@@ -72,7 +77,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("NameError"),
-                isError = viewModel.NameErrorShown,
+                isError = viewModel.State.NameError,
                 errorText = stringResource(
                     id = R.string.EnterName
                 )
@@ -89,9 +94,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Host,
+                value = viewModel.State.Host,
                 onValueChange = {
-                    viewModel.Host = it
+                    viewModel.OnEvent(
+                        NextCloudConfigurationEvent.OnHostChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
@@ -108,7 +117,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("HostError"),
-                isError = viewModel.HostErrorShown,
+                isError = viewModel.State.HostError,
                 errorText = stringResource(
                     id = R.string.EnterHost
                 )
@@ -125,9 +134,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Username,
+                value = viewModel.State.Username,
                 onValueChange = {
-                    viewModel.Username = it
+                    viewModel.OnEvent(
+                        NextCloudConfigurationEvent.OnUsernameChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -146,7 +159,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("UsernameError"),
-                isError = viewModel.UsernameErrorShown,
+                isError = viewModel.State.UsernameError,
                 errorText = stringResource(
                     id = R.string.EnterUsername
                 )
@@ -163,9 +176,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.Password,
+                value = viewModel.State.Password,
                 onValueChange = {
-                    viewModel.Password = it
+                    viewModel.OnEvent(
+                        NextCloudConfigurationEvent.OnPasswordChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -185,7 +202,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("PasswordError"),
-                isError = viewModel.PasswordErrorShown,
+                isError = viewModel.State.PasswordError,
                 errorText = stringResource(
                     id = R.string.EnterPassword
                 )
@@ -202,9 +219,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                value = viewModel.RemotePath,
+                value = viewModel.State.RemotePath,
                 onValueChange = {
-                    viewModel.RemotePath = it
+                    viewModel.OnEvent(
+                        NextCloudConfigurationEvent.OnRemotePathChange(
+                            it
+                        )
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,

@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.simplyteam.simplybackup.data.models.Path
 import com.simplyteam.simplybackup.data.models.PathType
+import com.simplyteam.simplybackup.data.models.events.connection.PathsConfigurationEvent
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
+import com.simplyteam.simplybackup.presentation.uistates.connection.PathsConfigurationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import java.io.File
@@ -16,12 +18,25 @@ import javax.inject.Inject
 @HiltViewModel
 class PathsConfigurationViewModel @Inject constructor(
 
-): ViewModel() {
+) : ViewModel() {
 
-    var CurrentPath by mutableStateOf("")
-    var CurrentPathError by mutableStateOf(false)
+    var State by mutableStateOf(PathsConfigurationState())
 
-    var Paths by mutableStateOf(listOf<Path>())
+    fun OnEvent(event: PathsConfigurationEvent) {
+        when (event) {
+            is PathsConfigurationEvent.OnCurrentPathChange -> {
+                State = State.copy(
+                    CurrentPath = event.Value
+                )
+            }
+            PathsConfigurationEvent.OnAddPathClicked -> {
+                AddPath()
+            }
+            is PathsConfigurationEvent.OnDeletePathClicked -> {
+                RemovePath(event.Path)
+            }
+        }
+    }
 
     private fun CreatePathObjectFromStringPath(path: String): Path {
         val file = File(path)
@@ -43,32 +58,42 @@ class PathsConfigurationViewModel @Inject constructor(
         }
     }
 
-    fun AddPath(stringPath: String) {
+    private fun AddPath() {
         try {
-            if(CurrentPath.isEmpty()){
-                CurrentPathError = true
+            if (State.CurrentPath.isEmpty()) {
+                State = State.copy(
+                    CurrentPathError = true
+                )
                 throw FieldNotFilledException()
+            }else{
+                State = State.copy(
+                    CurrentPathError = false
+                )
             }
 
-            val path = CreatePathObjectFromStringPath(stringPath)
+            val path = CreatePathObjectFromStringPath(State.CurrentPath)
 
-            val list = Paths.toMutableList()
+            val list = State.Paths.toMutableList()
 
             list.add(path)
 
-            Paths = list
-            CurrentPath = ""
+            State = State.copy(
+                Paths = list,
+                CurrentPath = ""
+            )
         } catch (ex: Exception) {
             Timber.e(ex)
         }
     }
 
-    fun RemovePath(path: Path) {
-        val list = Paths.toMutableList()
+    private fun RemovePath(path: Path) {
+        val list = State.Paths.toMutableList()
 
         list.remove(path)
 
-        Paths = list
+        State = State.copy(
+            Paths = list
+        )
     }
 
 }

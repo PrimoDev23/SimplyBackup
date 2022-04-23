@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.data.models.Event
 import com.simplyteam.simplybackup.data.models.UIText
+import com.simplyteam.simplybackup.data.models.events.UIEvent
+import com.simplyteam.simplybackup.data.models.events.main.ConnectionOverviewEvent
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
@@ -25,25 +26,44 @@ class ConnectionOverviewViewModel @Inject constructor(
 ) : ViewModel() {
 
     val ListState = LazyListState()
-    private val _connectionRemovedFlow = MutableSharedFlow<Event.ConnectionRemovedEvent>()
+    private val _connectionRemovedFlow = MutableSharedFlow<UIEvent.ShowSnackbar>()
     val ConnectionRemovedFlow = _connectionRemovedFlow.asSharedFlow()
 
-    private val _backupStartedFlow = MutableSharedFlow<Event.SimpleTextEvent>()
-    val BackupStartedFlow = _backupStartedFlow.asSharedFlow()
+    private val _runBackupFlow = MutableSharedFlow<ConnectionOverviewEvent.OnBackupConnection>()
+    val RunBackupFlow = _runBackupFlow.asSharedFlow()
+
+    fun OnEvent(event: ConnectionOverviewEvent){
+        when(event){
+            is ConnectionOverviewEvent.OnDeleteConnection -> {
+                DeleteConnection(event.Connection)
+            }
+            is ConnectionOverviewEvent.OnBackupConnection -> {
+                viewModelScope.launch {
+                    _runBackupFlow.emit(event)
+                }
+            }
+            is ConnectionOverviewEvent.Search -> {
+                Search(event.Value)
+            }
+            ConnectionOverviewEvent.ResetSearch -> {
+                ResetSearch()
+            }
+        }
+    }
 
     fun GetConnections() = _connectionSearchService.FilteredItems
 
     fun GetSearchText() = _connectionSearchService.GetSearchText()
 
-    fun Search(searchText: String) {
+    private fun Search(searchText: String) {
         _connectionSearchService.Search(searchText)
     }
 
-    fun ResetSearch() {
+    private fun ResetSearch() {
         _connectionSearchService.Search("")
     }
 
-    fun DeleteConnection(
+    private fun DeleteConnection(
         connection: Connection
     ) {
         viewModelScope.launch {
@@ -55,13 +75,18 @@ class ConnectionOverviewViewModel @Inject constructor(
                 )
 
                 _connectionRemovedFlow.emit(
-                    Event.ConnectionRemovedEvent(
-                        text = UIText.StringResource(
+                    UIEvent.ShowSnackbar(
+                        Message = UIText.StringResource(
                             R.string.ConnectionRemoved,
                             connection.Name
                         ),
-                        action = UIText.StringResource(R.string.Undo),
-                        connection = connection
+                        Action = UIText.StringResource(R.string.Undo),
+                        ActionClicked = {
+                            RestoreConnection(connection)
+                        },
+                        Dismissed = {
+                            FinishConnectionRemoval(connection)
+                        }
                     )
                 )
             } catch (ex: Exception) {
@@ -70,7 +95,7 @@ class ConnectionOverviewViewModel @Inject constructor(
         }
     }
 
-    fun FinishConnectionRemoval(connection: Connection) {
+    private fun FinishConnectionRemoval(connection: Connection) {
         viewModelScope.launch {
             _connectionRepository.RemoveConnection(connection)
 
@@ -78,24 +103,12 @@ class ConnectionOverviewViewModel @Inject constructor(
         }
     }
 
-    fun RestoreConnection(connection: Connection) {
+    private fun RestoreConnection(connection: Connection) {
         viewModelScope.launch {
             _connectionRepository.UpdateConnection(
                 connection.apply {
                     TemporarilyDeleted = false
                 }
-            )
-        }
-    }
-
-    fun ShowBackupSnackbar(
-        connection: Connection
-    ) {
-        viewModelScope.launch {
-            _backupStartedFlow.emit(
-                Event.SimpleTextEvent(
-                    UIText.StringResource(R.string.BackupStarted, connection.Name)
-                )
             )
         }
     }

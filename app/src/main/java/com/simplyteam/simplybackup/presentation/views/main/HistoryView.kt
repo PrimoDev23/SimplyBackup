@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
+import com.simplyteam.simplybackup.data.models.events.main.HistoryEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import com.simplyteam.simplybackup.presentation.views.SearchBox
@@ -61,10 +62,14 @@ fun HistoryView(
                 SearchBox(
                     searchText = viewModel.GetSearchText(),
                     search = {
-                        viewModel.Search(it)
+                        viewModel.OnEvent(
+                            HistoryEvent.Search(
+                                it
+                            )
+                        )
                     },
                     resetSearch = {
-                        viewModel.ResetSearch()
+                        viewModel.OnEvent(HistoryEvent.ResetSearch)
                     }
                 )
             }
@@ -72,8 +77,10 @@ fun HistoryView(
                 HistoryCard(
                     historyData = historyData,
                     openHistory = {
-                        viewModel.OpenHistory(
-                            historyData.Connection
+                        viewModel.OnEvent(
+                            HistoryEvent.OnOpenHistory(
+                                historyData.Connection
+                            )
                         )
                     }
                 )

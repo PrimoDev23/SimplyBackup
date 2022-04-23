@@ -46,7 +46,7 @@ class BackupHistoryActivity : ComponentActivity() {
                 LaunchedEffect(key1 = true) {
                     viewModel.RestoreFinishedFlow.collect {
                         scaffoldState.snackbarHostState.showSnackbar(
-                            it.text.asString(context)
+                            it.Message.asString(context)
                         )
                     }
                 }

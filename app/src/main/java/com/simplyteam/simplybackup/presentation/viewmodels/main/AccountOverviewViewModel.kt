@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Account
-import com.simplyteam.simplybackup.data.models.Event
 import com.simplyteam.simplybackup.data.models.UIText
+import com.simplyteam.simplybackup.data.models.events.UIEvent
+import com.simplyteam.simplybackup.data.models.events.main.AccountOverviewEvent
 import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.search.AccountSearchService
@@ -18,17 +19,27 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountsViewModel @Inject constructor(
+class AccountOverviewViewModel @Inject constructor(
     private val _connectionRepository: ConnectionRepository,
     private val _accountRepository: AccountRepository,
     private val _accountSearchService: AccountSearchService
 ) : ViewModel() {
 
     var ListState = LazyListState()
-    private val _connectionExistsFlow = MutableSharedFlow<Event.SimpleTextEvent>()
+    private val _connectionExistsFlow = MutableSharedFlow<UIEvent.ShowSnackbar>()
     val ConnectionExistsFlow = _connectionExistsFlow.asSharedFlow()
 
+    fun OnEvent(event: AccountOverviewEvent){
+        when(event){
+            is AccountOverviewEvent.OnDeleteAccount -> {
+                DeleteAccount(event.Account)
+            }
+        }
+    }
+
     fun GetSearchText() = _accountSearchService.GetSearchText()
+
+    fun GetAccounts() = _accountSearchService.FilteredItems
 
     fun Search(value: String) {
         _accountSearchService.Search(value)
@@ -38,9 +49,7 @@ class AccountsViewModel @Inject constructor(
         _accountSearchService.Search("")
     }
 
-    fun GetAccounts() = _accountSearchService.FilteredItems
-
-    fun DeleteAccount(account: Account) {
+    private fun DeleteAccount(account: Account) {
         viewModelScope.launch {
             try {
                 if (_connectionRepository.Connections.any {
@@ -49,7 +58,7 @@ class AccountsViewModel @Inject constructor(
                     }
                 ) {
                     _connectionExistsFlow.emit(
-                        Event.SimpleTextEvent(
+                        UIEvent.ShowSnackbar(
                             UIText.StringResource(
                                 R.string.ConnectionStillExists
                             )

@@ -1,6 +1,5 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -32,6 +30,7 @@ import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
@@ -64,18 +63,26 @@ fun ConnectionConfigurationView(
             )
 
             TypeSpecificOptions(
-                selectedType = viewModel.SelectedConnectionType,
+                selectedType = viewModel.State.SelectedConnectionType,
                 viewModelMap = viewModel.ViewModelMap
             )
 
             ExtraInformationCard(
-                backupPassword = viewModel.BackupPassword,
+                backupPassword = viewModel.State.BackupPassword,
                 onBackupPasswordChange = {
-                    viewModel.BackupPassword = it
+                    viewModel.OnEvent(
+                        ConnectionConfigurationEvent.OnBackupPasswordChange(
+                            it
+                        )
+                    )
                 },
-                wifiOnly = viewModel.WifiOnly,
+                wifiOnly = viewModel.State.WifiOnly,
                 onWifiOnlyChange = {
-                    viewModel.WifiOnly = it
+                    viewModel.OnEvent(
+                        ConnectionConfigurationEvent.OnWifiOnlyChange(
+                            it
+                        )
+                    )
                 }
             )
 
@@ -86,9 +93,13 @@ fun ConnectionConfigurationView(
             )
 
             ScheduleTypeCard(
-                selectedScheduleType = viewModel.SelectedScheduleType,
+                selectedScheduleType = viewModel.State.SelectedScheduleType,
                 onSelectionChange = {
-                    viewModel.SelectedScheduleType = it
+                    viewModel.OnEvent(
+                        ConnectionConfigurationEvent.OnSelectedScheduleTypeChange(
+                            it
+                        )
+                    )
                 }
             )
 
@@ -97,7 +108,7 @@ fun ConnectionConfigurationView(
                     .fillMaxWidth()
                     .testTag("Save"),
                 onClick = {
-                    viewModel.SaveConnection()
+                    viewModel.OnEvent(ConnectionConfigurationEvent.OnSaveConnection)
                 },
                 elevation = ButtonDefaults.elevation(2.dp)
             ) {
@@ -130,9 +141,13 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
             items(ConnectionType.values()) { type ->
                 ConnectionButton(
                     type = type,
-                    isSelected = viewModel.SelectedConnectionType == type,
+                    isSelected = viewModel.State.SelectedConnectionType == type,
                     typeSelected = {
-                        viewModel.SelectedConnectionType = type
+                        viewModel.OnEvent(
+                            ConnectionConfigurationEvent.OnSelectedConnectionTypeChange(
+                                type
+                            )
+                        )
                     }
                 )
             }

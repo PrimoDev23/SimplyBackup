@@ -9,8 +9,6 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.PathsConfi
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import org.junit.Assert.*
-
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -64,6 +62,9 @@ class PathsConfigurationViewTest {
 
         composeRule.onNodeWithTag("CurrentPath")
             .performTextInput("/sdcard/Pictures")
+
+        composeRule.onNodeWithTag("AddPath")
+            .performClick()
 
         composeRule.onNodeWithTag("CurrentPathError")
             .assertDoesNotExist()

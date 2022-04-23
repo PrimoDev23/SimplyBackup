@@ -8,7 +8,6 @@ import com.simplyteam.simplybackup.data.daos.HistoryDao
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.models.HistoryEntry
-import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.data.utils.SchedulerUtil
 import java.time.LocalDateTime

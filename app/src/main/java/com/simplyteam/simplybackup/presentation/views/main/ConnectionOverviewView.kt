@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
+import com.simplyteam.simplybackup.data.models.events.main.ConnectionOverviewEvent
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
@@ -70,10 +71,14 @@ fun ConnectionOverviewView(
                 SearchBox(
                     searchText = viewModel.GetSearchText(),
                     search = {
-                        viewModel.Search(it)
+                        viewModel.OnEvent(
+                            ConnectionOverviewEvent.Search(
+                                it
+                            )
+                        )
                     },
                     resetSearch = {
-                        viewModel.ResetSearch()
+                        viewModel.OnEvent(ConnectionOverviewEvent.ResetSearch)
                     }
                 )
             }
@@ -87,30 +92,19 @@ fun ConnectionOverviewView(
                         )
                     },
                     delete = {
-                        viewModel.DeleteConnection(
-                            item
+                        viewModel.OnEvent(
+                            ConnectionOverviewEvent.OnDeleteConnection(
+                                item
+                            )
                         )
                     },
                     backup = {
                         try {
-                            val intent = Intent(
-                                activity,
-                                BackupReceiver::class.java
+                            viewModel.OnEvent(
+                                ConnectionOverviewEvent.OnBackupConnection(
+                                    item
+                                )
                             )
-
-                            val bundle = Bundle()
-                            bundle.putSerializable(
-                                "Connection",
-                                item
-                            )
-                            intent.putExtra(
-                                "Bundle",
-                                bundle
-                            )
-
-                            activity.sendBroadcast(intent)
-
-                            viewModel.ShowBackupSnackbar(item)
                         } catch (ex: Exception) {
                             Timber.e(ex)
                         }

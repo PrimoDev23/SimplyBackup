@@ -11,19 +11,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Account
-import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
+import com.simplyteam.simplybackup.data.models.events.main.AccountOverviewEvent
+import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import com.simplyteam.simplybackup.presentation.views.SearchBox
 
 @Composable
-fun AccountsView(
+fun AccountOverview(
     paddingValues: PaddingValues,
-    viewModel: AccountsViewModel
+    viewModel: AccountOverviewViewModel
 ) {
     Column(
         modifier = Modifier
@@ -52,7 +52,11 @@ fun AccountsView(
                 AccountItem(
                     account = account,
                     deleteAccount = {
-                        viewModel.DeleteAccount(account)
+                        viewModel.OnEvent(
+                            AccountOverviewEvent.OnDeleteAccount(
+                                account
+                            )
+                        )
                     }
                 )
             }

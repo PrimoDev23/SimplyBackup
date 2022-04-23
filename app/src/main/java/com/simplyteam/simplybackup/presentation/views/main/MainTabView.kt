@@ -1,10 +1,8 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
-import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
@@ -23,14 +21,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Screen
+import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
 import com.simplyteam.simplybackup.presentation.navigation.MainNavigation
-import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainTabView() {
@@ -44,12 +42,12 @@ fun MainTabView() {
 
     val historyViewModel = viewModel<HistoryViewModel>()
     val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
-    val accountsViewModel = viewModel<AccountsViewModel>()
+    val accountsViewModel = viewModel<AccountOverviewViewModel>()
 
     SetupEvents(
         overviewViewModel = overviewViewModel,
         historyViewModel = historyViewModel,
-        accountsViewModel = accountsViewModel,
+        accountOverviewViewModel = accountsViewModel,
         snackbarHostState = scaffoldState.snackbarHostState
     )
 
@@ -124,7 +122,7 @@ fun MainTabView() {
             paddingValues = it,
             historyViewModel = historyViewModel,
             overviewViewModel = overviewViewModel,
-            accountsViewModel = accountsViewModel
+            accountOverviewViewModel = accountsViewModel
         )
     }
 }
@@ -133,7 +131,7 @@ fun MainTabView() {
 fun SetupEvents(
     overviewViewModel: ConnectionOverviewViewModel,
     historyViewModel: HistoryViewModel,
-    accountsViewModel: AccountsViewModel,
+    accountOverviewViewModel: AccountOverviewViewModel,
     snackbarHostState: SnackbarHostState
 ) {
     val activity = LocalContext.current as ComponentActivity
@@ -141,19 +139,39 @@ fun SetupEvents(
     LaunchedEffect(key1 = true) {
         overviewViewModel.ConnectionRemovedFlow.collect {
             when (snackbarHostState.showSnackbar(
-                it.text.asString(activity),
-                it.action.asString(activity)
+                it.Message.asString(activity),
+                it.Action?.asString(activity)
             )) {
-                SnackbarResult.Dismissed -> overviewViewModel.FinishConnectionRemoval(it.connection)
-                SnackbarResult.ActionPerformed -> overviewViewModel.RestoreConnection(it.connection)
+                SnackbarResult.Dismissed -> it.Dismissed?.invoke()
+                SnackbarResult.ActionPerformed -> it.ActionClicked?.invoke()
             }
         }
     }
 
     LaunchedEffect(key1 = true) {
-        overviewViewModel.BackupStartedFlow.collect {
+        overviewViewModel.RunBackupFlow.collect {
+            val intent = Intent(
+                activity,
+                BackupReceiver::class.java
+            )
+
+            val bundle = Bundle()
+            bundle.putSerializable(
+                "Connection",
+                it.Connection
+            )
+            intent.putExtra(
+                "Bundle",
+                bundle
+            )
+
+            activity.sendBroadcast(intent)
+
             snackbarHostState.showSnackbar(
-                it.text.asString(activity)
+                activity.getString(
+                    R.string.BackupStarted,
+                    it.Connection.Name
+                )
             )
         }
     }
@@ -174,9 +192,9 @@ fun SetupEvents(
     }
 
     LaunchedEffect(key1 = true) {
-        accountsViewModel.ConnectionExistsFlow.collect {
+        accountOverviewViewModel.ConnectionExistsFlow.collect {
             snackbarHostState.showSnackbar(
-                it.text.asString(activity)
+                it.Message.asString(activity)
             )
         }
     }

@@ -18,10 +18,7 @@ import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
-
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

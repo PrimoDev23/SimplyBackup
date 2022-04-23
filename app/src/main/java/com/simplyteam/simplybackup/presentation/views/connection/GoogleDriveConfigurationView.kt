@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.ScheduleType
+import com.simplyteam.simplybackup.data.models.events.connection.GoogleDriveConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 import com.simplyteam.simplybackup.presentation.views.RadioButton
@@ -33,37 +34,49 @@ fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         InformationCard(
-            name = viewModel.Name,
+            name = viewModel.State.Name,
             onNameChange = {
-                viewModel.Name = it
+                viewModel.OnEvent(
+                    GoogleDriveConfigurationEvent.OnNameChange(
+                        it
+                    )
+                )
             },
-            nameError = viewModel.NameError,
-            remotePath = viewModel.RemotePath,
+            nameError = viewModel.State.NameError,
+            remotePath = viewModel.State.FolderLink,
             onRemotePathChange = {
-                viewModel.RemotePath = it
+                viewModel.OnEvent(
+                    GoogleDriveConfigurationEvent.OnFolderLinkChange(
+                        it
+                    )
+                )
             }
         )
 
         LoginCard(
             onClick = {
-                viewModel.ShowSelectionDialog()
+                viewModel.OnEvent(GoogleDriveConfigurationEvent.OnLoginCardClicked)
             },
-            account = viewModel.SelectedAccount,
-            isError = viewModel.SelectedAccountError
+            account = viewModel.State.SelectedAccount,
+            isError = viewModel.State.SelectedAccountError
         )
 
         AccountSelectionDialog(
-            shown = viewModel.SelectionDialogShown,
+            shown = viewModel.State.SelectionDialogShown,
             onDismiss = {
-                viewModel.HideSelectionDialog()
+                viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
             },
             accounts = viewModel.GetAccounts(),
             onConfirm = {
-                viewModel.HideSelectionDialog()
+                viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
                 if (it == "NewAccount") {
-                    viewModel.AddNewAccount()
+                    viewModel.OnEvent(GoogleDriveConfigurationEvent.OnRequestSignIn)
                 } else {
-                    viewModel.SelectedAccount = it
+                    viewModel.OnEvent(
+                        GoogleDriveConfigurationEvent.OnSelectedAccountChange(
+                            it
+                        )
+                    )
                 }
             }
         )

@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">SimplyBackup</string>
     <string name="Connections">Connections</string>
-    <string name="Settings">Settings</string>
     <string name="ConfigureConnection">Configure connection</string>
-    <string name="NextCloud" translatable="false">NextCloud</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
     <string name="Name">Name</string>
@@ -57,14 +55,10 @@
     <string name="Host">Host</string>
     <string name="BackupPassword">Backup password</string>
     <string name="Search">Search</string>
-    <string name="Back">Back</string>
-    <string name="title_activity_search" translatable="false">SearchActivity</string>
     <string name="Backup">Backup</string>
     <string name="BackupStarted">Backup for %s started</string>
     <string name="ConnectionRemoved">Successfully deleted %s</string>
     <string name="Undo">Undo</string>
-    <string name="ConnectionSaved">Connection successfully saved</string>
-    <string name="GoogleDrive" translatable="false">Google Drive</string>
     <string name="OK">OK</string>
     <string name="AddNewAccount">Add new account</string>
     <string name="SelectedAccount">Selected account</string>

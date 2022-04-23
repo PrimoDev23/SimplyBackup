@@ -8,14 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.data.models.Account
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
-import com.simplyteam.simplybackup.data.models.Event
+import com.simplyteam.simplybackup.data.models.events.connection.GoogleDriveConfigurationEvent
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
 import com.simplyteam.simplybackup.data.repositories.AccountRepository
-import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
+import com.simplyteam.simplybackup.presentation.uistates.connection.GoogleDriveConfigurationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -26,25 +25,46 @@ class GoogleDriveConfigurationViewModel @Inject constructor(
     private val _accountRepository: AccountRepository,
     private val _googleDriveService: GoogleDriveService
 ) : ConfigurationViewModelBase() {
-
-    var SelectionDialogShown by mutableStateOf(false)
-        private set
-
-    private val _newAccountFlow = MutableSharedFlow<Event.GoogleSignInEvent>()
+    private val _newAccountFlow = MutableSharedFlow<Intent>()
     val NewAccountFlow = _newAccountFlow.asSharedFlow()
 
-    var SelectedAccount by mutableStateOf("")
-    var SelectedAccountError by mutableStateOf(false)
-    var Name by mutableStateOf("")
-    var NameError by mutableStateOf(false)
-    var RemotePath by mutableStateOf("")
+    var State by mutableStateOf(GoogleDriveConfigurationState())
 
-    fun ShowSelectionDialog() {
-        SelectionDialogShown = true
-    }
+    fun OnEvent(event: GoogleDriveConfigurationEvent) {
+        when (event) {
+            is GoogleDriveConfigurationEvent.OnFolderLinkChange -> {
+                State = State.copy(
+                    FolderLink = event.Value
+                )
+            }
+            is GoogleDriveConfigurationEvent.OnNameChange -> {
+                State = State.copy(
+                    Name = event.Value
+                )
+            }
+            is GoogleDriveConfigurationEvent.OnSelectedAccountChange -> {
+                State = State.copy(
+                    SelectedAccount = event.Value
+                )
+            }
+            GoogleDriveConfigurationEvent.OnDialogDismissed -> {
+                State = State.copy(
+                    SelectionDialogShown = false
+                )
+            }
+            GoogleDriveConfigurationEvent.OnLoginCardClicked -> {
+                State = State.copy(
+                    SelectionDialogShown = true
+                )
+            }
+            is GoogleDriveConfigurationEvent.OnRequestSignIn -> {
+                viewModelScope.launch {
+                    val intent = _googleDriveService.GetSignInIntent()
 
-    fun HideSelectionDialog() {
-        SelectionDialogShown = false
+                    _newAccountFlow.emit(intent)
+                }
+            }
+        }
     }
 
     fun GetAccounts(): List<String> = _accountRepository.Accounts.filter {
@@ -53,18 +73,6 @@ class GoogleDriveConfigurationViewModel @Inject constructor(
         .map {
             it.Username
         }
-
-    fun AddNewAccount() {
-        viewModelScope.launch {
-            val intent = _googleDriveService.GetSignInIntent()
-
-            _newAccountFlow.emit(
-                Event.GoogleSignInEvent(
-                    intent
-                )
-            )
-        }
-    }
 
     fun SetAccountFromIntent(data: Intent) {
         viewModelScope.launch {
@@ -78,7 +86,11 @@ class GoogleDriveConfigurationViewModel @Inject constructor(
                             mail
                         )
                     )
-                    SelectedAccount = mail
+                    OnEvent(
+                        GoogleDriveConfigurationEvent.OnSelectedAccountChange(
+                            mail
+                        )
+                    )
                 }
             } catch (ex: Exception) {
                 Timber.e(ex)
@@ -93,22 +105,26 @@ class GoogleDriveConfigurationViewModel @Inject constructor(
 
         return Connection(
             ConnectionType = ConnectionType.GoogleDrive,
-            Name = Name,
-            Username = SelectedAccount,
-            RemotePath = RemotePath
+            Name = State.Name,
+            Username = State.SelectedAccount,
+            RemotePath = State.FolderLink
         )
     }
 
     private fun ValuesValid(): Boolean {
-        NameError = Name.isEmpty()
-        SelectedAccountError = SelectedAccount.isEmpty()
+        State = State.copy(
+            NameError = State.Name.isEmpty(),
+            SelectedAccountError = State.SelectedAccount.isEmpty()
+        )
 
-        return !(NameError || SelectedAccountError)
+        return !(State.NameError || State.SelectedAccountError)
     }
 
     override fun LoadData(connection: Connection) {
-        Name = connection.Name
-        SelectedAccount = connection.Username
-        RemotePath = connection.RemotePath
+        State = State.copy(
+            Name = connection.Name,
+            SelectedAccount = connection.Username,
+            FolderLink = connection.RemotePath
+        )
     }
 }

@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.BackupDetail
+import com.simplyteam.simplybackup.data.models.events.backuphistory.BackupHistoryEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.backuphistory.BackupHistoryViewModel
 
 @Composable
@@ -30,7 +30,7 @@ fun BackupHistoryView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if (viewModel.Loading) {
+        if (viewModel.State.Loading) {
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -39,10 +39,10 @@ fun BackupHistoryView(
         }
 
         when {
-            viewModel.ShowErrorLoading -> {
+            viewModel.State.LoadingError -> {
                 ErrorLabel(R.string.ErrorLoadingFiles)
             }
-            !viewModel.Loading && viewModel.BackupDetails.isEmpty() -> {
+            !viewModel.State.Loading && viewModel.State.Backups.isEmpty() -> {
                 ErrorLabel(R.string.NoFiles)
             }
             else -> {
@@ -53,41 +53,49 @@ fun BackupHistoryView(
                         .testTag("HistoryList"),
                     state = viewModel.ListState
                 ) {
-                    items(viewModel.BackupDetails) { detail ->
+                    items(viewModel.State.Backups) { detail ->
                         FileItem(
                             detail = detail,
                             deleteItem = {
-                                viewModel.ShowDeleteAlert(detail)
+                                viewModel.OnEvent(
+                                    BackupHistoryEvent.OnDeleteBackup(
+                                        detail
+                                    )
+                                )
                             },
                             restoreItem = {
-                                viewModel.ShowRestoreAlert(detail)
+                                viewModel.OnEvent(
+                                    BackupHistoryEvent.OnRestoreBackup(
+                                        detail
+                                    )
+                                )
                             }
                         )
                     }
                 }
 
                 DeleteAlert(
-                    isShown = viewModel.BackupToDelete != null,
+                    isShown = viewModel.State.BackupToDelete != null,
                     dismissDialog = {
-                        viewModel.HideDeleteAlert()
+                        viewModel.OnEvent(BackupHistoryEvent.OnDeleteDialogDismiss)
                     },
                     confirmDialog = {
-                        viewModel.DeleteBackup()
+                        viewModel.OnEvent(BackupHistoryEvent.OnDeleteConfirmed)
                     }
                 )
 
                 RestoreAlert(
-                    isShown = viewModel.BackupToRestore != null,
+                    isShown = viewModel.State.BackupToRestore != null,
                     dismissDialog = {
-                        viewModel.HideRestoreAlert()
+                        viewModel.OnEvent(BackupHistoryEvent.OnRestoreDialogDismiss)
                     },
                     confirmDialog = {
-                        viewModel.RestoreBackup()
+                        viewModel.OnEvent(BackupHistoryEvent.OnRestoreConfirmed)
                     }
                 )
 
                 RestoringDialog(
-                    isShown = viewModel.CurrentlyRestoring
+                    isShown = viewModel.State.CurrentlyRestoring
                 )
             }
         }

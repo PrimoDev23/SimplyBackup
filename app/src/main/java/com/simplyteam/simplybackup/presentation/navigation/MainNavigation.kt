@@ -6,13 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.simplyteam.simplybackup.data.models.Screen
-import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountsViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
-import com.simplyteam.simplybackup.presentation.views.main.AccountsView
+import com.simplyteam.simplybackup.presentation.views.main.AccountOverview
 import com.simplyteam.simplybackup.presentation.views.main.ConnectionOverviewView
 import com.simplyteam.simplybackup.presentation.views.main.HistoryView
-import com.simplyteam.simplybackup.presentation.views.main.SettingsView
 
 @Composable
 fun MainNavigation(
@@ -20,7 +19,7 @@ fun MainNavigation(
     paddingValues: PaddingValues,
     historyViewModel: HistoryViewModel,
     overviewViewModel: ConnectionOverviewViewModel,
-    accountsViewModel: AccountsViewModel
+    accountOverviewViewModel: AccountOverviewViewModel
 ) {
     NavHost(
         navController = navController,
@@ -41,9 +40,9 @@ fun MainNavigation(
         }
 
         composable(Screen.Accounts.Route) {
-            AccountsView(
+            AccountOverview(
                 paddingValues = paddingValues,
-                viewModel = accountsViewModel
+                viewModel = accountOverviewViewModel
             )
         }
     }
