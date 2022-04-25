@@ -14,6 +14,7 @@ import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfig
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 
 import org.junit.Before
@@ -57,12 +58,14 @@ class GoogleDriveConfigurationViewTest {
 
     @Test
     fun GoogleDriveErrorTest(){
-        AccountRepository.Accounts = listOf(
-            Account(
-                ConnectionType.GoogleDrive,
-                "Test"
+        runBlocking {
+            AccountRepository.Insert(
+                Account(
+                    ConnectionType.GoogleDrive,
+                    "Test"
+                )
             )
-        )
+        }
 
         try {
             _viewModel.GetBaseConnection()
@@ -107,12 +110,14 @@ class GoogleDriveConfigurationViewTest {
         composeRule.onNodeWithTag("TestRadio")
             .assertDoesNotExist()
 
-        AccountRepository.Accounts = listOf(
-            Account(
-                ConnectionType.GoogleDrive,
-                "Test"
+        runBlocking {
+            AccountRepository.Insert(
+                Account(
+                    ConnectionType.GoogleDrive,
+                    "Test"
+                )
             )
-        )
+        }
 
         composeRule.onNodeWithTag("LoginCard")
             .performClick()

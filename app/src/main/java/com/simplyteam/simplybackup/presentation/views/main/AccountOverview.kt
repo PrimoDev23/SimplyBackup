@@ -30,7 +30,7 @@ fun AccountOverview(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val accounts by viewModel.AccountFlow.collectAsState(initial = listOf())
+        val accounts by viewModel.AccountFlow.collectAsState()
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(

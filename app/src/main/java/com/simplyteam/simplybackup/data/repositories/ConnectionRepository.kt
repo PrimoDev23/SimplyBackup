@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class ConnectionRepository @Inject constructor(
     private val _connectionDao: ConnectionDao
 ) {
-    fun GetFlow() = _connectionDao.GetAllConnectionsFlow()
+    val Flow get() = _connectionDao.GetAllConnectionsFlow()
 
     suspend fun GetAllConnections(): List<Connection> {
         return _connectionDao.GetAllConnections()

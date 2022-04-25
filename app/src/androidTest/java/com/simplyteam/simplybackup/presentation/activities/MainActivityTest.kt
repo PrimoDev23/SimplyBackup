@@ -40,7 +40,7 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private val _testConnectionType = ConnectionType.NextCloud
+    private val _testConnectionType = ConnectionType.GoogleDrive
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository

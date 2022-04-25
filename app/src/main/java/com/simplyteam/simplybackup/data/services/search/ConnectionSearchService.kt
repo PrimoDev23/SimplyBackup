@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class ConnectionSearchService @Inject constructor(
     _connectionRepository: ConnectionRepository
 ) : SearchServiceBase<Connection>() {
-    override var FilteredItems: Flow<List<Connection>> = _connectionRepository.GetFlow().combine(SearchText) { connections, search ->
+    override var FilteredItems: Flow<List<Connection>> = _connectionRepository.Flow.combine(SearchText) { connections, search ->
         connections.filter {
             it.Name.contains(
                 search,

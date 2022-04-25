@@ -20,8 +20,8 @@ class HistorySearchService @Inject constructor(
     _connectionRepository: ConnectionRepository
 ) : SearchServiceBase<HistoryData>() {
 
-    override var FilteredItems: Flow<List<HistoryData>> = _historyRepository.GetFlow()
-        .combine(_connectionRepository.GetFlow()) { entries, connections ->
+    override var FilteredItems: Flow<List<HistoryData>> = _historyRepository.Flow
+        .combine(_connectionRepository.Flow) { entries, connections ->
             BuildHistoryData(
                 connections,
                 entries

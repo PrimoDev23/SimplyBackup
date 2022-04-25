@@ -8,7 +8,9 @@ import com.simplyteam.simplybackup.data.models.events.main.HistoryEvent
 import com.simplyteam.simplybackup.data.services.search.HistorySearchService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,7 +43,9 @@ class HistoryViewModel @Inject constructor(
     }
 
     val HistoryDataFlow = _historySearchService.FilteredItems
-    val SearchTextFlow = _historySearchService.GetSearchText()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val SearchTextFlow = _historySearchService.SearchText
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     private fun Search(searchText: String) {
         viewModelScope.launch {

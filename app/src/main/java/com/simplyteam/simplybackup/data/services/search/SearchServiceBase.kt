@@ -5,16 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 abstract class SearchServiceBase<T> {
 
-    protected val SearchText = MutableStateFlow("")
+    private val _searchText = MutableStateFlow("")
+    val SearchText get() = _searchText.asStateFlow()
 
     abstract var FilteredItems: Flow<List<T>>
 
-    fun GetSearchText() = SearchText
-
     suspend fun Search(value: String){
-        SearchText.emit(value)
+        _searchText.emit(value)
     }
 }

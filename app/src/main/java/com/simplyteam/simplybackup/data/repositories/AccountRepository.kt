@@ -12,10 +12,7 @@ import javax.inject.Singleton
 class AccountRepository @Inject constructor (
     private val _accountDao: AccountDao
 ) {
-
-    var Accounts by mutableStateOf(listOf<Account>())
-
-    fun GetFlow() = _accountDao.GetFlow()
+    val Flow get() = _accountDao.GetFlow()
 
     suspend fun Insert(account: Account) = _accountDao.InsertAccount(account)
 

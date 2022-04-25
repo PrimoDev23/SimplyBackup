@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class AccountSearchService @Inject constructor(
     _accountRepository: AccountRepository
 ) : SearchServiceBase<Account>() {
-    override var FilteredItems: Flow<List<Account>> = _accountRepository.GetFlow().combine(SearchText) { accounts, search ->
+    override var FilteredItems: Flow<List<Account>> = _accountRepository.Flow.combine(SearchText) { accounts, search ->
         accounts.filter {
             it.Username.contains(
                 search,

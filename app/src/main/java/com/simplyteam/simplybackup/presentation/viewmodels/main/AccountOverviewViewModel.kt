@@ -13,7 +13,9 @@ import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.search.AccountSearchService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,7 +40,9 @@ class AccountOverviewViewModel @Inject constructor(
     }
 
     val AccountFlow = _accountSearchService.FilteredItems
-    val SearchTextFlow = _accountSearchService.GetSearchText()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val SearchTextFlow = _accountSearchService.SearchText
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     fun Search(value: String) {
         viewModelScope.launch {

@@ -33,7 +33,7 @@ fun HistoryView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val data by viewModel.HistoryDataFlow.collectAsState(initial = listOf())
+        val data by viewModel.HistoryDataFlow.collectAsState()
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(

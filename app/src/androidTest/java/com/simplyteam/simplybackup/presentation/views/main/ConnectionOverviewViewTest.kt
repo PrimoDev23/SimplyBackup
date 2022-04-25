@@ -68,15 +68,6 @@ class ConnectionOverviewViewTest {
             val context = LocalContext.current
 
             LaunchedEffect(true) {
-                ConnectionRepository.GetFlow()
-                    .collect {
-                        ConnectionRepository.Connections = it
-
-                        ConnectionSearchService.RepeatSearch()
-                    }
-            }
-
-            LaunchedEffect(true) {
                 viewModel.ConnectionRemovedFlow.collect {
                     when (scaffoldState.snackbarHostState.showSnackbar(
                         it.Message.asString(context),

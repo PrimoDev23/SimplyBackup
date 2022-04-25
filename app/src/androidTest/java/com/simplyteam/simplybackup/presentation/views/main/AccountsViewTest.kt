@@ -54,15 +54,6 @@ class AccountsViewTest {
         )
 
         composeRule.setContent {
-            LaunchedEffect(key1 = true) {
-                AccountRepository.GetFlow()
-                    .collect {
-                        AccountRepository.Accounts = it
-
-                        AccountSearchService.RepeatSearch()
-                    }
-            }
-
             SimplyBackupTheme {
                 AccountOverview(
                     paddingValues = PaddingValues(0.dp),
@@ -79,11 +70,6 @@ class AccountsViewTest {
         composeRule.onNodeWithText("Test1234")
             .assertExists()
 
-        assertEquals(
-            1,
-            AccountRepository.Accounts.size
-        )
-
         composeRule.onNodeWithTag("More")
             .performClick()
 
@@ -92,11 +78,6 @@ class AccountsViewTest {
 
         composeRule.onNodeWithText("Test1234")
             .assertDoesNotExist()
-
-        assertEquals(
-            0,
-            AccountRepository.Accounts.size
-        )
     }
 
     @Test

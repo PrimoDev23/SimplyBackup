@@ -53,27 +53,6 @@ class HistoryViewTest {
         )
 
         composeRule.setContent {
-            LaunchedEffect(true) {
-                ConnectionRepository.GetFlow()
-                    .collect {
-                        ConnectionRepository.Connections = it
-
-                        HistoryRepository.BuildHistoryData(it)
-
-                        HistorySearchService.RepeatSearch()
-                    }
-            }
-
-            LaunchedEffect(true) {
-                HistoryRepository.GetFlow()
-                    .collect {
-                        HistoryRepository.HistoryEntries = it
-
-                        HistoryRepository.BuildHistoryData(ConnectionRepository.Connections)
-                        HistorySearchService.RepeatSearch()
-                    }
-            }
-
             HistoryView(
                 paddingValues = PaddingValues(0.dp),
                 viewModel = viewModel

@@ -60,7 +60,7 @@ fun ConnectionOverviewView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val connections by viewModel.ConnectionFlow.collectAsState(initial = listOf())
+        val connections by viewModel.ConnectionFlow.collectAsState()
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(

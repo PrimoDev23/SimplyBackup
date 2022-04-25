@@ -13,7 +13,9 @@ import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -52,7 +54,9 @@ class ConnectionOverviewViewModel @Inject constructor(
     }
 
     val ConnectionFlow = _connectionSearchService.FilteredItems
-    val SearchTextFlow = _connectionSearchService.GetSearchText()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val SearchTextFlow = _connectionSearchService.SearchText
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     private fun Search(searchText: String) {
         viewModelScope.launch {

@@ -20,7 +20,7 @@ class HistoryRepository @Inject constructor(
 ) {
     var HistoryEntries = listOf<HistoryEntry>()
 
-    fun GetFlow() = _historyDao.GetHistoryFlow()
+    val Flow get() = _historyDao.GetHistoryFlow()
 
     suspend fun InsertHistoryEntry(entry: HistoryEntry): Result<Long> {
         return try {
