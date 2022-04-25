@@ -80,8 +80,6 @@ class MainActivity : ComponentActivity() {
 
         NotificationService.CreateNotificationChannel()
 
-        CollectFlows()
-
         setContent {
             SimplyBackupTheme {
                 MainTabView()
@@ -91,35 +89,5 @@ class MainActivity : ComponentActivity() {
 
     private fun RequestFullStorageAccess() {
         _storageAccessLauncher.launch(_storageAccessIntent)
-    }
-
-    private fun CollectFlows() {
-        lifecycleScope.launchWhenStarted {
-            ConnectionRepository.GetFlow().collect {
-                ConnectionRepository.Connections = it
-
-                HistoryRepository.BuildHistoryData(it)
-
-                ConnectionSearchService.RepeatSearch()
-                HistorySearchService.RepeatSearch()
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            HistoryRepository.GetFlow().collect {
-                HistoryRepository.HistoryEntries = it
-
-                HistoryRepository.BuildHistoryData(ConnectionRepository.Connections)
-                HistorySearchService.RepeatSearch()
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            AccountRepository.GetFlow().collect {
-                AccountRepository.Accounts = it
-
-                AccountSearchService.RepeatSearch()
-            }
-        }
     }
 }

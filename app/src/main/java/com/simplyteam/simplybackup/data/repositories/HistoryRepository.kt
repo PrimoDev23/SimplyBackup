@@ -19,39 +19,8 @@ class HistoryRepository @Inject constructor(
     private val _historyDao: HistoryDao
 ) {
     var HistoryEntries = listOf<HistoryEntry>()
-    var HistoryData by mutableStateOf(listOf<HistoryData>())
 
     fun GetFlow() = _historyDao.GetHistoryFlow()
-
-    fun BuildHistoryData(connections: List<Connection>) {
-        val data = mutableListOf<HistoryData>()
-
-        for (connection in connections) {
-            val calendar = SchedulerUtil.GetNextSchedule(connection.ScheduleType)
-
-            val entries = HistoryEntries.filter {
-                it.ConnectionId == connection.Id
-            }
-
-            data.add(
-                HistoryData(
-                    Connection = connection,
-                    LastBackup = if (entries.isNotEmpty()) entries.last().Time else "-",
-                    NextBackup = LocalDateTime.ofInstant(
-                        calendar.toInstant(),
-                        calendar.timeZone.toZoneId()
-                    )
-                        .format(Constants.HumanReadableFormatter),
-                    LastBackupSize = if (entries.isNotEmpty()) MathUtil.GetBiggestFileSizeString(entries.last().Size) else "0 B",
-                    TotalBackedUpSize = MathUtil.GetBiggestFileSizeString(entries.sumOf {
-                        it.Size
-                    })
-                )
-            )
-        }
-
-        HistoryData = data
-    }
 
     suspend fun InsertHistoryEntry(entry: HistoryEntry): Result<Long> {
         return try {

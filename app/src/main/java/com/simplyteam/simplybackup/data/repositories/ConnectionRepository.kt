@@ -12,8 +12,6 @@ import javax.inject.Singleton
 class ConnectionRepository @Inject constructor(
     private val _connectionDao: ConnectionDao
 ) {
-    var Connections by mutableStateOf(listOf<Connection>())
-
     fun GetFlow() = _connectionDao.GetAllConnectionsFlow()
 
     suspend fun GetAllConnections(): List<Connection> {

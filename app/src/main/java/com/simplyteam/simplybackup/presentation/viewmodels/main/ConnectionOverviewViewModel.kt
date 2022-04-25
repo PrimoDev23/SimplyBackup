@@ -51,16 +51,19 @@ class ConnectionOverviewViewModel @Inject constructor(
         }
     }
 
-    fun GetConnections() = _connectionSearchService.FilteredItems
-
-    fun GetSearchText() = _connectionSearchService.GetSearchText()
+    val ConnectionFlow = _connectionSearchService.FilteredItems
+    val SearchTextFlow = _connectionSearchService.GetSearchText()
 
     private fun Search(searchText: String) {
-        _connectionSearchService.Search(searchText)
+        viewModelScope.launch {
+            _connectionSearchService.Search(searchText)
+        }
     }
 
     private fun ResetSearch() {
-        _connectionSearchService.Search("")
+        viewModelScope.launch {
+            _connectionSearchService.Search("")
+        }
     }
 
     private fun DeleteConnection(

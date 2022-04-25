@@ -1,34 +1,22 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
-import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.HistoryData
 import com.simplyteam.simplybackup.data.models.events.main.HistoryEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
@@ -45,6 +33,9 @@ fun HistoryView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        val data by viewModel.HistoryDataFlow.collectAsState(initial = listOf())
+        val searchText by viewModel.SearchTextFlow.collectAsState()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,7 +51,7 @@ fun HistoryView(
         ) {
             item {
                 SearchBox(
-                    searchText = viewModel.GetSearchText(),
+                    searchText = searchText,
                     search = {
                         viewModel.OnEvent(
                             HistoryEvent.Search(
@@ -73,7 +64,7 @@ fun HistoryView(
                     }
                 )
             }
-            items(viewModel.GetHistoryData()) { historyData ->
+            items(data) { historyData ->
                 HistoryCard(
                     historyData = historyData,
                     openHistory = {

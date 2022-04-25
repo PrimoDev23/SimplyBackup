@@ -37,22 +37,25 @@ class AccountOverviewViewModel @Inject constructor(
         }
     }
 
-    fun GetSearchText() = _accountSearchService.GetSearchText()
-
-    fun GetAccounts() = _accountSearchService.FilteredItems
+    val AccountFlow = _accountSearchService.FilteredItems
+    val SearchTextFlow = _accountSearchService.GetSearchText()
 
     fun Search(value: String) {
-        _accountSearchService.Search(value)
+        viewModelScope.launch {
+            _accountSearchService.Search(value)
+        }
     }
 
     fun ResetSearch() {
-        _accountSearchService.Search("")
+        viewModelScope.launch {
+            _accountSearchService.Search("")
+        }
     }
 
     private fun DeleteAccount(account: Account) {
         viewModelScope.launch {
             try {
-                if (_connectionRepository.Connections.any {
+                if (_connectionRepository.GetAllConnections().any {
                         it.ConnectionType == account.Type &&
                                 it.Username == account.Username
                     }

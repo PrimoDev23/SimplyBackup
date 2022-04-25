@@ -30,6 +30,9 @@ fun AccountOverview(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        val accounts by viewModel.AccountFlow.collectAsState(initial = listOf())
+        val searchText by viewModel.SearchTextFlow.collectAsState()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -39,7 +42,7 @@ fun AccountOverview(
         ) {
             item {
                 SearchBox(
-                    searchText = viewModel.GetSearchText(),
+                    searchText = searchText,
                     search = {
                         viewModel.Search(it)
                     },
@@ -48,7 +51,7 @@ fun AccountOverview(
                     }
                 )
             }
-            items(viewModel.GetAccounts()) { account ->
+            items(accounts) { account ->
                 AccountItem(
                     account = account,
                     deleteAccount = {

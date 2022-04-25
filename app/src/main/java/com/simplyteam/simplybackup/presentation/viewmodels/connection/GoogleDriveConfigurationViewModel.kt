@@ -16,6 +16,8 @@ import com.simplyteam.simplybackup.presentation.uistates.connection.GoogleDriveC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,12 +69,14 @@ class GoogleDriveConfigurationViewModel @Inject constructor(
         }
     }
 
-    fun GetAccounts(): List<String> = _accountRepository.Accounts.filter {
-        it.Type == ConnectionType.GoogleDrive
-    }
-        .map {
-            it.Username
+    val AccountFlow = _accountRepository.GetFlow().map { accounts ->
+        accounts.filter { account ->
+            account.Type == ConnectionType.GoogleDrive
         }
+            .map { account ->
+                account.Username
+            }
+    }
 
     fun SetAccountFromIntent(data: Intent) {
         viewModelScope.launch {

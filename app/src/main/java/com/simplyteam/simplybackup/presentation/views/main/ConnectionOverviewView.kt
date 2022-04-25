@@ -60,6 +60,9 @@ fun ConnectionOverviewView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        val connections by viewModel.ConnectionFlow.collectAsState(initial = listOf())
+        val searchText by viewModel.SearchTextFlow.collectAsState()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,7 +72,7 @@ fun ConnectionOverviewView(
         ) {
             item {
                 SearchBox(
-                    searchText = viewModel.GetSearchText(),
+                    searchText = searchText,
                     search = {
                         viewModel.OnEvent(
                             ConnectionOverviewEvent.Search(
@@ -82,7 +85,8 @@ fun ConnectionOverviewView(
                     }
                 )
             }
-            items(viewModel.GetConnections()) { item ->
+            
+            items(connections) { item ->
                 ConnectionItem(
                     item = item,
                     openConfiguration = {

@@ -7,9 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,11 +17,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.simplyteam.simplybackup.R
-import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.events.connection.GoogleDriveConfigurationEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.views.ErrorOutlinedTextField
 import com.simplyteam.simplybackup.presentation.views.RadioButton
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
@@ -66,7 +63,7 @@ fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
             onDismiss = {
                 viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
             },
-            accounts = viewModel.GetAccounts(),
+            accountFlow = viewModel.AccountFlow,
             onConfirm = {
                 viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
                 if (it == "NewAccount") {
@@ -264,12 +261,13 @@ private fun LoginCard(
 fun AccountSelectionDialog(
     shown: Boolean,
     onDismiss: () -> Unit,
-    accounts: List<String>,
+    accountFlow: Flow<List<String>>,
     onConfirm: (String) -> Unit
 ) {
     var selectedAccount by remember {
         mutableStateOf("")
     }
+    val accounts by accountFlow.collectAsState(initial = emptyList())
 
     if (shown) {
         Dialog(onDismissRequest = onDismiss) {

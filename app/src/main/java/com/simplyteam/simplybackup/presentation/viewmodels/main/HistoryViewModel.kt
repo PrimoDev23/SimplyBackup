@@ -40,15 +40,18 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun GetHistoryData() = _historySearchService.FilteredItems
-
-    fun GetSearchText() = _historySearchService.GetSearchText()
+    val HistoryDataFlow = _historySearchService.FilteredItems
+    val SearchTextFlow = _historySearchService.GetSearchText()
 
     private fun Search(searchText: String) {
-        _historySearchService.Search(searchText)
+        viewModelScope.launch {
+            _historySearchService.Search(searchText)
+        }
     }
 
     private fun ResetSearch() {
-        _historySearchService.Search("")
+        viewModelScope.launch {
+            _historySearchService.Search("")
+        }
     }
 }
