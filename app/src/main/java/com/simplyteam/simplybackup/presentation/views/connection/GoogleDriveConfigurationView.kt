@@ -58,12 +58,13 @@ fun GoogleDriveConfigurationView(viewModel: GoogleDriveConfigurationViewModel) {
             isError = viewModel.State.SelectedAccountError
         )
 
+        val accounts by viewModel.AccountFlow.collectAsState(initial = emptyList())
         AccountSelectionDialog(
             shown = viewModel.State.SelectionDialogShown,
             onDismiss = {
                 viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
             },
-            accountFlow = viewModel.AccountFlow,
+            accounts = accounts,
             onConfirm = {
                 viewModel.OnEvent(GoogleDriveConfigurationEvent.OnDialogDismissed)
                 if (it == "NewAccount") {
@@ -261,13 +262,12 @@ private fun LoginCard(
 fun AccountSelectionDialog(
     shown: Boolean,
     onDismiss: () -> Unit,
-    accountFlow: Flow<List<String>>,
+    accounts: List<String>,
     onConfirm: (String) -> Unit
 ) {
     var selectedAccount by remember {
         mutableStateOf("")
     }
-    val accounts by accountFlow.collectAsState(initial = emptyList())
 
     if (shown) {
         Dialog(onDismissRequest = onDismiss) {

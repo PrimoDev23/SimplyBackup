@@ -10,14 +10,14 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -41,30 +41,33 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
         val connection = this.intent.extras?.get("Connection") as Connection?
 
+        val connectionConfigurationViewModel = ViewModelProvider(this).get(ConnectionConfigurationViewModel::class.java)
+        val nextCloudViewModel = ViewModelProvider(this).get(NextCloudConfigurationViewModel::class.java)
+        val ftpViewModel = ViewModelProvider(this).get(SFTPConfigurationViewModel::class.java)
+        val googleDriveViewModel = ViewModelProvider(this).get(GoogleDriveConfigurationViewModel::class.java)
+
+        connectionConfigurationViewModel.ViewModelMap[ConnectionType.NextCloud] =
+            nextCloudViewModel
+        connectionConfigurationViewModel.ViewModelMap[ConnectionType.SFTP] =
+            ftpViewModel
+        connectionConfigurationViewModel.ViewModelMap[ConnectionType.GoogleDrive] =
+            googleDriveViewModel
+
         setContent {
             SimplyBackupTheme {
                 val context = LocalContext.current as ComponentActivity
 
                 val navController = rememberAnimatedNavController()
 
-                val connectionConfigurationViewModel = viewModel<ConnectionConfigurationViewModel>()
                 val pathsConfigurationViewModel = viewModel<PathsConfigurationViewModel>()
-
-                val nextCloudViewModel = viewModel<NextCloudConfigurationViewModel>()
-                val ftpViewModel = viewModel<SFTPConfigurationViewModel>()
-                val googleDriveViewModel = viewModel<GoogleDriveConfigurationViewModel>()
 
                 val googleDriveLoginLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult()
-                ){
+                ) {
                     it.data?.let { data ->
                         googleDriveViewModel.SetAccountFromIntent(data)
                     }
                 }
-
-                connectionConfigurationViewModel.ViewModelMap[ConnectionType.NextCloud] = nextCloudViewModel
-                connectionConfigurationViewModel.ViewModelMap[ConnectionType.SFTP] = ftpViewModel
-                connectionConfigurationViewModel.ViewModelMap[ConnectionType.GoogleDrive] = googleDriveViewModel
 
                 LaunchedEffect(key1 = true) {
                     connection?.let {
@@ -72,7 +75,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(key1 = true){
+                LaunchedEffect(key1 = true) {
                     googleDriveViewModel.NewAccountFlow.collect {
                         googleDriveLoginLauncher.launch(it)
                     }
@@ -84,12 +87,46 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                     }
                 }
 
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                var currentScreen by remember {
+                    mutableStateOf<Screen>(Screen.ConnectionConfiguration)
+                }
+
+                LaunchedEffect(key1 = navBackStackEntry) {
+                    currentScreen = when (navBackStackEntry?.destination?.route) {
+                        Screen.ConnectionConfiguration.Route -> {
+                            Screen.ConnectionConfiguration
+                        }
+                        else -> {
+                            Screen.PathsConfiguration
+                        }
+                    }
+                }
+
+                val elevation by animateDpAsState(
+                    if (currentScreen == Screen.ConnectionConfiguration && connectionConfigurationViewModel.ScrollState.value != 0) {
+                        AppBarDefaults.TopAppBarElevation
+                    } else {
+                        0.dp
+                    }
+                )
+
                 Scaffold(
                     topBar = {
                         BuildTopBar(
-                            navController = navController,
-                            connectionConfigurationViewModel = connectionConfigurationViewModel,
-                            pathsConfigurationViewModel = pathsConfigurationViewModel
+                            title = stringResource(
+                                id = currentScreen.Title
+                            ),
+                            onBackPressed = {
+                                if (currentScreen == Screen.ConnectionConfiguration) {
+                                    context.FinishActivityWithAnimation()
+                                } else if (currentScreen == Screen.PathsConfiguration) {
+                                    connectionConfigurationViewModel.Paths =
+                                        pathsConfigurationViewModel.State.Paths
+                                    navController.popBackStack()
+                                }
+                            },
+                            elevation = elevation
                         )
                     }) {
                     ConnectionConfigurationNavigation(
@@ -105,50 +142,22 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
     @Composable
     private fun BuildTopBar(
-        navController: NavHostController,
-        connectionConfigurationViewModel: ConnectionConfigurationViewModel,
-        pathsConfigurationViewModel: PathsConfigurationViewModel
+        title: String,
+        onBackPressed: () -> Unit,
+        elevation: Dp
     ) {
-        val navBackStackEntry = navController.currentBackStackEntryAsState()
-
-        val currentScreen = when (navBackStackEntry.value?.destination?.route) {
-            Screen.ConnectionConfiguration.Route -> {
-                Screen.ConnectionConfiguration
-            }
-            else -> {
-                Screen.PathsConfiguration
-            }
-        }
-
-        val elevation by animateDpAsState(
-            if (connectionConfigurationViewModel.ScrollState.value != 0 && currentScreen == Screen.ConnectionConfiguration) {
-                AppBarDefaults.TopAppBarElevation
-            } else {
-                0.dp
-            }
-        )
-        val activity = LocalContext.current as ComponentActivity
-
         TopAppBar(
             title = {
                 Text(
-                    text = stringResource(
-                        id = currentScreen.Title
-                    )
+                    text = title
                 )
             },
             navigationIcon = {
                 IconButton(
                     modifier = Modifier
                         .testTag("BackButton"),
-                    onClick = {
-                        if (currentScreen == Screen.ConnectionConfiguration) {
-                            activity.FinishActivityWithAnimation()
-                        } else if (currentScreen == Screen.PathsConfiguration) {
-                            connectionConfigurationViewModel.Paths = pathsConfigurationViewModel.State.Paths
-                            navController.popBackStack()
-                        }
-                    }) {
+                    onClick = onBackPressed
+                ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back"

@@ -34,8 +34,8 @@ class ConnectionOverviewViewModel @Inject constructor(
     private val _runBackupFlow = MutableSharedFlow<ConnectionOverviewEvent.OnBackupConnection>()
     val RunBackupFlow = _runBackupFlow.asSharedFlow()
 
-    fun OnEvent(event: ConnectionOverviewEvent){
-        when(event){
+    fun OnEvent(event: ConnectionOverviewEvent) {
+        when (event) {
             is ConnectionOverviewEvent.OnDeleteConnection -> {
                 DeleteConnection(event.Connection)
             }
@@ -54,9 +54,17 @@ class ConnectionOverviewViewModel @Inject constructor(
     }
 
     val ConnectionFlow = _connectionSearchService.FilteredItems
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
     val SearchTextFlow = _connectionSearchService.SearchText
-        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            ""
+        )
 
     private fun Search(searchText: String) {
         viewModelScope.launch {
@@ -76,9 +84,9 @@ class ConnectionOverviewViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _connectionRepository.UpdateConnection(
-                    connection.apply {
+                    connection.copy(
                         TemporarilyDeleted = true
-                    }
+                    )
                 )
 
                 _connectionRemovedFlow.emit(
@@ -113,9 +121,9 @@ class ConnectionOverviewViewModel @Inject constructor(
     private fun RestoreConnection(connection: Connection) {
         viewModelScope.launch {
             _connectionRepository.UpdateConnection(
-                connection.apply {
+                connection.copy(
                     TemporarilyDeleted = false
-                }
+                )
             )
         }
     }

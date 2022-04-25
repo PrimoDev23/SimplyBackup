@@ -67,9 +67,9 @@ object ConnectionUtil {
 
         Thread.sleep(1000)
 
-        return connection.apply {
+        return connection.copy(
             Id = id
-        }
+        )
     }
 
 }

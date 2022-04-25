@@ -71,21 +71,23 @@ class ConnectionConfigurationViewModel @Inject constructor(
     private fun SaveConnection() {
         viewModelScope.launch {
             try {
-                val connection = (ViewModelMap[State.SelectedConnectionType])!!.GetBaseConnection()
-
-                connection.Id = _id
-
-                connection.BackupPassword = State.BackupPassword
-                connection.WifiOnly = State.WifiOnly
-                connection.Paths = Paths
-                connection.ScheduleType = State.SelectedScheduleType
+                var connection = (ViewModelMap[State.SelectedConnectionType])!!.GetBaseConnection()
+                    .copy(
+                        Id = _id,
+                        BackupPassword = State.BackupPassword,
+                        WifiOnly = State.WifiOnly,
+                        Paths = Paths,
+                        ScheduleType = State.SelectedScheduleType
+                    )
 
                 if (_id == 0L) {
                     val id = connectionRepository.InsertConnection(
                         connection
                     )
 
-                    connection.Id = id
+                    connection = connection.copy(
+                        Id = id
+                    )
                     schedulerService.ScheduleBackup(
                         connection
                     )

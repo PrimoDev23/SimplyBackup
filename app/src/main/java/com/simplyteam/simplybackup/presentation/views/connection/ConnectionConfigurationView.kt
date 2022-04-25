@@ -59,7 +59,14 @@ fun ConnectionConfigurationView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ConnectionTypeRow(
-                viewModel = viewModel
+                selectedConnectionType = viewModel.State.SelectedConnectionType,
+                onSelected = {
+                    viewModel.OnEvent(
+                        ConnectionConfigurationEvent.OnSelectedConnectionTypeChange(
+                            it
+                        )
+                    )
+                }
             )
 
             TypeSpecificOptions(
@@ -123,7 +130,10 @@ fun ConnectionConfigurationView(
 }
 
 @Composable
-private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
+private fun ConnectionTypeRow(
+    selectedConnectionType: ConnectionType,
+    onSelected: (ConnectionType) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -141,13 +151,9 @@ private fun ConnectionTypeRow(viewModel: ConnectionConfigurationViewModel) {
             items(ConnectionType.values()) { type ->
                 ConnectionButton(
                     type = type,
-                    isSelected = viewModel.State.SelectedConnectionType == type,
+                    isSelected = selectedConnectionType == type,
                     typeSelected = {
-                        viewModel.OnEvent(
-                            ConnectionConfigurationEvent.OnSelectedConnectionTypeChange(
-                                type
-                            )
-                        )
+                        onSelected(type)
                     }
                 )
             }

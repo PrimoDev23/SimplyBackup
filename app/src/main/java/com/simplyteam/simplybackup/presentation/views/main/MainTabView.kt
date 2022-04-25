@@ -39,6 +39,7 @@ fun MainTabView() {
     var currentScreen by remember {
         mutableStateOf<Screen>(Screen.History)
     }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val historyViewModel = viewModel<HistoryViewModel>()
     val overviewViewModel = viewModel<ConnectionOverviewViewModel>()
@@ -76,8 +77,16 @@ fun MainTabView() {
         },
         bottomBar = {
             BottomBar(
-                navController = navController,
+                currentRoute = navBackStackEntry?.destination?.route,
                 onNavigate = {
+                    navController.navigate(it.Route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+
                     currentScreen = it
                 }
             )
@@ -229,7 +238,7 @@ private fun TopBar(
 
 @Composable
 private fun BottomBar(
-    navController: NavController,
+    currentRoute: String?,
     onNavigate: (Screen) -> Unit
 ) {
     val items = listOf(
@@ -237,9 +246,6 @@ private fun BottomBar(
         Screen.Connections,
         Screen.Accounts
     )
-
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
 
     BottomNavigation {
         for (item in items) {
@@ -263,14 +269,6 @@ private fun BottomBar(
                 },
                 selected = currentRoute == item.Route,
                 onClick = {
-                    navController.navigate(item.Route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-
                     onNavigate(item)
                 }
             )

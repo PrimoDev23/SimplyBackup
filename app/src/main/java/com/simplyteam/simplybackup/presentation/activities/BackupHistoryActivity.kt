@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.simplyteam.simplybackup.R
@@ -51,11 +52,22 @@ class BackupHistoryActivity : ComponentActivity() {
                     }
                 }
 
+                val elevation by animateDpAsState(
+                    if (viewModel.ListState.firstVisibleItemIndex == 0) {
+                        minOf(
+                            viewModel.ListState.firstVisibleItemScrollOffset.toFloat().dp,
+                            AppBarDefaults.TopAppBarElevation
+                        )
+                    } else {
+                        AppBarDefaults.TopAppBarElevation
+                    }
+                )
+
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
                         BuildTopBar(
-                            viewModel = viewModel
+                            elevation = elevation
                         )
                     },
                     snackbarHost = {
@@ -83,19 +95,8 @@ class BackupHistoryActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun BuildTopBar(viewModel: BackupHistoryViewModel) {
+    private fun BuildTopBar(elevation: Dp) {
         val activity = LocalContext.current as ComponentActivity
-
-        val elevation by animateDpAsState(
-            if (viewModel.ListState.firstVisibleItemIndex == 0) {
-                minOf(
-                    viewModel.ListState.firstVisibleItemScrollOffset.toFloat().dp,
-                    AppBarDefaults.TopAppBarElevation
-                )
-            } else {
-                AppBarDefaults.TopAppBarElevation
-            }
-        )
 
         TopAppBar(
             title = {
