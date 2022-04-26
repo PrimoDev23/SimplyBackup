@@ -41,5 +41,4 @@ class TestAppModule {
     fun GetAccountDao(simplyBackupDatabase: SimplyBackupDatabase) = simplyBackupDatabase.accountDao
 
     //endregion DB
-
 }

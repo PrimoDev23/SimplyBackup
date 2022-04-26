@@ -1,12 +1,12 @@
 package com.simplyteam.simplybackup.presentation.views.main
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.common.Constants
+import com.simplyteam.simplybackup.common.TestConstants
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.HistoryEntry
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
@@ -63,7 +63,7 @@ class HistoryViewTest {
     @Test
     fun AddConnectionTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -74,7 +74,7 @@ class HistoryViewTest {
     @Test
     fun RemoveConnectionTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -94,7 +94,7 @@ class HistoryViewTest {
     @Test
     fun AddHistoryEntryTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 

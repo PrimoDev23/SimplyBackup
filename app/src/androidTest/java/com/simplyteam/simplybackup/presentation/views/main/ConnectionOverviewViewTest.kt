@@ -11,12 +11,16 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
+import com.simplyteam.simplybackup.common.TestConstants
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
+import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
+import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
+import com.simplyteam.simplybackup.data.utils.CloudServiceUtil
 import com.simplyteam.simplybackup.data.utils.ConnectionUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -51,6 +55,12 @@ class ConnectionOverviewViewTest {
 
     @Inject
     lateinit var NextCloudService: NextCloudService
+
+    @Inject
+    lateinit var SFTPService: SFTPService
+
+    @Inject
+    lateinit var GoogleDriveService: GoogleDriveService
 
     @Before
     fun setUp() {
@@ -135,7 +145,7 @@ class ConnectionOverviewViewTest {
     @Test
     fun ConnectionSearchTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -176,7 +186,7 @@ class ConnectionOverviewViewTest {
             .assertDoesNotExist()
 
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -187,7 +197,7 @@ class ConnectionOverviewViewTest {
     @Test
     fun DeleteConnectionTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -219,7 +229,7 @@ class ConnectionOverviewViewTest {
     @Test
     fun BackupConnectionTest() {
         val connection = ConnectionUtil.InsertConnection(
-            ConnectionType.NextCloud,
+            TestConstants.TestConnectionType,
             ConnectionRepository
         )
 
@@ -235,7 +245,12 @@ class ConnectionOverviewViewTest {
         Thread.sleep(10000)
 
         val files = runBlocking {
-            NextCloudService.GetFilesForConnection(connection)
+            CloudServiceUtil.GetFilesForConnection(
+                connection,
+                NextCloudService,
+                SFTPService,
+                GoogleDriveService
+            )
         }
 
         assertEquals(
@@ -244,9 +259,11 @@ class ConnectionOverviewViewTest {
         )
 
         runBlocking {
-            NextCloudService.DeleteFile(
+            CloudServiceUtil.CleanupServer(
                 connection,
-                files[0].RemotePath
+                NextCloudService,
+                SFTPService,
+                GoogleDriveService
             )
         }
     }
