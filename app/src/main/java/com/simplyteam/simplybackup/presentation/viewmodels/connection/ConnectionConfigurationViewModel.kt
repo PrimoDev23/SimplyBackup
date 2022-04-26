@@ -46,6 +46,7 @@ class ConnectionConfigurationViewModel @Inject constructor(
             }
             is ConnectionConfigurationEvent.OnSelectedConnectionTypeChange -> {
                 State = State.copy(
+                    LastConnectionType = State.SelectedConnectionType,
                     SelectedConnectionType = event.Value
                 )
             }

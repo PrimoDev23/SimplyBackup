@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -70,6 +71,7 @@ fun ConnectionConfigurationView(
             )
 
             TypeSpecificOptions(
+                lastSelectedType = viewModel.State.LastConnectionType,
                 selectedType = viewModel.State.SelectedConnectionType,
                 viewModelMap = viewModel.ViewModelMap
             )
@@ -199,27 +201,42 @@ private fun ConnectionButton(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 private fun TypeSpecificOptions(
+    lastSelectedType: ConnectionType,
     selectedType: ConnectionType,
     viewModelMap: Map<ConnectionType, ViewModel>
 ) {
-    when (selectedType) {
-        ConnectionType.NextCloud -> {
-            NextCloudInformationFields(
-                viewModel = viewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
-            )
+    AnimatedContent(
+        targetState = selectedType,
+        transitionSpec = {
+            if(selectedType < lastSelectedType) {
+                slideInHorizontally { width -> -width } with slideOutHorizontally { width -> width }
+            }else{
+                slideInHorizontally { width -> width } with slideOutHorizontally { width -> -width }
+            }
         }
-        ConnectionType.SFTP -> {
-            SFTPInformationFields(
-                viewModel = viewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
-            )
-        }
-        ConnectionType.GoogleDrive -> {
-            GoogleDriveConfigurationView(
-                viewModel = viewModelMap[ConnectionType.GoogleDrive] as GoogleDriveConfigurationViewModel
-            )
+    ) { type ->
+        when (type) {
+            ConnectionType.NextCloud -> {
+                NextCloudInformationFields(
+                    viewModel = viewModelMap[ConnectionType.NextCloud] as NextCloudConfigurationViewModel
+                )
+            }
+            ConnectionType.SFTP -> {
+                SFTPInformationFields(
+                    viewModel = viewModelMap[ConnectionType.SFTP] as SFTPConfigurationViewModel
+                )
+            }
+            ConnectionType.GoogleDrive -> {
+                GoogleDriveConfigurationView(
+                    viewModel = viewModelMap[ConnectionType.GoogleDrive] as GoogleDriveConfigurationViewModel
+                )
+            }
         }
     }
 }
