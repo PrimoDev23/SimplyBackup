@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.events.main.ConnectionOverviewEvent
-import com.simplyteam.simplybackup.data.receiver.BackupReceiver
 import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon

@@ -18,6 +18,10 @@ class ConnectionRepository @Inject constructor(
         return _connectionDao.GetAllConnections()
     }
 
+    suspend fun GetConnection(id: Long): Connection {
+        return _connectionDao.GetConnection(id)
+    }
+
     suspend fun InsertConnection(connection: Connection): Long {
         return _connectionDao.InsertConnection(connection)
     }

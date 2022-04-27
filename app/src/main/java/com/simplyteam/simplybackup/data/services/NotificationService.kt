@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
-import com.simplyteam.simplybackup.data.receiver.BackupReceiver
+import com.simplyteam.simplybackup.data.receiver.RunBackupReceiver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -53,7 +53,7 @@ class NotificationService @Inject constructor(
     fun ShowErrorNotification(text: String, connection: Connection) {
         val notificationManager = _context.getSystemService(NotificationManager::class.java)
 
-        val intent = Intent(_context, BackupReceiver::class.java)
+        val intent = Intent(_context, RunBackupReceiver::class.java)
         val bundle = Bundle()
         bundle.putSerializable("Connection", connection)
         intent.putExtra("Bundle", bundle)

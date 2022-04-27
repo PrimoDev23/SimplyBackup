@@ -216,7 +216,7 @@ private fun TypeSpecificOptions(
         transitionSpec = {
             if(selectedType < lastSelectedType) {
                 slideInHorizontally { width -> -width } with slideOutHorizontally { width -> width }
-            }else{
+            } else {
                 slideInHorizontally { width -> width } with slideOutHorizontally { width -> -width }
             }
         }

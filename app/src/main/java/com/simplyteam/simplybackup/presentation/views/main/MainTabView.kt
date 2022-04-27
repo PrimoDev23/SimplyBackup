@@ -16,12 +16,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Screen
-import com.simplyteam.simplybackup.data.receiver.BackupReceiver
+import com.simplyteam.simplybackup.data.receiver.RunBackupReceiver
 import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.StartActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.activities.BackupHistoryActivity
@@ -161,7 +160,7 @@ fun SetupEvents(
         overviewViewModel.RunBackupFlow.collect {
             val intent = Intent(
                 activity,
-                BackupReceiver::class.java
+                RunBackupReceiver::class.java
             )
 
             val bundle = Bundle()

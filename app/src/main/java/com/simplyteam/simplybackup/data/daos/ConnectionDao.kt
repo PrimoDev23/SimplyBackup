@@ -13,6 +13,9 @@ interface ConnectionDao {
     @Query("SELECT * FROM Connections WHERE TemporarilyDeleted = 0")
     suspend fun GetAllConnections() : List<Connection>
 
+    @Query("SELECT * FROM Connections WHERE Id = :id")
+    suspend fun GetConnection(id: Long) : Connection
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun InsertConnection(connection: Connection) : Long
 
