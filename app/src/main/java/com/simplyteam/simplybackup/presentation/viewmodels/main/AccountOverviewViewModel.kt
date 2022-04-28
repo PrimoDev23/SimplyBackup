@@ -40,9 +40,7 @@ class AccountOverviewViewModel @Inject constructor(
     }
 
     val AccountFlow = _accountSearchService.FilteredItems
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val SearchTextFlow = _accountSearchService.SearchText
-        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     fun Search(value: String) {
         viewModelScope.launch {

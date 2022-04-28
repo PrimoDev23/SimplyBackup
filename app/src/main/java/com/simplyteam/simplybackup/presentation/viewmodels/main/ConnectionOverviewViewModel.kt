@@ -54,17 +54,7 @@ class ConnectionOverviewViewModel @Inject constructor(
     }
 
     val ConnectionFlow = _connectionSearchService.FilteredItems
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            emptyList()
-        )
     val SearchTextFlow = _connectionSearchService.SearchText
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            ""
-        )
 
     private fun Search(searchText: String) {
         viewModelScope.launch {

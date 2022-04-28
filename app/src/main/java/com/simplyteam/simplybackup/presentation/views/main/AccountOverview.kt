@@ -19,6 +19,7 @@ import com.simplyteam.simplybackup.data.models.events.main.AccountOverviewEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.main.AccountOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import com.simplyteam.simplybackup.presentation.views.SearchBox
+import com.simplyteam.simplybackup.presentation.views.collectFlowLifecycleAware
 
 @Composable
 fun AccountOverview(
@@ -30,7 +31,7 @@ fun AccountOverview(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val accounts by viewModel.AccountFlow.collectAsState()
+        val accounts by viewModel.AccountFlow.collectFlowLifecycleAware(emptyList())
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(

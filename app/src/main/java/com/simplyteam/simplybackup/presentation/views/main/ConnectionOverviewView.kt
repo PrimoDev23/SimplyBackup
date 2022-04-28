@@ -42,6 +42,7 @@ import com.simplyteam.simplybackup.data.utils.ActivityUtil
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import com.simplyteam.simplybackup.presentation.views.SearchBox
+import com.simplyteam.simplybackup.presentation.views.collectFlowLifecycleAware
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -59,7 +60,7 @@ fun ConnectionOverviewView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val connections by viewModel.ConnectionFlow.collectAsState()
+        val connections by viewModel.ConnectionFlow.collectFlowLifecycleAware(emptyList())
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(

@@ -43,9 +43,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     val HistoryDataFlow = _historySearchService.FilteredItems
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val SearchTextFlow = _historySearchService.SearchText
-        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     private fun Search(searchText: String) {
         viewModelScope.launch {

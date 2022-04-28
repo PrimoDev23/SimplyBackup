@@ -22,6 +22,7 @@ import com.simplyteam.simplybackup.data.models.events.main.HistoryEvent
 import com.simplyteam.simplybackup.presentation.viewmodels.main.HistoryViewModel
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
 import com.simplyteam.simplybackup.presentation.views.SearchBox
+import com.simplyteam.simplybackup.presentation.views.collectFlowLifecycleAware
 
 @Composable
 fun HistoryView(
@@ -33,7 +34,7 @@ fun HistoryView(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        val data by viewModel.HistoryDataFlow.collectAsState()
+        val data by viewModel.HistoryDataFlow.collectFlowLifecycleAware(emptyList())
         val searchText by viewModel.SearchTextFlow.collectAsState()
 
         LazyColumn(
