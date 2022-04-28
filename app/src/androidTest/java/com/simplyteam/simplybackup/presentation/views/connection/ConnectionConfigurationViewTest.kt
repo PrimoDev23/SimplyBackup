@@ -17,8 +17,12 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.work.Configuration
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.common.AppModule
@@ -59,6 +63,9 @@ class ConnectionConfigurationViewTest {
     val composeRule = createComposeRule()
 
     @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    @Inject
     lateinit var ConnectionRepository: ConnectionRepository
 
     @Inject
@@ -77,6 +84,14 @@ class ConnectionConfigurationViewTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val config = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+
+        // Initialize WorkManager for instrumentation tests.
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
 
         _viewModel = ConnectionConfigurationViewModel(
             ConnectionRepository,

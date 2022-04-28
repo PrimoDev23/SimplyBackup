@@ -144,6 +144,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
     androidTestImplementation  'com.google.dagger:hilt-android-testing:2.41'
     kaptAndroidTest 'com.google.dagger:hilt-compiler:2.41'
+    androidTestImplementation "androidx.work:work-testing:2.7.1"
 
     //Leak Canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'

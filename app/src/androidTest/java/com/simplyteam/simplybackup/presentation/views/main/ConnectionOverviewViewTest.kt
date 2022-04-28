@@ -9,11 +9,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.work.Configuration
+import androidx.work.Data
+import androidx.work.testing.TestListenableWorkerBuilder
+import androidx.work.testing.TestWorkerBuilder
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.common.TestConstants
 import com.simplyteam.simplybackup.data.models.ConnectionType
-import com.simplyteam.simplybackup.data.receiver.BackupReceiver
+import com.simplyteam.simplybackup.data.receiver.RunBackupReceiver
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
@@ -22,6 +30,7 @@ import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.utils.CloudServiceUtil
 import com.simplyteam.simplybackup.data.utils.ConnectionUtil
+import com.simplyteam.simplybackup.data.workers.BackupWorker
 import com.simplyteam.simplybackup.presentation.viewmodels.main.ConnectionOverviewViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -43,6 +52,9 @@ class ConnectionOverviewViewTest {
 
     @get:Rule(order = 1)
     val composeRule = createComposeRule()
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     @Inject
     lateinit var ConnectionRepository: ConnectionRepository
@@ -91,22 +103,16 @@ class ConnectionOverviewViewTest {
 
             LaunchedEffect(key1 = true) {
                 viewModel.RunBackupFlow.collect {
-                    val intent = Intent(
-                        context,
-                        BackupReceiver::class.java
+                    val worker = TestListenableWorkerBuilder<BackupWorker>(
+                        ApplicationProvider.getApplicationContext(),
+                        Data.Builder()
+                            .putLong("ConnectionId", it.Connection.Id)
+                            .build()
                     )
+                        .setWorkerFactory(workerFactory)
+                        .build()
 
-                    val bundle = Bundle()
-                    bundle.putSerializable(
-                        "Connection",
-                        it.Connection
-                    )
-                    intent.putExtra(
-                        "Bundle",
-                        bundle
-                    )
-
-                    context.sendBroadcast(intent)
+                    worker.doWork()
 
                     scaffoldState.snackbarHostState.showSnackbar(
                         context.getString(
