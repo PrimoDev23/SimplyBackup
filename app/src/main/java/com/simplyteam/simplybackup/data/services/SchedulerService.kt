@@ -19,9 +19,6 @@ import javax.inject.Inject
 class SchedulerService @Inject constructor(
     @ApplicationContext private val _context: Context
 ) {
-
-    private val _workManager = WorkManager.getInstance(_context)
-
     fun ScheduleBackup(connection: Connection) {
         val time = SchedulerUtil.GetNextSchedule(connection.ScheduleType)
 
@@ -43,7 +40,7 @@ class SchedulerService @Inject constructor(
             .setInputData(inputData)
             .build()
 
-        _workManager.enqueueUniqueWork(
+        WorkManager.getInstance(_context).enqueueUniqueWork(
             "${connection.Name}-${connection.Id}",
             ExistingWorkPolicy.REPLACE,
             workRequest
@@ -66,7 +63,7 @@ class SchedulerService @Inject constructor(
             .setInputData(inputData)
             .build()
 
-        _workManager.enqueueUniqueWork(
+        WorkManager.getInstance(_context).enqueueUniqueWork(
             "${connection.Name}-${connection.Id}",
             ExistingWorkPolicy.REPLACE,
             workRequest
@@ -74,7 +71,7 @@ class SchedulerService @Inject constructor(
     }
 
     fun CancelBackup(connection: Connection) {
-        _workManager.cancelUniqueWork("${connection.Name}-${connection.Id}")
+        WorkManager.getInstance(_context).cancelUniqueWork("${connection.Name}-${connection.Id}")
 
         Timber.d("Job ${connection.Name} canceled!")
     }
