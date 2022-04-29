@@ -3,60 +3,32 @@ package com.simplyteam.simplybackup.data.utils
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 object SchedulerUtil {
-
-    private val _calendarInstance = Calendar.getInstance()
-
-    fun GetNextSchedule(scheduleType: ScheduleType) : Calendar {
+    fun GetNextSchedule(
+        scheduleType: ScheduleType,
+        baseDate: LocalDate = LocalDate.now()
+    ) : LocalDateTime {
         return when(scheduleType){
-            ScheduleType.DAILY -> GetNextDailySchedule()
-            ScheduleType.WEEKLY -> GetNextWeeklySchedule()
-            ScheduleType.MONTHLY -> GetNextMonthlySchedule()
-            ScheduleType.YEARLY -> GetNextYearlySchedule()
+            ScheduleType.DAILY -> GetNextDailySchedule(baseDate)
+            ScheduleType.WEEKLY -> GetNextWeeklySchedule(baseDate)
+            ScheduleType.MONTHLY -> GetNextMonthlySchedule(baseDate)
+            ScheduleType.YEARLY -> GetNextYearlySchedule(baseDate)
         }
     }
 
-    private fun GetNextDailySchedule() : Calendar {
-        val date = LocalDate.now().plusDays(1L)
+    private fun GetNextDailySchedule(baseDate: LocalDate) =
+        baseDate.plusDays(1L).atStartOfDay()
 
-        _calendarInstance.clear()
-        _calendarInstance.set(date.year, date.monthValue - 1, date.dayOfMonth, 0, 0)
+    private fun GetNextWeeklySchedule(baseDate: LocalDate) =
+        baseDate.plusDays(8L - baseDate.dayOfWeek.value).atStartOfDay()
 
-        return _calendarInstance
-    }
+    private fun GetNextMonthlySchedule(baseDate: LocalDate) : LocalDateTime =
+        baseDate.withDayOfMonth(1).plusMonths(1).atStartOfDay()
 
-    private fun GetNextWeeklySchedule() : Calendar {
-        var date = LocalDate.now()
-
-        val daysTillMonday = 8L - date.dayOfWeek.value
-
-        date = date.plusDays(daysTillMonday)
-
-        _calendarInstance.clear()
-        _calendarInstance.set(date.year, date.monthValue - 1, date.dayOfMonth, 0, 0)
-
-        return _calendarInstance
-    }
-
-    private fun GetNextMonthlySchedule() : Calendar {
-        var date = LocalDate.now()
-        date = date.minusDays(date.dayOfMonth - 1L).plusMonths(1L)
-
-        _calendarInstance.clear()
-        _calendarInstance.set(date.year, date.monthValue - 1, 1, 0, 0)
-
-        return _calendarInstance
-    }
-
-    private fun GetNextYearlySchedule() : Calendar {
-        val date = LocalDate.now()
-
-        _calendarInstance.clear()
-        _calendarInstance.set(date.year + 1, 0, 1, 0, 0)
-
-        return _calendarInstance
-    }
+    private fun GetNextYearlySchedule(baseDate: LocalDate) : LocalDateTime =
+        LocalDateTime.of(baseDate.year + 1, 1, 1, 0, 0)
 
 }

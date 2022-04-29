@@ -43,7 +43,7 @@ class HistorySearchService @Inject constructor(
         val data = mutableListOf<HistoryData>()
 
         for (connection in connections) {
-            val calendar = SchedulerUtil.GetNextSchedule(connection.ScheduleType)
+            val nextScheduleTime = SchedulerUtil.GetNextSchedule(connection.ScheduleType)
 
             val entries = historyEntries.filter {
                 it.ConnectionId == connection.Id
@@ -53,11 +53,7 @@ class HistorySearchService @Inject constructor(
                 HistoryData(
                     Connection = connection,
                     LastBackup = if (entries.isNotEmpty()) entries.last().Time else "-",
-                    NextBackup = LocalDateTime.ofInstant(
-                        calendar.toInstant(),
-                        calendar.timeZone.toZoneId()
-                    )
-                        .format(Constants.HumanReadableFormatter),
+                    NextBackup =  nextScheduleTime.format(Constants.HumanReadableFormatter),
                     LastBackupSize = if (entries.isNotEmpty()) MathUtil.GetBiggestFileSizeString(entries.last().Size) else "0 B",
                     TotalBackedUpSize = MathUtil.GetBiggestFileSizeString(entries.sumOf {
                         it.Size

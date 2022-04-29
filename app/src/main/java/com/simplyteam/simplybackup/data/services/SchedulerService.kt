@@ -14,6 +14,9 @@ import com.simplyteam.simplybackup.data.workers.BackupWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 class SchedulerService @Inject constructor(
@@ -34,9 +37,11 @@ class SchedulerService @Inject constructor(
             .putLong("ConnectionId", connection.Id)
             .build()
 
+        val duration = Duration.between(LocalDateTime.now(), time)
+
         val workRequest = OneTimeWorkRequest.Builder(BackupWorker::class.java)
             .setConstraints(constraintsBuilder.build())
-            .setInitialDelay(Duration.ofMillis(time.timeInMillis - System.currentTimeMillis()))
+            .setInitialDelay(duration)
             .setInputData(inputData)
             .build()
 
@@ -46,7 +51,7 @@ class SchedulerService @Inject constructor(
             workRequest
         )
 
-        Timber.d("Queued job ${connection.Name} for ${time.time}")
+        Timber.d("Queued job ${connection.Name} for $time in $duration")
     }
 
     fun RunBackup(connection: Connection) {
