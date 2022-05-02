@@ -59,14 +59,15 @@ class BackupWorker @AssistedInject constructor(
         val connection = _connectionRepository.GetConnection(id)
 
         try {
+            _notificationService.ShowBackingUpNotification(
+                connection
+            )
+
             _packagingService.CreatePackage(
                 _context.filesDir.absolutePath,
                 connection
             )
                 .onSuccess { file ->
-                    _notificationService.ShowBackingUpNotification(
-                        connection
-                    )
                     val uploadResult = when (connection.ConnectionType) {
                         ConnectionType.NextCloud -> {
                             _nextCloudService.UploadFile(
