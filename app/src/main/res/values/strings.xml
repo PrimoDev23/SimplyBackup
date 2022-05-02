@@ -72,4 +72,7 @@
     <string name="EnterRepoId">Please enter a repo id</string>
     <string name="RepoId">RepoId</string>
     <string name="SeaFile" translatable="false">SeaFile</string>
+    <string name="StartRemotePathWithSlash">Remote path has to start with \"/\"</string>
+    <string name="RemotePathEndsWithSlash">Remote path must not end with \"/\"</string>
+    <string name="PlaceholderValue">.</string>
 </resources>

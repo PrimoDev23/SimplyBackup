@@ -3,6 +3,7 @@ package com.simplyteam.simplybackup.presentation.viewmodels.connection
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.events.connection.NextCloudConfigurationEvent
@@ -20,8 +21,8 @@ class SeaFileConfigurationViewModel @Inject constructor(
 
     var State by mutableStateOf(SeaFileConfigurationState())
 
-    fun OnEvent(event: SeaFileConfigurationEvent){
-        when(event){
+    fun OnEvent(event: SeaFileConfigurationEvent) {
+        when (event) {
             is SeaFileConfigurationEvent.OnHostChange -> {
                 State = State.copy(
                     Host = event.Value
@@ -77,11 +78,25 @@ class SeaFileConfigurationViewModel @Inject constructor(
             HostError = State.Host.isEmpty(),
             UsernameError = State.Username.isEmpty(),
             PasswordError = State.Password.isEmpty(),
-            RepoIdError = State.RepoId.isEmpty()
+            RepoIdError = State.RepoId.isEmpty(),
+            RemotePathError = GetRemotePathError()
         )
 
-        return !(State.NameError || State.HostError || State.UsernameError || State.PasswordError || State.RepoIdError)
+        return !(State.NameError || State.HostError || State.UsernameError || State.PasswordError || State.RepoIdError || State.RemotePathError != R.string.PlaceholderValue)
     }
+
+    private fun GetRemotePathError() =
+        if (State.RemotePath.isEmpty()) {
+            R.string.EnterRemotePath
+        } else if (State.RemotePath == "/") {
+            R.string.PlaceholderValue
+        } else if (!State.RemotePath.startsWith("/")) {
+            R.string.StartRemotePathWithSlash
+        } else if (State.RemotePath.endsWith("/")) {
+            R.string.RemotePathEndsWithSlash
+        } else {
+            R.string.PlaceholderValue
+        }
 
     override fun LoadData(connection: Connection) {
         State = State.copy(

@@ -14,7 +14,7 @@ interface SeaFileService {
     suspend fun GetAuthToken(@Body user: User) : Token
 
     @GET("/api2/repos/{repoId}/upload-link/")
-    suspend fun GetUploadLink(@Header("Authorization") token: String, @Path("repoId") repoId: String, @Query("p") directory: String = "/") : String
+    suspend fun GetUploadLink(@Header("Authorization") token: String, @Path("repoId") repoId: String, @Query("p") directory: String) : String
 
     @Multipart
     @POST

@@ -27,7 +27,18 @@ class SeaFileService @Inject constructor(
 
     private fun BuildRetrofitInstance(connection: Connection) =
         Retrofit.Builder()
-            .baseUrl(connection.Host)
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                    .build()
+            )
+            .baseUrl(
+                if (connection.Host.endsWith("/")) {
+                    connection.Host
+                } else {
+                    "${connection.Host}/"
+                }
+            )
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
@@ -60,7 +71,9 @@ class SeaFileService @Inject constructor(
             val uploadLink = seaFileService.GetUploadLink(
                 authToken,
                 connection.RepoId,
-                connection.RemotePath
+                connection.RemotePath.ifEmpty {
+                    "/"
+                }
             )
 
             val requestFile = file

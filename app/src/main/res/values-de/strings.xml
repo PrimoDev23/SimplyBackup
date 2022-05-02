@@ -67,4 +67,6 @@
     <string name="ErrorInternet">Es bestand keine Internet-Verbindung beim Backup von %s</string>
     <string name="EnterRepoId">Bitte geben Sie die Repo-Id ein</string>
     <string name="RepoId">RepoId</string>
+    <string name="StartRemotePathWithSlash">Der Remotepfad muss mit \"/\" starten</string>
+    <string name="RemotePathEndsWithSlash">Der Remotepfad darf nicht mit \"/\" enden</string>
 </resources>

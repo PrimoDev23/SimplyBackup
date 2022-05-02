@@ -244,9 +244,9 @@ fun SFTPInformationFields(viewModel: SFTPConfigurationViewModel) {
                 singleLine = true,
                 errorModifier = Modifier
                     .testTag("RemotePathError"),
-                isError = viewModel.State.RemotePathError,
+                isError = viewModel.State.RemotePathError != R.string.PlaceholderValue,
                 errorText = stringResource(
-                    id = R.string.EnterRemotePath
+                    id = viewModel.State.RemotePathError
                 )
             )
         }

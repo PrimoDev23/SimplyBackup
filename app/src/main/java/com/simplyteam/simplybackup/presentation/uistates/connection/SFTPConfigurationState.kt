@@ -1,5 +1,7 @@
 package com.simplyteam.simplybackup.presentation.uistates.connection
 
+import com.simplyteam.simplybackup.R
+
 data class SFTPConfigurationState(
     val Name: String = "",
     val NameError: Boolean = false,
@@ -10,5 +12,5 @@ data class SFTPConfigurationState(
     val Password: String = "",
     val PasswordError: Boolean = false,
     val RemotePath: String = "",
-    val RemotePathError: Boolean = false
+    val RemotePathError: Int = R.string.PlaceholderValue
 )

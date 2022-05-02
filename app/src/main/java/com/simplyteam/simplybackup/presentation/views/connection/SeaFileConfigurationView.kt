@@ -250,7 +250,7 @@ fun SeaFileInformationFields(viewModel: SeaFileConfigurationViewModel) {
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("RemotePath"),
@@ -283,7 +283,13 @@ fun SeaFileInformationFields(viewModel: SeaFileConfigurationViewModel) {
                         )
                     )
                 },
-                singleLine = true
+                singleLine = true,
+                errorModifier = Modifier
+                    .testTag("RemotePathError"),
+                isError = viewModel.State.RemotePathError != R.string.PlaceholderValue,
+                errorText = stringResource(
+                    id = viewModel.State.RemotePathError
+                )
             )
         }
     }
