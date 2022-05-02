@@ -21,7 +21,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class NextCloudService @Inject constructor(
     @ApplicationContext private val _context: Context
-): ICloudService {
+) : ICloudService {
 
     private fun CreateClient(
         connection: Connection
@@ -118,7 +118,12 @@ class NextCloudService @Inject constructor(
                             val file =
                                 obj as com.owncloud.android.lib.resources.files.model.RemoteFile
 
-                            if (file.remotePath.contains("-${connection.Name}-") && file.remotePath.endsWith(".zip")) {
+                            if (
+                                FileUtil.CheckFilenameIsBackup(
+                                    file.remotePath,
+                                    connection
+                                )
+                            ) {
                                 files.add(
                                     RemoteFile(
                                         file.localId,

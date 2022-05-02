@@ -98,7 +98,12 @@ class SFTPService @Inject constructor(
                 )) {
                     val entry = obj as ChannelSftp.LsEntry
 
-                    if (entry.filename.contains("-${connection.Name}-") && entry.filename.endsWith(".zip")) {
+                    if (
+                        FileUtil.CheckFilenameIsBackup(
+                            obj.filename,
+                            connection
+                        )
+                    ) {
                         files.add(
                             RemoteFile(
                                 "0",
