@@ -12,7 +12,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
@@ -29,7 +28,6 @@ class SeaFileService @Inject constructor(
         Retrofit.Builder()
             .client(
                 OkHttpClient.Builder()
-                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                     .build()
             )
             .baseUrl(
@@ -71,9 +69,7 @@ class SeaFileService @Inject constructor(
             val uploadLink = seaFileService.GetUploadLink(
                 authToken,
                 connection.RepoId,
-                connection.RemotePath.ifEmpty {
-                    "/"
-                }
+                connection.RemotePath
             )
 
             val requestFile = file
@@ -109,18 +105,11 @@ class SeaFileService @Inject constructor(
         )
 
         val files =
-            if (connection.RemotePath.isEmpty()) {
-                seaFileService.GetItemsInDirectory(
-                    authToken,
-                    connection.RepoId
-                )
-            } else {
-                seaFileService.GetItemsInDirectory(
-                    authToken,
-                    connection.RepoId,
-                    connection.RemotePath
-                )
-            }
+            seaFileService.GetItemsInDirectory(
+                authToken,
+                connection.RepoId,
+                connection.RemotePath
+            )
 
         val remoteFiles = mutableListOf<RemoteFile>()
 

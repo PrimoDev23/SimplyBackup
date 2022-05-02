@@ -26,9 +26,6 @@ interface SeaFileService {
     @GET
     suspend fun DownloadFile(@Url url: String, @Header("Authorization") token: String) : ResponseBody
 
-    @GET("/api2/repos/{repoId}/dir")
-    suspend fun GetItemsInDirectory(@Header("Authorization") token: String, @Path("repoId") repoId: String) : List<File>
-
     @GET("/api2/repos/{repoId}/dir/")
     suspend fun GetItemsInDirectory(@Header("Authorization") token: String, @Path("repoId") repoId: String, @Query("p") directory: String) : List<File>
 
