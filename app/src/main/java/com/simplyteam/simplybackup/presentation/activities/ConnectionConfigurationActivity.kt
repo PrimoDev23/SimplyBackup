@@ -45,6 +45,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
         val nextCloudViewModel = ViewModelProvider(this).get(NextCloudConfigurationViewModel::class.java)
         val ftpViewModel = ViewModelProvider(this).get(SFTPConfigurationViewModel::class.java)
         val googleDriveViewModel = ViewModelProvider(this).get(GoogleDriveConfigurationViewModel::class.java)
+        val seaFileViewModel = ViewModelProvider(this).get(SeaFileConfigurationViewModel::class.java)
 
         connectionConfigurationViewModel.ViewModelMap[ConnectionType.NextCloud] =
             nextCloudViewModel
@@ -52,6 +53,8 @@ class ConnectionConfigurationActivity : ComponentActivity() {
             ftpViewModel
         connectionConfigurationViewModel.ViewModelMap[ConnectionType.GoogleDrive] =
             googleDriveViewModel
+        connectionConfigurationViewModel.ViewModelMap[ConnectionType.SeaFile] =
+            seaFileViewModel
 
         setContent {
             SimplyBackupTheme {

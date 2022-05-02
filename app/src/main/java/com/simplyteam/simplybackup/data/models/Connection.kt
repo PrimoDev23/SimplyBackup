@@ -16,6 +16,7 @@ data class Connection(
     val Host : String = "",
     val Username : String,
     val Password : String = "",
+    val RepoId: String = "",
     val RemotePath: String = "",
     val BackupPassword: String = "",
     val WifiOnly: Boolean = false,

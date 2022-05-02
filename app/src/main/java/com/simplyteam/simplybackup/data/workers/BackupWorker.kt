@@ -19,6 +19,7 @@ import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.GlobalScope
@@ -36,6 +37,7 @@ class BackupWorker @AssistedInject constructor(
     private val _nextCloudService: NextCloudService,
     private val _sftpService: SFTPService,
     private val _googleDriveService: GoogleDriveService,
+    private val _seaFileService: SeaFileService,
     private val _notificationService: NotificationService,
     private val _schedulerService: SchedulerService,
     private val _connectionRepository: ConnectionRepository,
@@ -80,6 +82,12 @@ class BackupWorker @AssistedInject constructor(
                         }
                         ConnectionType.GoogleDrive -> {
                             _googleDriveService.UploadFile(
+                                connection,
+                                file
+                            )
+                        }
+                        ConnectionType.SeaFile -> {
+                            _seaFileService.UploadFile(
                                 connection,
                                 file
                             )

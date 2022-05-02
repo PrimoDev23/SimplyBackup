@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -32,11 +34,9 @@ import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.ConnectionConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.GoogleDriveConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
-import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
+import com.simplyteam.simplybackup.presentation.viewmodels.connection.*
 import com.simplyteam.simplybackup.presentation.views.ConnectionIcon
+import kotlinx.coroutines.launch
 
 @Composable
 fun ConnectionConfigurationView(
@@ -145,16 +145,24 @@ private fun ConnectionTypeRow(
             MaterialTheme.colors.onBackground.copy(0.12f)
         )
     ) {
+        val scope = rememberCoroutineScope()
+        val scrollState = rememberLazyListState()
+
+
         LazyRow(
             modifier = Modifier
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = scrollState
         ) {
-            items(ConnectionType.values()) { type ->
+            itemsIndexed(ConnectionType.values()) { index, type ->
                 ConnectionButton(
                     type = type,
                     isSelected = selectedConnectionType == type,
                     typeSelected = {
+                        scope.launch {
+                            scrollState.animateScrollToItem(index)
+                        }
                         onSelected(type)
                     }
                 )
@@ -235,6 +243,11 @@ private fun TypeSpecificOptions(
             ConnectionType.GoogleDrive -> {
                 GoogleDriveConfigurationView(
                     viewModel = viewModelMap[ConnectionType.GoogleDrive] as GoogleDriveConfigurationViewModel
+                )
+            }
+            ConnectionType.SeaFile -> {
+                SeaFileInformationFields(
+                    viewModel = viewModelMap[ConnectionType.SeaFile] as SeaFileConfigurationViewModel
                 )
             }
         }

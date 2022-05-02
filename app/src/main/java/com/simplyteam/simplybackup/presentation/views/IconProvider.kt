@@ -21,6 +21,7 @@ fun ConnectionIcon(connectionType: ConnectionType) {
         ConnectionType.NextCloud -> NextcloudIcon()
         ConnectionType.SFTP -> SftpIcon()
         ConnectionType.GoogleDrive -> GoogleDriveIcon()
+        ConnectionType.SeaFile -> SeaFileIcon()
     }
 }
 
@@ -67,5 +68,17 @@ private fun GoogleDriveIcon() {
             id = R.drawable.google_drive_logo
         ),
         contentDescription = ConnectionType.GoogleDrive.toString()
+    )
+}
+
+@Composable
+fun SeaFileIcon() {
+    Image(
+        modifier = Modifier
+            .size(52.dp),
+        painter = painterResource(
+            id = R.drawable.seafile_logo
+        ),
+        contentDescription = ConnectionType.SeaFile.toString()
     )
 }

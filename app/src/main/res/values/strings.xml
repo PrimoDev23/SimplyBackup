@@ -69,4 +69,7 @@
     <string name="ConnectionStillExists">There is still at least one connection that uses this account</string>
     <string name="EnterPath">Please enter a path</string>
     <string name="ErrorInternet">Internet connection wasn\'t available while backing up %s</string>
+    <string name="EnterRepoId">Please enter a repo id</string>
+    <string name="RepoId">RepoId</string>
+    <string name="SeaFile" translatable="false">SeaFile</string>
 </resources>

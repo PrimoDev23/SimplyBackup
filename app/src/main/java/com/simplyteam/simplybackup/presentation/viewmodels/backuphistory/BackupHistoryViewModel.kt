@@ -14,6 +14,7 @@ import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
+import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import com.simplyteam.simplybackup.data.utils.FileUtil
 import com.simplyteam.simplybackup.data.utils.MathUtil
 import com.simplyteam.simplybackup.presentation.uistates.backuphistory.BackupHistoryState
@@ -31,6 +32,7 @@ class BackupHistoryViewModel @Inject constructor(
     private val _nextCloudService: NextCloudService,
     private val _sFTPService: SFTPService,
     private val _googleDriveService: GoogleDriveService,
+    private val _seaFileService: SeaFileService,
     private val _packagingService: PackagingService
 ) : ViewModel() {
 
@@ -86,6 +88,11 @@ class BackupHistoryViewModel @Inject constructor(
                     }
                     ConnectionType.GoogleDrive -> {
                         _googleDriveService.GetFilesForConnection(
+                            connection
+                        )
+                    }
+                    ConnectionType.SeaFile -> {
+                        _seaFileService.GetFilesForConnection(
                             connection
                         )
                     }
@@ -190,6 +197,12 @@ class BackupHistoryViewModel @Inject constructor(
                                     backup.RemoteId
                                 )
                             }
+                            ConnectionType.SeaFile -> {
+                                _seaFileService.DeleteFile(
+                                    backup.Connection,
+                                    backup.RemotePath
+                                )
+                            }
                         }
                     }
 
@@ -257,6 +270,12 @@ class BackupHistoryViewModel @Inject constructor(
                                 _googleDriveService.DownloadFile(
                                     backup.Connection,
                                     backup.RemoteId
+                                )
+                            }
+                            ConnectionType.SeaFile -> {
+                                _seaFileService.DownloadFile(
+                                    backup.Connection,
+                                    backup.RemotePath
                                 )
                             }
                         }

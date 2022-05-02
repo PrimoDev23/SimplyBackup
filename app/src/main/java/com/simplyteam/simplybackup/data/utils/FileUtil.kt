@@ -6,6 +6,9 @@ import java.time.LocalDateTime
 
 object FileUtil {
 
+    fun CheckFilenameIsBackup(fileName: String, connection: Connection) =
+        fileName.contains("-${connection.Name}-") && fileName.endsWith(".zip")
+
     fun ExtractFileNameFromRemotePath(
         connection: Connection,
         path: String

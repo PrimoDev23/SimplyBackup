@@ -65,4 +65,6 @@
     <string name="ConnectionStillExists">Es gibt mindestens eine Verbindung die dieses Konto nutzt</string>
     <string name="EnterPath">Bitte tragen Sie einen Pfad ein</string>
     <string name="ErrorInternet">Es bestand keine Internet-Verbindung beim Backup von %s</string>
+    <string name="EnterRepoId">Bitte geben Sie die Repo-Id ein</string>
+    <string name="RepoId">RepoId</string>
 </resources>
