@@ -18,6 +18,7 @@ import com.google.api.services.drive.Drive
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.RemoteFile
+import com.simplyteam.simplybackup.data.utils.FileUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileNotFoundException
@@ -214,8 +215,11 @@ class GoogleDriveService @Inject constructor(
         GetClientForUsername(connection.Username).account?.let { account ->
             GetDriveService(account)?.let { drive ->
                 val file = File(
-                    _context.filesDir,
-                    "backup.zip"
+                    _context.cacheDir,
+                    FileUtil.ExtractFileNameFromRemotePath(
+                        connection,
+                        remotePath
+                    )
                 )
 
                 FileOutputStream(

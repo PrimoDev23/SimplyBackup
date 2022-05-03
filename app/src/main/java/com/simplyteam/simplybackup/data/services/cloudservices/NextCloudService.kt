@@ -191,7 +191,7 @@ class NextCloudService @Inject constructor(
 
             val operation = DownloadFileRemoteOperation(
                 remotePath,
-                _context.filesDir.absolutePath
+                _context.cacheDir.absolutePath
             )
 
             val handler = Handler(_context.mainLooper)

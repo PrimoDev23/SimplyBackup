@@ -196,7 +196,7 @@ class SFTPService @Inject constructor(
                 channel.connect()
 
                 val file = File(
-                    _context.filesDir,
+                    _context.cacheDir,
                     FileUtil.ExtractFileNameFromRemotePath(
                         connection,
                         remotePath

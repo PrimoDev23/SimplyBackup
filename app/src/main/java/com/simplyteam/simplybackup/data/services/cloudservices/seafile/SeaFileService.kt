@@ -188,7 +188,7 @@ class SeaFileService @Inject constructor(
         body: ResponseBody
     ): File {
         val file = File(
-            _context.filesDir,
+            _context.cacheDir,
             filename
         )
         FileOutputStream(file).use { fos ->
