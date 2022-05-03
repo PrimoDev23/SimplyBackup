@@ -177,7 +177,7 @@ class GoogleDriveService @Inject constructor(
                     fileList.add(
                         RemoteFile(
                             file.id,
-                            file.name,
+                            "${connection.RemotePath}/${file.name}",
                             file.createdTime.value,
                             file.getSize()
                         )
@@ -216,10 +216,7 @@ class GoogleDriveService @Inject constructor(
             GetDriveService(account)?.let { drive ->
                 val file = File(
                     _context.cacheDir,
-                    FileUtil.ExtractFileNameFromRemotePath(
-                        connection,
-                        remotePath
-                    )
+                    "backup.zip"
                 )
 
                 FileOutputStream(
