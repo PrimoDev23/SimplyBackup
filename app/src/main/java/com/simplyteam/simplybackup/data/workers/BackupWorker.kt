@@ -186,7 +186,7 @@ class BackupWorker @AssistedInject constructor(
         val notificationManager = _context.getSystemService(NotificationManager::class.java)
 
         notificationManager.notify(
-            connection.Id.toInt(),
+            Constants.FINISH_NOTIFICATION_OFFSET + connection.Id.toInt(),
             notification
         )
     }
@@ -211,7 +211,7 @@ class BackupWorker @AssistedInject constructor(
 
         val pendingIntent = PendingIntent.getBroadcast(
             _context,
-            connection.Id.toInt() + Constants.NOTIFICATION_ID_OFFSET,
+            connection.Id.toInt() + Constants.PENDING_INTENT_REQUEST_CODE_OFFSET,
             intent,
             if (Build.VERSION.SDK_INT >= 31) {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
@@ -228,6 +228,7 @@ class BackupWorker @AssistedInject constructor(
             .setContentTitle(_context.getString(R.string.ErrorNotificationTitle))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle())
+            .setOngoing(false)
             .addAction(
                 0,
                 _context.getString(R.string.Retry),
@@ -238,7 +239,7 @@ class BackupWorker @AssistedInject constructor(
         val notificationManager = _context.getSystemService(NotificationManager::class.java)
 
         notificationManager.notify(
-            connection.Id.toInt(),
+            Constants.FINISH_NOTIFICATION_OFFSET + connection.Id.toInt(),
             notification
         )
     }
