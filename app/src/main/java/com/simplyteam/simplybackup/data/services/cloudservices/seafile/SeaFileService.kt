@@ -192,7 +192,7 @@ class SeaFileService @Inject constructor(
     ): File {
         val file = File(
             _context.cacheDir,
-            filename
+            "backup.zip"
         )
         FileOutputStream(file).use { fos ->
             fos.write(body.bytes())

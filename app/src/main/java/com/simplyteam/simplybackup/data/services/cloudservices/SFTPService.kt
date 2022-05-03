@@ -197,10 +197,7 @@ class SFTPService @Inject constructor(
 
                 val file = File(
                     _context.cacheDir,
-                    FileUtil.ExtractFileNameFromRemotePath(
-                        connection,
-                        remotePath
-                    )
+                    "backup.zip"
                 )
 
                 FileOutputStream(file).use { stream ->
