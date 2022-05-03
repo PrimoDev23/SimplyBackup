@@ -35,6 +35,11 @@ class PathsConfigurationViewModel @Inject constructor(
             is PathsConfigurationEvent.OnDeletePathClicked -> {
                 RemovePath(event.Path)
             }
+            is PathsConfigurationEvent.OnLoadData -> {
+                State = State.copy(
+                    Paths = event.Paths
+                )
+            }
         }
     }
 

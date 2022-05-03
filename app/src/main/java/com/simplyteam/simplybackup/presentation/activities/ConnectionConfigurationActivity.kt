@@ -27,6 +27,7 @@ import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
+import com.simplyteam.simplybackup.data.models.events.connection.PathsConfigurationEvent
 import com.simplyteam.simplybackup.data.utils.ActivityUtil.FinishActivityWithAnimation
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
@@ -75,6 +76,7 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                 LaunchedEffect(key1 = true) {
                     connection?.let {
                         connectionConfigurationViewModel.OnEvent(ConnectionConfigurationEvent.OnLoadData(connection))
+                        pathsConfigurationViewModel.OnEvent(PathsConfigurationEvent.OnLoadData(connection.Paths))
                     }
                 }
 
