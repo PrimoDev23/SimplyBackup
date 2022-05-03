@@ -118,8 +118,6 @@ class PackagingService @Inject constructor(
         zipParameters: ZipParameters,
         file: File
     ) {
-        val bytes = file.readBytes()
-
         val path = if (file.absolutePath.startsWith("/")) {
             file.absolutePath.removePrefix("/")
         } else {
@@ -130,9 +128,24 @@ class PackagingService @Inject constructor(
         zipParameters.lastModifiedFileTime = file.lastModified()
 
         stream.putNextEntry(zipParameters)
-        stream.write(
-            bytes
-        )
+
+        file.inputStream()
+            .use { fis ->
+                var length = 0
+                val buffer = ByteArray(32 * 1024)
+
+                //Initial read
+                length = fis.read(buffer)
+
+                while (length > 0) {
+                    stream.write(
+                        buffer,
+                        0,
+                        length
+                    )
+                    length = fis.read(buffer)
+                }
+            }
         stream.closeEntry()
     }
 
