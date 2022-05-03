@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.io.FileOutputStream
+import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -29,8 +30,8 @@ class SeaFileService @Inject constructor(
         Retrofit.Builder()
             .client(
                 OkHttpClient.Builder()
-                    .readTimeout(10, TimeUnit.MINUTES)
-                    .writeTimeout(10, TimeUnit.MINUTES)
+                    .readTimeout(Duration.ZERO)
+                    .writeTimeout(Duration.ZERO)
                     .build()
             )
             .baseUrl(
