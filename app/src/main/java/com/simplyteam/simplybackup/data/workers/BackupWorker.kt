@@ -1,5 +1,6 @@
 package com.simplyteam.simplybackup.data.workers
 
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -114,17 +115,15 @@ class BackupWorker @AssistedInject constructor(
                                 true
                             )
 
-                            setForeground(BuildSuccessForegroundInfo(connection))
+                            ShowSuccessNotification(connection)
                         }
                         .onFailure {
                             Timber.e(it)
 
-                            setForeground(
-                                BuildErrorForegroundInfo(
-                                    connection,
-                                    _context.getString(R.string.ErrorException)
-                                        .format(connection.Name)
-                                )
+                            ShowErrorNotification(
+                                connection,
+                                _context.getString(R.string.ErrorException)
+                                    .format(connection.Name)
                             )
                         }
 
@@ -136,12 +135,10 @@ class BackupWorker @AssistedInject constructor(
                 .onFailure {
                     Timber.e(it)
 
-                    setForeground(
-                        BuildErrorForegroundInfo(
-                            connection,
-                            _context.getString(R.string.ErrorPackaging)
-                                .format(connection.Name)
-                        )
+                    ShowErrorNotification(
+                        connection,
+                        _context.getString(R.string.ErrorPackaging)
+                            .format(connection.Name)
                     )
                 }
 
@@ -173,7 +170,7 @@ class BackupWorker @AssistedInject constructor(
         )
     }
 
-    private fun BuildSuccessForegroundInfo(connection: Connection): ForegroundInfo {
+    private fun ShowSuccessNotification(connection: Connection) {
         val notification = NotificationCompat.Builder(
             _context,
             _context.getString(R.string.notification_channel_id)
@@ -186,16 +183,18 @@ class BackupWorker @AssistedInject constructor(
             )
             .build()
 
-        return ForegroundInfo(
+        val notificationManager = _context.getSystemService(NotificationManager::class.java)
+
+        notificationManager.notify(
             connection.Id.toInt(),
             notification
         )
     }
 
-    private fun BuildErrorForegroundInfo(
+    private fun ShowErrorNotification(
         connection: Connection,
         text: String
-    ): ForegroundInfo {
+    ) {
         val intent = Intent(
             _context,
             RunBackupReceiver::class.java
@@ -236,7 +235,9 @@ class BackupWorker @AssistedInject constructor(
             )
             .build()
 
-        return ForegroundInfo(
+        val notificationManager = _context.getSystemService(NotificationManager::class.java)
+
+        notificationManager.notify(
             connection.Id.toInt(),
             notification
         )
