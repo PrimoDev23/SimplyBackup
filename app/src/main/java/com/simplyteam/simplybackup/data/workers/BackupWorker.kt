@@ -64,7 +64,7 @@ class BackupWorker @AssistedInject constructor(
             )
 
             _packagingService.CreatePackage(
-                _context.filesDir.absolutePath,
+                _context.cacheDir.absolutePath,
                 connection
             )
                 .onSuccess { file ->

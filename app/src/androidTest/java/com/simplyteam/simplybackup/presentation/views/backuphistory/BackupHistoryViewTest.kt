@@ -89,7 +89,7 @@ class BackupHistoryViewTest {
             CloudServiceUtil.UploadTestPackage(
                 Connection,
                 PackagingService,
-                Context.filesDir.absolutePath,
+                Context.cacheDir.absolutePath,
                 NextCloudService,
                 SFTPService,
                 GoogleDriveService
