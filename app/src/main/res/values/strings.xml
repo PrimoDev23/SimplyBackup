@@ -24,7 +24,7 @@
     <string name="TotalBackupSize">Total size of backups</string>
     <string name="WifiOnly">Backup only on wifi connection</string>
     <string name="BackingUpNotificationTitle">Backing up…</string>
-    <string name="BackingUpNotificationText">Currently backing up %s</string>
+    <string name="CreatingArchive">Creating backup for %s</string>
     <string name="notification_channel_id" translatable="false">simplybackup_notify_channel</string>
     <string name="notification_channel_name" translatable="false">Backup Notification</string>
     <string name="ErrorNotificationTitle">Error backing up</string>
@@ -74,5 +74,6 @@
     <string name="SeaFile" translatable="false">SeaFile</string>
     <string name="StartRemotePathWithSlash">Remote path has to start with \"/\"</string>
     <string name="RemotePathEndsWithSlash">Remote path must not end with \"/\"</string>
-    <string name="PlaceholderValue">.</string>
+    <string name="PlaceholderValue" translatable="false">.</string>
+    <string name="UploadingBackup">Uploading backup for %s</string>
 </resources>

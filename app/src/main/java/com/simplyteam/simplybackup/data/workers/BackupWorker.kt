@@ -1,19 +1,21 @@
 package com.simplyteam.simplybackup.data.workers
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
-import androidx.work.WorkManager
-import androidx.work.Worker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.simplyteam.simplybackup.R
 import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.HistoryEntry
+import com.simplyteam.simplybackup.data.receiver.RunBackupReceiver
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.repositories.HistoryRepository
-import com.simplyteam.simplybackup.data.services.NotificationService
 import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
@@ -22,12 +24,9 @@ import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
 import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.time.LocalDateTime
-import javax.inject.Inject
 
 @HiltWorker
 class BackupWorker @AssistedInject constructor(
@@ -38,7 +37,6 @@ class BackupWorker @AssistedInject constructor(
     private val _sftpService: SFTPService,
     private val _googleDriveService: GoogleDriveService,
     private val _seaFileService: SeaFileService,
-    private val _notificationService: NotificationService,
     private val _schedulerService: SchedulerService,
     private val _connectionRepository: ConnectionRepository,
     private val _historyRepository: HistoryRepository
@@ -59,8 +57,13 @@ class BackupWorker @AssistedInject constructor(
         val connection = _connectionRepository.GetConnection(id)
 
         try {
-            _notificationService.ShowBackingUpNotification(
-                connection
+            //This can be long running
+            setForeground(
+                BuildBackingUpForegroundInfo(
+                    connection,
+                    _context.getString(R.string.CreatingArchive)
+                        .format(connection.Name)
+                )
             )
 
             _packagingService.CreatePackage(
@@ -68,6 +71,14 @@ class BackupWorker @AssistedInject constructor(
                 connection
             )
                 .onSuccess { file ->
+                    setForeground(
+                        BuildBackingUpForegroundInfo(
+                            connection,
+                            _context.getString(R.string.UploadingBackup)
+                                .format(connection.Name)
+                        )
+                    )
+
                     val uploadResult = when (connection.ConnectionType) {
                         ConnectionType.NextCloud -> {
                             _nextCloudService.UploadFile(
@@ -95,10 +106,6 @@ class BackupWorker @AssistedInject constructor(
                         }
                     }
 
-                    _notificationService.HideBackingUpNotification(
-                        connection
-                    )
-
                     uploadResult
                         .onSuccess {
                             AddHistoryEntry(
@@ -107,20 +114,21 @@ class BackupWorker @AssistedInject constructor(
                                 true
                             )
 
-                            _notificationService.ShowSuccessNotification(
-                                connection
-                            )
+                            setForeground(BuildSuccessForegroundInfo(connection))
                         }
                         .onFailure {
                             Timber.e(it)
 
-                            _notificationService.ShowErrorNotification(
-                                _context.getString(R.string.ErrorException)
-                                    .format(connection.Name),
-                                connection
+                            setForeground(
+                                BuildErrorForegroundInfo(
+                                    connection,
+                                    _context.getString(R.string.ErrorException)
+                                        .format(connection.Name)
+                                )
                             )
                         }
 
+                    //Remove the file, no matter of the result
                     file.delete()
 
                     return Result.success()
@@ -128,10 +136,12 @@ class BackupWorker @AssistedInject constructor(
                 .onFailure {
                     Timber.e(it)
 
-                    _notificationService.ShowErrorNotification(
-                        _context.getString(R.string.ErrorPackaging)
-                            .format(connection.Name),
-                        connection
+                    setForeground(
+                        BuildErrorForegroundInfo(
+                            connection,
+                            _context.getString(R.string.ErrorPackaging)
+                                .format(connection.Name)
+                        )
                     )
                 }
 
@@ -139,6 +149,97 @@ class BackupWorker @AssistedInject constructor(
         } finally {
             _schedulerService.ScheduleBackup(connection)
         }
+    }
+
+    private fun BuildBackingUpForegroundInfo(
+        connection: Connection,
+        text: String
+    ): ForegroundInfo {
+        val notification = NotificationCompat.Builder(
+            _context,
+            _context.getString(R.string.notification_channel_id)
+        )
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(_context.getString(R.string.BackingUpNotificationTitle))
+            .setContentText(
+                text
+            )
+            .setOngoing(true)
+            .build()
+
+        return ForegroundInfo(
+            connection.Id.toInt(),
+            notification
+        )
+    }
+
+    private fun BuildSuccessForegroundInfo(connection: Connection): ForegroundInfo {
+        val notification = NotificationCompat.Builder(
+            _context,
+            _context.getString(R.string.notification_channel_id)
+        )
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(_context.getString(R.string.SuccessNotificationTitle))
+            .setContentText(
+                _context.getString(R.string.SuccessNotificationText)
+                    .format(connection.Name)
+            )
+            .build()
+
+        return ForegroundInfo(
+            connection.Id.toInt(),
+            notification
+        )
+    }
+
+    private fun BuildErrorForegroundInfo(
+        connection: Connection,
+        text: String
+    ): ForegroundInfo {
+        val intent = Intent(
+            _context,
+            RunBackupReceiver::class.java
+        )
+        val bundle = Bundle()
+        bundle.putSerializable(
+            "Connection",
+            connection
+        )
+        intent.putExtra(
+            "Bundle",
+            bundle
+        )
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            _context,
+            connection.Id.toInt() + Constants.NOTIFICATION_ID_OFFSET,
+            intent,
+            if (Build.VERSION.SDK_INT >= 31) {
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+            } else {
+                PendingIntent.FLAG_CANCEL_CURRENT
+            }
+        )
+
+        val notification = NotificationCompat.Builder(
+            _context,
+            _context.getString(R.string.notification_channel_id)
+        )
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(_context.getString(R.string.ErrorNotificationTitle))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle())
+            .addAction(
+                0,
+                _context.getString(R.string.Retry),
+                pendingIntent
+            )
+            .build()
+
+        return ForegroundInfo(
+            connection.Id.toInt(),
+            notification
+        )
     }
 
     private suspend fun AddHistoryEntry(

@@ -24,7 +24,7 @@
     <string name="TotalBackupSize">Gesamtgröße der Backups</string>
     <string name="WifiOnly">Backup nur bei WLAN-Verbindung</string>
     <string name="BackingUpNotificationTitle">Backup wird ausgeführt…</string>
-    <string name="BackingUpNotificationText">Backup für %s wird ausgeführt</string>
+    <string name="CreatingArchive">Backup für %s wird erstellt</string>
     <string name="ErrorNotificationTitle">Fehler beim Backup</string>
     <string name="SuccessNotificationTitle">Backup erfolgreich</string>
     <string name="SuccessNotificationText">Das Backup %s wurde erfolgreich ausgeführt</string>
@@ -69,4 +69,5 @@
     <string name="RepoId">RepoId</string>
     <string name="StartRemotePathWithSlash">Der Remotepfad muss mit \"/\" starten</string>
     <string name="RemotePathEndsWithSlash">Der Remotepfad darf nicht mit \"/\" enden</string>
+    <string name="UploadingBackup">Backup für %s wird hochgeladen</string>
 </resources>
