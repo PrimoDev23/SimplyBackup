@@ -1,11 +1,8 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performTextInput
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.SFTPConfigurationViewModel
@@ -67,6 +64,32 @@ class SFTPConfigurationViewTest {
         composeRule.onNodeWithTag("RemotePathError")
             .assertExists()
 
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextInput("Test")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
+        composeRule.onNodeWithTag("RemotePathError")
+            .assertExists()
+
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextReplacement("/Test/")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
+        composeRule.onNodeWithTag("RemotePathError")
+            .assertExists()
+
         composeRule.onNodeWithTag("Name")
             .performTextInput("Test")
 
@@ -80,7 +103,7 @@ class SFTPConfigurationViewTest {
             .performTextInput("Test")
 
         composeRule.onNodeWithTag("RemotePath")
-            .performTextInput("Test")
+            .performTextReplacement("/Test")
 
         try{
             _viewModel.GetBaseConnection()
