@@ -1,5 +1,8 @@
 package com.simplyteam.simplybackup.presentation.views.connection
 
+import android.content.Context
+import android.inputmethodservice.InputMethodService
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,14 +12,18 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -26,13 +33,13 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.common.AppModule
-import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.common.TestConstants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
 import com.simplyteam.simplybackup.data.models.ScheduleType
 import com.simplyteam.simplybackup.data.models.Screen
 import com.simplyteam.simplybackup.data.models.events.connection.ConnectionConfigurationEvent
+import com.simplyteam.simplybackup.data.models.events.connection.PathsConfigurationEvent
 import com.simplyteam.simplybackup.data.repositories.AccountRepository
 import com.simplyteam.simplybackup.data.repositories.ConnectionRepository
 import com.simplyteam.simplybackup.data.services.SchedulerService
@@ -42,16 +49,17 @@ import com.simplyteam.simplybackup.data.utils.ConnectionUtil
 import com.simplyteam.simplybackup.presentation.navigation.ConnectionConfigurationNavigation
 import com.simplyteam.simplybackup.presentation.theme.SimplyBackupTheme
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
-
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+
 
 @HiltAndroidTest
 @UninstallModules(AppModule::class)
@@ -86,13 +94,12 @@ class ConnectionConfigurationViewTest {
     fun setUp() {
         hiltRule.inject()
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val config = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
 
         // Initialize WorkManager for instrumentation tests.
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+        WorkManagerTestInitHelper.initializeTestWorkManager(InstrumentationRegistry.getInstrumentation().targetContext, config)
 
         _viewModel = ConnectionConfigurationViewModel(
             ConnectionRepository,
@@ -105,6 +112,7 @@ class ConnectionConfigurationViewTest {
             AccountRepository,
             GoogleDriveService
         )
+        val seaFileViewModel = SeaFileConfigurationViewModel()
 
         _viewModel.ViewModelMap[ConnectionType.NextCloud] =
             nextCloudViewModel
@@ -112,6 +120,8 @@ class ConnectionConfigurationViewTest {
             ftpViewModel
         _viewModel.ViewModelMap[ConnectionType.GoogleDrive] =
             googleDriveViewModel
+        _viewModel.ViewModelMap[ConnectionType.SeaFile] =
+            seaFileViewModel
 
         composeRule.setContent {
             SimplyBackupTheme {
@@ -132,6 +142,20 @@ class ConnectionConfigurationViewTest {
                 LaunchedEffect(key1 = true) {
                     googleDriveViewModel.NewAccountFlow.collect {
                         googleDriveLoginLauncher.launch(it)
+                    }
+                }
+
+                LaunchedEffect(true){
+                    _viewModel.ConfigurePathsFlow.collect {
+                        pathsConfigurationViewModel.OnEvent(PathsConfigurationEvent.OnLoadData(_viewModel.Paths))
+                        navController.navigate(Screen.PathsConfiguration.Route)
+                    }
+                }
+
+                LaunchedEffect(true) {
+                    pathsConfigurationViewModel.SaveFlow.collect {
+                        _viewModel.Paths = it
+                        navController.popBackStack()
                     }
                 }
 
@@ -265,7 +289,7 @@ class ConnectionConfigurationViewTest {
                     .performTextReplacement(testValue)
 
                 composeRule.onNodeWithTag("RemotePath")
-                    .performTextReplacement(testValue)
+                    .performTextReplacement("/")
 
                 if(TestConstants.TestConnectionType == ConnectionType.SeaFile){
                     composeRule.onNodeWithTag("RepoId")
@@ -364,6 +388,7 @@ class ConnectionConfigurationViewTest {
         assert(newConnection.Paths.isNotEmpty())
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Test
     fun EditConnection() {
         _connection = ConnectionUtil.InsertConnection(
@@ -409,7 +434,7 @@ class ConnectionConfigurationViewTest {
                     .performTextReplacement(testValue)
 
                 composeRule.onNodeWithTag("RemotePath")
-                    .performTextReplacement(testValue)
+                    .performTextReplacement("/")
 
                 if(TestConstants.TestConnectionType == ConnectionType.SeaFile){
                     composeRule.onNodeWithTag("RepoId")
@@ -437,6 +462,7 @@ class ConnectionConfigurationViewTest {
             .performClick()
 
         composeRule.onNodeWithTag("ScheduleTypeCard")
+            .performScrollTo()
             .performClick()
 
         composeRule.onNodeWithTag("YearlyMenuItem")
