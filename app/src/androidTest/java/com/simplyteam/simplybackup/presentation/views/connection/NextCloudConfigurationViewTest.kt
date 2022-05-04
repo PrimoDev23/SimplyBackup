@@ -2,11 +2,8 @@ package com.simplyteam.simplybackup.presentation.views.connection
 
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
@@ -65,6 +62,32 @@ class NextCloudConfigurationViewTest {
         composeRule.onNodeWithTag("PasswordError")
             .assertExists()
 
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextInput("Test")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
+        composeRule.onNodeWithTag("RemotePathError")
+            .assertExists()
+
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextReplacement("/Test/")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
+        composeRule.onNodeWithTag("RemotePathError")
+            .assertExists()
+
         composeRule.onNodeWithTag("Name")
             .performTextInput("Test")
 
@@ -76,6 +99,9 @@ class NextCloudConfigurationViewTest {
 
         composeRule.onNodeWithTag("Password")
             .performTextInput("Test")
+
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextReplacement("/Test")
 
         try{
             _viewModel.GetBaseConnection()
@@ -93,6 +119,9 @@ class NextCloudConfigurationViewTest {
             .assertDoesNotExist()
 
         composeRule.onNodeWithTag("PasswordError")
+            .assertDoesNotExist()
+
+        composeRule.onNodeWithTag("RemotePathError")
             .assertDoesNotExist()
     }
 
