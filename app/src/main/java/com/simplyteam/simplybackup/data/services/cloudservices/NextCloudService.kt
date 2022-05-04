@@ -56,7 +56,7 @@ class NextCloudService @Inject constructor(
                     connection
                 )
 
-                val remotePath = connection.RemotePath + FileUtils.PATH_SEPARATOR + file.name
+                val remotePath = connection.RemotePath + file.name
 
                 // Get the last modification date of the file from the file system
                 val timeStampLong: Long = file.lastModified() / 1000

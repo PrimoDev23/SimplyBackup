@@ -19,8 +19,8 @@ class NextCloudConfigurationViewModel @Inject constructor(
 
     var State by mutableStateOf(NextCloudConfigurationState())
 
-    fun OnEvent(event: NextCloudConfigurationEvent){
-        when(event){
+    fun OnEvent(event: NextCloudConfigurationEvent) {
+        when (event) {
             is NextCloudConfigurationEvent.OnHostChange -> {
                 State = State.copy(
                     Host = event.Value
@@ -76,14 +76,16 @@ class NextCloudConfigurationViewModel @Inject constructor(
         return !(State.NameError || State.HostError || State.UsernameError || State.PasswordError || State.RemotePathError != R.string.PlaceholderValue)
     }
 
-    private fun GetRemotePathError(): Int{
-        if(State.RemotePath.isEmpty() || State.RemotePath == "/"){
+    private fun GetRemotePathError(): Int {
+        if (State.RemotePath.isEmpty()) {
+            return R.string.EnterRemotePath
+        } else if (State.RemotePath == "/") {
             return R.string.PlaceholderValue
-        }else if(!State.RemotePath.startsWith("/")){
+        } else if (!State.RemotePath.startsWith("/")) {
             return R.string.StartRemotePathWithSlash
-        }else if(State.RemotePath.endsWith("/")){
+        } else if (State.RemotePath.endsWith("/")) {
             return R.string.RemotePathEndsWithSlash
-        }else{
+        } else {
             return R.string.PlaceholderValue
         }
     }
