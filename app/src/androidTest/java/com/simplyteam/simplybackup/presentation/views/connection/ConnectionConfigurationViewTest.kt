@@ -317,6 +317,7 @@ class ConnectionConfigurationViewTest {
             .performClick()
 
         composeRule.onNodeWithTag("ScheduleTypeCard")
+            .performScrollTo()
             .performClick()
 
         composeRule.onNodeWithTag("MonthlyMenuItem")
@@ -367,7 +368,7 @@ class ConnectionConfigurationViewTest {
                     newConnection.Password
                 )
                 assertEquals(
-                    testValue,
+                    "/",
                     newConnection.RemotePath
                 )
 
@@ -505,7 +506,7 @@ class ConnectionConfigurationViewTest {
                     connection.Password
                 )
                 assertEquals(
-                    testValue,
+                    "/",
                     connection.RemotePath
                 )
                 if(TestConstants.TestConnectionType == ConnectionType.SeaFile) {
