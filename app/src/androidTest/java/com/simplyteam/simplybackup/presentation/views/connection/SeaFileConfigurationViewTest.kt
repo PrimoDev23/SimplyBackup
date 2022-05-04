@@ -2,11 +2,8 @@ package com.simplyteam.simplybackup.presentation.views.connection
 
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.simplyteam.simplybackup.common.AppModule
 import com.simplyteam.simplybackup.presentation.viewmodels.connection.NextCloudConfigurationViewModel
@@ -75,11 +72,25 @@ class SeaFileConfigurationViewTest {
         composeRule.onNodeWithTag("RemotePath")
             .performTextInput("Test")
 
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
         composeRule.onNodeWithTag("RemotePathError")
             .assertExists()
 
         composeRule.onNodeWithTag("RemotePath")
-            .performTextInput("/Test/")
+            .performTextReplacement("/Test/")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
 
         composeRule.onNodeWithTag("RemotePathError")
             .assertExists()
@@ -100,7 +111,7 @@ class SeaFileConfigurationViewTest {
             .performTextInput("Test")
 
         composeRule.onNodeWithTag("RemotePath")
-            .performTextInput("/Test")
+            .performTextReplacement("/Test")
 
         try{
             _viewModel.GetBaseConnection()
