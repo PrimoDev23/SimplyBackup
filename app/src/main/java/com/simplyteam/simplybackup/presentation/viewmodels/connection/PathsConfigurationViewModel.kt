@@ -4,15 +4,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.simplyteam.simplybackup.data.models.Path
 import com.simplyteam.simplybackup.data.models.PathType
 import com.simplyteam.simplybackup.data.models.events.connection.PathsConfigurationEvent
 import com.simplyteam.simplybackup.data.models.exceptions.FieldNotFilledException
 import com.simplyteam.simplybackup.presentation.uistates.connection.PathsConfigurationState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
+import java.nio.file.Paths
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +26,9 @@ class PathsConfigurationViewModel @Inject constructor(
 ) : ViewModel() {
 
     var State by mutableStateOf(PathsConfigurationState())
+
+    private val _saveFlow = MutableSharedFlow<List<Path>>()
+    val SaveFlow = _saveFlow.asSharedFlow()
 
     fun OnEvent(event: PathsConfigurationEvent) {
         when (event) {
@@ -39,6 +47,11 @@ class PathsConfigurationViewModel @Inject constructor(
                 State = State.copy(
                     Paths = event.Paths
                 )
+            }
+            PathsConfigurationEvent.OnSaveClicked -> {
+                viewModelScope.launch {
+                    _saveFlow.emit(State.Paths)
+                }
             }
         }
     }

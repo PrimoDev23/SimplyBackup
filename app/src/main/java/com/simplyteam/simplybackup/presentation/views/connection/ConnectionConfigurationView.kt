@@ -97,7 +97,7 @@ fun ConnectionConfigurationView(
 
             PathConfigurationCard(
                 onClick = {
-                    navController.navigate(Screen.PathsConfiguration.Route)
+                    viewModel.OnEvent(ConnectionConfigurationEvent.OnConfigurePathsClicked)
                 }
             )
 

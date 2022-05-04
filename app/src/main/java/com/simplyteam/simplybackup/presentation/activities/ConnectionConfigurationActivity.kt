@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -65,32 +66,18 @@ class ConnectionConfigurationActivity : ComponentActivity() {
 
                 val pathsConfigurationViewModel = viewModel<PathsConfigurationViewModel>()
 
-                val googleDriveLoginLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult()
-                ) {
-                    it.data?.let { data ->
-                        googleDriveViewModel.SetAccountFromIntent(data)
-                    }
-                }
-
                 LaunchedEffect(key1 = true) {
                     connection?.let {
                         connectionConfigurationViewModel.OnEvent(ConnectionConfigurationEvent.OnLoadData(connection))
-                        pathsConfigurationViewModel.OnEvent(PathsConfigurationEvent.OnLoadData(connection.Paths))
                     }
                 }
 
-                LaunchedEffect(key1 = true) {
-                    googleDriveViewModel.NewAccountFlow.collect {
-                        googleDriveLoginLauncher.launch(it)
-                    }
-                }
-
-                LaunchedEffect(key1 = true) {
-                    connectionConfigurationViewModel.FinishFlow.collect {
-                        context.FinishActivityWithAnimation()
-                    }
-                }
+                EventHandlers(
+                    connectionConfigurationViewModel = connectionConfigurationViewModel,
+                    pathsConfigurationViewModel = pathsConfigurationViewModel,
+                    navController = navController,
+                    googleDriveConfigurationViewModel = googleDriveViewModel
+                )
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 var currentScreen by remember {
@@ -126,8 +113,6 @@ class ConnectionConfigurationActivity : ComponentActivity() {
                                 if (currentScreen == Screen.ConnectionConfiguration) {
                                     context.FinishActivityWithAnimation()
                                 } else if (currentScreen == Screen.PathsConfiguration) {
-                                    connectionConfigurationViewModel.Paths =
-                                        pathsConfigurationViewModel.State.Paths
                                     navController.popBackStack()
                                 }
                             },
@@ -172,6 +157,50 @@ class ConnectionConfigurationActivity : ComponentActivity() {
             elevation = elevation,
             backgroundColor = MaterialTheme.colors.background
         )
+    }
+
+    @Composable
+    private fun EventHandlers(
+        connectionConfigurationViewModel: ConnectionConfigurationViewModel,
+        pathsConfigurationViewModel: PathsConfigurationViewModel,
+        navController: NavController,
+        googleDriveConfigurationViewModel: GoogleDriveConfigurationViewModel
+    ){
+        val context = LocalContext.current as ComponentActivity
+
+        val googleDriveLoginLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) {
+            it.data?.let { data ->
+                googleDriveConfigurationViewModel.SetAccountFromIntent(data)
+            }
+        }
+
+        LaunchedEffect(true){
+            connectionConfigurationViewModel.ConfigurePathsFlow.collect {
+                pathsConfigurationViewModel.OnEvent(PathsConfigurationEvent.OnLoadData(connectionConfigurationViewModel.Paths))
+                navController.navigate(Screen.PathsConfiguration.Route)
+            }
+        }
+
+        LaunchedEffect(key1 = true) {
+            googleDriveConfigurationViewModel.NewAccountFlow.collect {
+                googleDriveLoginLauncher.launch(it)
+            }
+        }
+
+        LaunchedEffect(key1 = true) {
+            connectionConfigurationViewModel.FinishFlow.collect {
+                context.FinishActivityWithAnimation()
+            }
+        }
+
+        LaunchedEffect(true) {
+            pathsConfigurationViewModel.SaveFlow.collect {
+                connectionConfigurationViewModel.Paths = it
+                navController.popBackStack()
+            }
+        }
     }
 
     override fun onBackPressed() {

@@ -11,4 +11,5 @@ sealed class ConnectionConfigurationEvent {
     data class OnBackupPasswordChange(val Value: String) : ConnectionConfigurationEvent()
     data class OnWifiOnlyChange(val Value: Boolean) : ConnectionConfigurationEvent()
     object OnSaveConnection : ConnectionConfigurationEvent()
+    object OnConfigurePathsClicked : ConnectionConfigurationEvent()
 }

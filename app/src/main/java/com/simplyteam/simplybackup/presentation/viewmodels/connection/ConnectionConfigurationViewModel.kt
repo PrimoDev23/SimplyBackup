@@ -28,6 +28,9 @@ class ConnectionConfigurationViewModel @Inject constructor(
     private val _finishFlow = MutableSharedFlow<Unit>()
     val FinishFlow = _finishFlow.asSharedFlow()
 
+    private val _configurePathsFlow = MutableSharedFlow<Unit>()
+    val ConfigurePathsFlow = _configurePathsFlow.asSharedFlow()
+
     val ScrollState = ScrollState(0)
 
     private var _id = 0L
@@ -65,6 +68,11 @@ class ConnectionConfigurationViewModel @Inject constructor(
             }
             ConnectionConfigurationEvent.OnSaveConnection -> {
                 SaveConnection()
+            }
+            ConnectionConfigurationEvent.OnConfigurePathsClicked -> {
+                viewModelScope.launch {
+                    _configurePathsFlow.emit(Unit)
+                }
             }
         }
     }

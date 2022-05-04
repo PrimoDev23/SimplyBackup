@@ -7,4 +7,5 @@ sealed class PathsConfigurationEvent {
     data class OnCurrentPathChange(val Value: String): PathsConfigurationEvent()
     object OnAddPathClicked: PathsConfigurationEvent()
     data class OnDeletePathClicked(val Path: Path): PathsConfigurationEvent()
+    object OnSaveClicked: PathsConfigurationEvent()
 }

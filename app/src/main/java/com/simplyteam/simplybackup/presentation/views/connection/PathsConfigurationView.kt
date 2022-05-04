@@ -144,6 +144,26 @@ fun PathsConfigurationView(
                 )
             }
         }
+
+        OutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .testTag("Save"),
+            border = BorderStroke(
+                1.dp,
+                MaterialTheme.colors.primary
+            ),
+            onClick = {
+                viewModel.OnEvent(PathsConfigurationEvent.OnSaveClicked)
+            }
+        ) {
+            Text(
+                text = stringResource(
+                    id = R.string.Save
+                )
+            )
+        }
     }
 }
 
