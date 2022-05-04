@@ -19,6 +19,7 @@ import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import com.simplyteam.simplybackup.data.utils.CloudServiceUtil
 import com.simplyteam.simplybackup.data.utils.ConnectionUtil
 import com.simplyteam.simplybackup.data.utils.TestFileUtil
@@ -56,6 +57,9 @@ class BackupHistoryViewTest {
     lateinit var GoogleDriveService: GoogleDriveService
 
     @Inject
+    lateinit var SeaFileService: SeaFileService
+
+    @Inject
     lateinit var PackagingService: PackagingService
 
     @Inject
@@ -77,6 +81,7 @@ class BackupHistoryViewTest {
             NextCloudService,
             SFTPService,
             GoogleDriveService,
+            SeaFileService,
             PackagingService
         )
 
@@ -92,7 +97,8 @@ class BackupHistoryViewTest {
                 Context.cacheDir.absolutePath,
                 NextCloudService,
                 SFTPService,
-                GoogleDriveService
+                GoogleDriveService,
+                SeaFileService
             )
         }
 
@@ -133,7 +139,8 @@ class BackupHistoryViewTest {
                 Connection,
                 NextCloudService,
                 SFTPService,
-                GoogleDriveService
+                GoogleDriveService,
+                SeaFileService
             )
         }
     }

@@ -27,6 +27,7 @@ import com.simplyteam.simplybackup.data.services.SchedulerService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import com.simplyteam.simplybackup.data.services.search.ConnectionSearchService
 import com.simplyteam.simplybackup.data.utils.CloudServiceUtil
 import com.simplyteam.simplybackup.data.utils.ConnectionUtil
@@ -73,6 +74,9 @@ class ConnectionOverviewViewTest {
 
     @Inject
     lateinit var GoogleDriveService: GoogleDriveService
+
+    @Inject
+    lateinit var SeaFileService: SeaFileService
 
     @Before
     fun setUp() {
@@ -255,7 +259,8 @@ class ConnectionOverviewViewTest {
                 connection,
                 NextCloudService,
                 SFTPService,
-                GoogleDriveService
+                GoogleDriveService,
+                SeaFileService
             )
         }
 
@@ -269,7 +274,8 @@ class ConnectionOverviewViewTest {
                 connection,
                 NextCloudService,
                 SFTPService,
-                GoogleDriveService
+                GoogleDriveService,
+                SeaFileService
             )
         }
     }

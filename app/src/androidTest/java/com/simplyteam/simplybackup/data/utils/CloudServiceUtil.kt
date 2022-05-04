@@ -8,6 +8,7 @@ import com.simplyteam.simplybackup.data.services.PackagingService
 import com.simplyteam.simplybackup.data.services.cloudservices.GoogleDriveService
 import com.simplyteam.simplybackup.data.services.cloudservices.NextCloudService
 import com.simplyteam.simplybackup.data.services.cloudservices.SFTPService
+import com.simplyteam.simplybackup.data.services.cloudservices.seafile.SeaFileService
 import kotlinx.coroutines.runBlocking
 
 object CloudServiceUtil {
@@ -17,7 +18,8 @@ object CloudServiceUtil {
         basePath: String,
         nextCloudService: NextCloudService,
         sftpService: SFTPService,
-        googleDriveService: GoogleDriveService
+        googleDriveService: GoogleDriveService,
+        seaFileService: SeaFileService
     ): Result<Boolean> {
         packagingService.CreatePackage(
             basePath,
@@ -43,6 +45,12 @@ object CloudServiceUtil {
                             it
                         )
                     }
+                    ConnectionType.SeaFile -> {
+                        seaFileService.UploadFile(
+                            connection,
+                            it
+                        )
+                    }
                 }
                 return result
             }
@@ -56,7 +64,8 @@ object CloudServiceUtil {
         connection: Connection,
         nextCloudService: NextCloudService,
         sftpService: SFTPService,
-        googleDriveService: GoogleDriveService
+        googleDriveService: GoogleDriveService,
+        seaFileService: SeaFileService
     ): List<RemoteFile> {
         return when (TestConstants.TestConnectionType) {
             ConnectionType.NextCloud -> {
@@ -74,6 +83,11 @@ object CloudServiceUtil {
                     connection
                 )
             }
+            ConnectionType.SeaFile -> {
+                seaFileService.GetFilesForConnection(
+                    connection
+                )
+            }
         }
     }
 
@@ -81,7 +95,8 @@ object CloudServiceUtil {
         connection: Connection,
         nextCloudService: NextCloudService,
         sftpService: SFTPService,
-        googleDriveService: GoogleDriveService
+        googleDriveService: GoogleDriveService,
+        seaFileService: SeaFileService
     ) {
         val files = when (connection.ConnectionType) {
             ConnectionType.NextCloud -> {
@@ -96,6 +111,11 @@ object CloudServiceUtil {
             }
             ConnectionType.GoogleDrive -> {
                 googleDriveService.GetFilesForConnection(
+                    connection
+                )
+            }
+            ConnectionType.SeaFile -> {
+                seaFileService.GetFilesForConnection(
                     connection
                 )
             }
@@ -119,6 +139,12 @@ object CloudServiceUtil {
                     googleDriveService.DeleteFile(
                         connection,
                         file.RemoteId
+                    )
+                }
+                ConnectionType.SeaFile -> {
+                    seaFileService.DeleteFile(
+                        connection,
+                        file.RemotePath
                     )
                 }
             }

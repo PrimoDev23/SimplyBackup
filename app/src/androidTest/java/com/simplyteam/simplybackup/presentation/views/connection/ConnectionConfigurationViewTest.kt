@@ -26,6 +26,7 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.simplyteam.simplybackup.BuildConfig
 import com.simplyteam.simplybackup.common.AppModule
+import com.simplyteam.simplybackup.common.Constants
 import com.simplyteam.simplybackup.common.TestConstants
 import com.simplyteam.simplybackup.data.models.Connection
 import com.simplyteam.simplybackup.data.models.ConnectionType
@@ -265,6 +266,11 @@ class ConnectionConfigurationViewTest {
 
                 composeRule.onNodeWithTag("RemotePath")
                     .performTextReplacement(testValue)
+
+                if(TestConstants.TestConnectionType == ConnectionType.SeaFile){
+                    composeRule.onNodeWithTag("RepoId")
+                        .performTextReplacement(testValue)
+                }
             }
         }
 
@@ -280,7 +286,7 @@ class ConnectionConfigurationViewTest {
         composeRule.onNodeWithText("/sdcard/Pictures")
             .assertExists()
 
-        composeRule.onNodeWithTag("BackButton")
+        composeRule.onNodeWithTag("Save")
             .performClick()
 
         composeRule.onNodeWithTag("WifiOnly")
@@ -340,6 +346,13 @@ class ConnectionConfigurationViewTest {
                     testValue,
                     newConnection.RemotePath
                 )
+
+                if(TestConstants.TestConnectionType == ConnectionType.SeaFile){
+                    assertEquals(
+                        testValue,
+                        newConnection.RepoId
+                    )
+                }
             }
         }
 
@@ -397,6 +410,11 @@ class ConnectionConfigurationViewTest {
 
                 composeRule.onNodeWithTag("RemotePath")
                     .performTextReplacement(testValue)
+
+                if(TestConstants.TestConnectionType == ConnectionType.SeaFile){
+                    composeRule.onNodeWithTag("RepoId")
+                        .performTextReplacement(testValue)
+                }
             }
         }
 
@@ -412,7 +430,7 @@ class ConnectionConfigurationViewTest {
         composeRule.onNodeWithText("/sdcard/Movies")
             .assertExists()
 
-        composeRule.onNodeWithTag("BackButton")
+        composeRule.onNodeWithTag("Save")
             .performClick()
 
         composeRule.onNodeWithTag("WifiOnly")
@@ -464,6 +482,12 @@ class ConnectionConfigurationViewTest {
                     testValue,
                     connection.RemotePath
                 )
+                if(TestConstants.TestConnectionType == ConnectionType.SeaFile) {
+                    assertEquals(
+                        testValue,
+                        connection.RepoId
+                    )
+                }
             }
         }
 

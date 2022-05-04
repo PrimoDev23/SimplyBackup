@@ -38,6 +38,11 @@ android {
 
             buildConfigField "String", "GOOGLE_DRIVE_USER", properties.getProperty('GOOGLE_DRIVE_USER')
             buildConfigField "String", "GOOGLE_DRIVE_EDITUSER", properties.getProperty('GOOGLE_DRIVE_EDITUSER')
+
+            buildConfigField "String", "SEAFILE_HOST", properties.getProperty('SEAFILE_HOST')
+            buildConfigField "String", "SEAFILE_USER", properties.getProperty('SEAFILE_USER')
+            buildConfigField "String", "SEAFILE_PASSWORD", properties.getProperty('SEAFILE_PASSWORD')
+            buildConfigField "String", "SEAFILE_REPOID", properties.getProperty('SEAFILE_REPOID')
         }
         release {
             minifyEnabled false

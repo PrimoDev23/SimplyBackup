@@ -59,6 +59,17 @@ object ConnectionUtil {
                     )
                 )
             }
+            ConnectionType.SeaFile -> {
+                Connection(
+                    ConnectionType = ConnectionType.SeaFile,
+                    Name = "AndroidInstrumentationTest",
+                    Host = BuildConfig.SEAFILE_HOST,
+                    Username = BuildConfig.SEAFILE_USER,
+                    Password = BuildConfig.SEAFILE_PASSWORD,
+                    RepoId = BuildConfig.SEAFILE_REPOID,
+                    RemotePath = "/"
+                )
+            }
         }
 
         val id = runBlocking {
