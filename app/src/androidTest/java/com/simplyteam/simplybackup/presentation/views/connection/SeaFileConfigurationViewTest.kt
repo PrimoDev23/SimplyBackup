@@ -70,7 +70,20 @@ class SeaFileConfigurationViewTest {
             .assertExists()
 
         composeRule.onNodeWithTag("RemotePath")
-            .performTextInput("Test")
+            .performTextInput("")
+
+        try{
+            _viewModel.GetBaseConnection()
+            assert(false)
+        }catch (ex: Exception){
+
+        }
+
+        composeRule.onNodeWithTag("RemotePathError")
+            .assertExists()
+
+        composeRule.onNodeWithTag("RemotePath")
+            .performTextReplacement("Test")
 
         try{
             _viewModel.GetBaseConnection()
