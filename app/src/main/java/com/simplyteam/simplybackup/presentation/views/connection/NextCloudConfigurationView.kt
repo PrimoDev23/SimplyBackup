@@ -208,7 +208,7 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                 )
             )
 
-            OutlinedTextField(
+            ErrorOutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("RemotePath"),
@@ -241,7 +241,13 @@ fun NextCloudInformationFields(viewModel: NextCloudConfigurationViewModel) {
                         )
                     )
                 },
-                singleLine = true
+                singleLine = true,
+                errorModifier = Modifier
+                    .testTag("RemotePathError"),
+                isError = viewModel.State.RemotePathError != R.string.PlaceholderValue,
+                errorText = stringResource(
+                    id = viewModel.State.RemotePathError
+                )
             )
         }
     }
