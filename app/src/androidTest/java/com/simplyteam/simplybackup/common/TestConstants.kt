@@ -4,6 +4,6 @@ import com.simplyteam.simplybackup.data.models.ConnectionType
 
 object TestConstants {
 
-    val TestConnectionType = ConnectionType.NextCloud
+    val TestConnectionType = ConnectionType.SeaFile
 
 }
